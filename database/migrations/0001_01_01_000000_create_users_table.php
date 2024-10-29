@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->string('auth_token', 100)->nullable();
-            $table->string('telegram_chat_id');
+            $table->string('telegram_chat_id')->nullable();
             $table->timestamps();
             $table->softDeletes()->index();
         });
