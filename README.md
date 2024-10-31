@@ -64,3 +64,102 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+# Getting started
+
+- You must copy .env.example:
+  ```
+  cp .env.example .env
+  ```
+- Next run the  command in your project shell terminal.
+  ```
+  docker compose up
+  ```
+- Next run install composer:
+  ```
+  docker compose exec php-fpm php composer install
+  ```
+- Next run generate application key:
+  ```
+  docker compose exec php-fpm php artisan key:generate
+  ```
+- Next run migration:
+  ```
+  docker compose exec php-fpm php artisan migrate
+  ```
+- Use Laravel Pint in project
+    - Pint to fix code style issues
+      ```
+      docker compose exec php-fpm ./vendor/bin/pint
+      ```
+    - Pint to fix code style issues. Pint will display a thorough list of all the files that it updates.
+      ```
+      docker compose exec php-fpm ./vendor/bin/pint -v
+      ```
+    - Pint print code style issues. Pint will display a thorough list of all the files that it updates.
+      ```
+      docker compose exec php-fpm ./vendor/bin/pint --test -v
+      ```
+    - Setup laravel pint in phpstorm
+      [https://gilbitron.me/blog/running-laravel-pint-in-phpstorm/](https://gilbitron.me/blog/running-laravel-pint-in-phpstorm/)
+- For install craftable-pro (SKIP)
+```
+    php artisan craftable-pro:install
+```
+- For generate new admin user
+```
+    php artisan craftable-pro:create-admin-user
+```
+- For update craftable-pro package
+```
+    composer reinstall brackets/craftable-pro
+    or
+    docker exec platform_php-fpm_1 composer reinstall brackets/craftable-pro
+```
+
+- CRUD Generator
+  ```
+    php artisan craftable:generate:crud
+    
+    php artisan craftable-pro:generate-crud {table_name} -w
+    
+    Options:
+        --w|wizard -> Wizard mode asks for most common options interactively
+        --listing-columns -> List and select columns for index page
+        --sortable-columns -> List of columns which listing can be sorted by
+        --form-columns -> List and select columns for form page
+        --publishable-column -> Name of column which should be used for publishable feature
+        --translatable-columns -> List of columns which should be translatable
+        --media-collections -> Names of media collections which should be registered for model
+        --image-collections -> Names of media collections which should have conversions generated as well
+        --add-relation -> Definition of relation on model using following syntax:
+        <relationType>(<relatedModel>-><modelAccessor>,<?foreign_key>,<?owner_key>)
+        (ie: `belongsTo(Author->title)` or `belongsTo(Author->title,author_id,id)`)
+        --with-export -> Whether listing should have export function or not
+        --run-migration -> Whether to run permission migration after generating CRUD or not
+        --without-routes -> Do not generate routes
+        --without-sidebar -> Do not append new module into the sidebar
+        --dry-run -> Display all information without actually generating anything';
+  ```
+
+- For laravel-settings plugin
+```
+    php artisan make:settings-migration <name>
+    php artisan settings:clear-cache
+    php artisan settings:discover
+    php artisan settings:clear-discovered
+```
+- For spatie media-library plugin
+```
+    php artisan media-library:clean
+```
+
+- Run new empty project + seeder
+```
+    php artisan migrate:fresh --seed
+    or
+    php artisan migrate:fresh
+    php artisan craftable-pro:create-admin-user
+    php artisan db:seed
+```

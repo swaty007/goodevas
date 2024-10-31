@@ -15,14 +15,21 @@
         "sourceMap": true,
         "resolveJsonModule": true,
         "lib": ["esnext", "dom"],
+        "baseUrl": "./",
         "paths": {
             "@/*": ["./resources/js/*"],
-            "ziggy-js": ["./vendor/tightenco/ziggy"]
+            "ziggy-js": ["./vendor/tightenco/ziggy"],
+            "craftable-pro/*": ["vendor/brackets/craftable-pro/resources/js/*"]
         }
     },
     "include": [
         "resources/js/**/*.ts",
         "resources/js/**/*.d.ts",
         "resources/js/**/*.vue",
+
+        "resources/js/craftable-pro/**/*.ts",
+        "resources/js/craftable-pro/**/*.d.ts",
+        "resources/js/craftable-pro/**/*.tsx",
+        "resources/js/craftable-pro/**/*.vue"
     ]
 }
