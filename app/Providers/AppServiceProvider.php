@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Facades\Ysell\YsellApiService;
 use App\Models\PersonalAccessToken;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
@@ -24,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.debug')) {
             $this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);
         }
+
+        $this->app->bind('ysell-api', function () {
+            return new YsellApiService;
+        });
     }
 
     /**
