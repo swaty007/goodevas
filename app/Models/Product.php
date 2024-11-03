@@ -16,6 +16,10 @@ class Product extends Model
         'additional_data',
     ];
 
+    protected $casts = [
+        'additional_data' => 'collection',
+    ];
+
     public function warehouses()
     {
         return $this->belongsToMany(Warehouse::class)->withPivot('stock_quantity')->withTimestamps();

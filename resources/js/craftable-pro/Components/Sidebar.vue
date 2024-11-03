@@ -9,7 +9,28 @@
         >
           {{ $t("craftable-pro", "Media") }}
         </SidebarItem>
-        <!--AppendGeneratorLink-->
+        <SidebarItem
+                        :href="route('craftable-pro.products.index')"
+                        :icon="CubeTransparentIcon"
+                        v-can="'global.product.index'"
+                    >
+                        {{ $t("global", "Products") }}
+                    </SidebarItem>
+                    <SidebarItem
+                        :href="route('craftable-pro.product-types.index')"
+                        :icon="CubeTransparentIcon"
+                        v-can="'global.product-type.index'"
+                    >
+                        {{ $t("global", "Product Types") }}
+                    </SidebarItem>
+                    <SidebarItem
+                        :href="route('craftable-pro.ysells.index')"
+                        :icon="CubeTransparentIcon"
+                        v-can="'global.ysell.index'"
+                    >
+                        {{ $t("global", "Ysells") }}
+                    </SidebarItem>
+                    <!--AppendGeneratorLink-->
       </SidebarGroup>
 
       <SidebarGroup
