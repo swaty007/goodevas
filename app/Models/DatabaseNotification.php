@@ -12,8 +12,6 @@ class DatabaseNotification extends ParentModel
 
     /**
      * Get the prunable model query.
-     *
-     * @return Builder
      */
     public function prunable(): Builder
     {

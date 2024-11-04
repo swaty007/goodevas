@@ -3,8 +3,8 @@
 namespace Brackets\CraftablePro\Commands;
 
 use App\Models\Admin;
-use Brackets\CraftablePro\Models\CraftableProUser;
 use App\Settings\GeneralSettings;
+use Brackets\CraftablePro\Models\CraftableProUser;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 

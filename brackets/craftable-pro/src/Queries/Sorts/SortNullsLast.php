@@ -11,7 +11,6 @@ class SortNullsLast implements Sort
     {
         [$nulls, $direction] = $descending ? ['IS NULL', 'DESC'] : ['IS NOT NULL', 'ASC'];
 
-
         $query->orderByRaw("{$property} {$nulls}, {$property} {$direction}");
     }
 }

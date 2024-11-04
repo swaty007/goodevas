@@ -14,6 +14,7 @@ class CraftableProUserSeeder extends Seeder
      * Run the database seeds.
      *
      * @return void
+     *
      * @throws FileCannotBeAdded
      * @throws FileDoesNotExist
      * @throws FileIsTooBig
@@ -25,14 +26,14 @@ class CraftableProUserSeeder extends Seeder
             ->create();
 
         $users->take(5)->each(function (CraftableProUser $user) {
-            $fullName = $user->first_name . ' ' . $user->last_name;
+            $fullName = $user->first_name.' '.$user->last_name;
 
-            $user->addMediaFromUrl("https://i.pravatar.cc/400")
+            $user->addMediaFromUrl('https://i.pravatar.cc/400')
                 ->withCustomProperties([
-                    "name" => $fullName,
-                    "extension" => "jpg",
-                    "size" => rand(10, 100) * 1024,
-                    "alt" => $fullName,
+                    'name' => $fullName,
+                    'extension' => 'jpg',
+                    'size' => rand(10, 100) * 1024,
+                    'alt' => $fullName,
                 ])
                 ->toMediaCollection('avatar', config('craftable-pro.default_media_disk_name'));
         });

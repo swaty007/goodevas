@@ -2,6 +2,7 @@
 
 namespace Brackets\CraftablePro\Http\Controllers\Translations;
 
+use App\Settings\GeneralSettings;
 use Brackets\CraftablePro\Http\Requests\Translation\ExportTranslations;
 use Brackets\CraftablePro\Http\Requests\Translation\ImportTranslation;
 use Brackets\CraftablePro\Http\Requests\Translation\IndexTranslation;
@@ -9,7 +10,6 @@ use Brackets\CraftablePro\Http\Requests\Translation\PublishTranslations;
 use Brackets\CraftablePro\Http\Requests\Translation\RescanTranslations;
 use Brackets\CraftablePro\Http\Requests\Translation\UpdateTranslation;
 use Brackets\CraftablePro\Queries\Filters\FuzzyFilter;
-use App\Settings\GeneralSettings;
 use Brackets\CraftablePro\Translations\Export\TranslationsExport;
 use Brackets\CraftablePro\Translations\LanguageLine;
 use Brackets\CraftablePro\Translations\Service\TranslationService;
@@ -43,9 +43,8 @@ class TranslationsController extends Controller
     }
 
     /**
-     * @param IndexTranslation $request
-     * @param TranslationsListingDataProcessor $translationsListingDataProcessor
      * @return Response
+     *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -73,8 +72,6 @@ class TranslationsController extends Controller
     }
 
     /**
-     * @param UpdateTranslation $request
-     * @param LanguageLine $translation
      * @return RedirectResponse
      */
     public function update(UpdateTranslation $request, LanguageLine $translation)
@@ -85,9 +82,8 @@ class TranslationsController extends Controller
     }
 
     /**
-     * @param RescanTranslations $request
-     * @param TranslationsProcessor $translationsProcessor
      * @return RedirectResponse
+     *
      * @throws \InvalidScannerException
      */
     public function rescan(RescanTranslations $request, TranslationsProcessor $translationsProcessor)
@@ -98,8 +94,6 @@ class TranslationsController extends Controller
     }
 
     /**
-     * @param PublishTranslations $request
-     * @param TranslationsProcessor $translationsProcessor
      * @return RedirectResponse
      */
     public function publish(PublishTranslations $request, TranslationsProcessor $translationsProcessor)
@@ -110,21 +104,20 @@ class TranslationsController extends Controller
     }
 
     /**
-     * @param ExportTranslations $request
      * @return BinaryFileResponse
+     *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export(ExportTranslations $request)
     {
         $currentTime = Carbon::now()->toDateTimeString();
-        $nameOfExportedFile = 'translations' . $currentTime . '.xlsx';
+        $nameOfExportedFile = 'translations'.$currentTime.'.xlsx';
 
         return Excel::download(new TranslationsExport($request), $nameOfExportedFile);
     }
 
     /**
-     * @param ImportTranslation $request
      * @return array|JsonResponse|mixed
      */
     public function import(ImportTranslation $request)
@@ -161,7 +154,6 @@ class TranslationsController extends Controller
     }
 
     /**
-     * @param UpdateTranslation $request
      * @return JsonResponse|int[]
      */
     public function importResolvedConflicts(UpdateTranslation $request)

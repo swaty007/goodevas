@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
-use Throwable;
 
 class ActivityService
 {
@@ -25,12 +24,12 @@ class ActivityService
         $propertiesData = [
             'attributes' => $properties,
         ];
-        if (!empty($oldProperties)) {
+        if (! empty($oldProperties)) {
             $propertiesData['old'] = $oldProperties;
         }
 
         $activity = activity();
-        if (!empty($model)) {
+        if (! empty($model)) {
             $activity->performedOn($model);
         }
         //        $activity->tap(function (Activity $activity) use ($event) {
@@ -43,30 +42,26 @@ class ActivityService
             ->log($event);
     }
 
-    /**
-     * @param $userIds
-     * @return Builder
-     */
     public function getInitQuery($userIds = false): Builder
     {
         $initQuery = Activity::where(function (Builder $query) use ($userIds) {
-            $query->where(function (Builder $query) use ($userIds) {
+            $query->where(function (Builder $query) {
                 $query->whereHasMorph('causer', [User::class]);
                 $query->orWhere('causer_id', null);
             });
 
-            if (!empty($userIds)) {
+            if (! empty($userIds)) {
                 $query->whereHasMorph('subject', [
                     User::class,
                 ], function (Builder $query) use ($userIds) {
-                    $query->getQuery()->wheres[0]['second'] = DB::raw($query->getQuery()->wheres[0]['second'] .' ::text');
+                    $query->getQuery()->wheres[0]['second'] = DB::raw($query->getQuery()->wheres[0]['second'].' ::text');
                     $query->whereIn('id', $userIds);
                 });
                 $query->orWhereHasMorph('subject', [
-//                    SettingsProperty::class,
-//                    AdditionalData::class,
+                    //                    SettingsProperty::class,
+                    //                    AdditionalData::class,
                 ], function (Builder $query) use ($userIds) {
-                    $query->getQuery()->wheres[0]['second'] = DB::raw($query->getQuery()->wheres[0]['second'] .' ::text');
+                    $query->getQuery()->wheres[0]['second'] = DB::raw($query->getQuery()->wheres[0]['second'].' ::text');
                     $query->whereIn('user_id', $userIds);
                 });
             }
@@ -75,13 +70,9 @@ class ActivityService
         return $initQuery;
     }
 
-    /**
-     * @param $initQuery
-     * @return QueryBuilder
-     */
     public function getIndexQuery($initQuery = false): QueryBuilder
     {
-        if(empty($initQuery)) {
+        if (empty($initQuery)) {
             $initQuery = $this->getInitQuery();
         }
 
@@ -118,7 +109,7 @@ class ActivityService
                 'event',
                 'created_at',
                 'updated_at',
-                ]);
+            ]);
 
         return $activityQuery;
     }
@@ -128,11 +119,6 @@ class ActivityService
         return $this->getIndexQuery()->select(['id'])->pluck('id');
     }
 
-    /**
-     * @param int $per_page
-     * @param $initQuery
-     * @return AbstractPaginator
-     */
     public function getIndexPagination(int $per_page = 15, $initQuery = false): AbstractPaginator
     {
         return $this->getIndexQuery($initQuery)
@@ -158,7 +144,7 @@ class ActivityService
     {
         return Cache::remember('activity_options', 60 * 60 * 24, function () {
             return [
-//            'users' => Activity::all()->map->only(['id', 'name'])->pluck('name', 'id'),
+                //            'users' => Activity::all()->map->only(['id', 'name'])->pluck('name', 'id'),
                 'causer_type' => Activity::select('causer_type')->distinct()->pluck('causer_type')->filter()->values(),
                 'subject_type' => Activity::select('subject_type')->distinct()->pluck('subject_type')->filter()->values(),
                 'event' => Activity::select('event')->distinct()->pluck('event')->filter()->values(),

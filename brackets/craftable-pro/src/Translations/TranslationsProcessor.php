@@ -12,9 +12,7 @@ use InvalidScannerException;
 
 class TranslationsProcessor
 {
-    public function __construct(private LanguageLineRepository $languageLineRepository)
-    {
-    }
+    public function __construct(private LanguageLineRepository $languageLineRepository) {}
 
     public function scanTranslations()
     {
@@ -23,9 +21,9 @@ class TranslationsProcessor
         // local translations
 
         collect(config('craftable-pro.translations.scan'))->each(function (array $options, string $scanner) {
-            $scanner = new $scanner();
+            $scanner = new $scanner;
             if (! $scanner instanceof ScannerInterface) {
-                throw new InvalidScannerException();
+                throw new InvalidScannerException;
             }
             $scanner->addScannedPaths($options['paths'])->scanAndSaveTranslations();
         });
@@ -35,9 +33,9 @@ class TranslationsProcessor
         collect(config('craftable-pro.translations.external'))->each(function ($scannerItem) {
             $group = $scannerItem['group'];
             collect($scannerItem['scan'])->each(function (array $options, string $scanner) use ($group) {
-                $scanner = new $scanner();
+                $scanner = new $scanner;
                 if (! $scanner instanceof ExternalScannerInterface) {
-                    throw new InvalidScannerException();
+                    throw new InvalidScannerException;
                 }
                 $scanner->setGroup($group)->addScannedPaths($options['paths'])->scanAndSaveTranslations();
             });
@@ -54,20 +52,20 @@ class TranslationsProcessor
                     File::makeDirectory($options['path']);
                 }
 
-                if (! File::exists($options['path'] . '/' . $locale)) {
-                    File::makeDirectory($options['path'] . '/' . $locale);
+                if (! File::exists($options['path'].'/'.$locale)) {
+                    File::makeDirectory($options['path'].'/'.$locale);
                 }
 
                 $translations = LanguageLine::query()
                     ->whereIn('group', $options['groups'])
                     ->get()
-                    ->mapWithKeys(function (LanguageLine $line) use ($locale, $options) {
+                    ->mapWithKeys(function (LanguageLine $line) use ($locale) {
                         return [
-                            $line->group . '.' . $line->key => $line->getTranslation($locale),
+                            $line->group.'.'.$line->key => $line->getTranslation($locale),
                         ];
                     })->toJson();
 
-                File::put($options['path'] . '/' . $locale . '/' . $key . '.json', $translations);
+                File::put($options['path'].'/'.$locale.'/'.$key.'.json', $translations);
             });
         });
     }

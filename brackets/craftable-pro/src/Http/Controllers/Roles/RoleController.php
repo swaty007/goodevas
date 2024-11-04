@@ -21,8 +21,8 @@ use Spatie\QueryBuilder\QueryBuilder;
 class RoleController extends Controller
 {
     /**
-     * @param IndexRoleRequest $request
      * @return Response
+     *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -47,8 +47,8 @@ class RoleController extends Controller
     }
 
     /**
-     * @param Role $role
      * @return Response
+     *
      * @throws AuthorizationException
      */
     public function edit(Role $role)
@@ -72,9 +72,8 @@ class RoleController extends Controller
     }
 
     /**
-     * @param Role $role
-     * @param Request $request
      * @return RedirectResponse
+     *
      * @throws AuthorizationException
      */
     public function update(Role $role, Request $request)

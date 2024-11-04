@@ -16,7 +16,6 @@ class FuzzyFilter implements Filter
     /** @var string[] */
     protected array $fields;
 
-    /** @var string */
     protected string $likeOperator;
 
     public function __construct(string ...$fields)
@@ -25,12 +24,6 @@ class FuzzyFilter implements Filter
         $this->likeOperator = DB::connection()->getDriverName() == 'pgsql' ? 'ilike' : 'like';
     }
 
-    /**
-     * @param Builder $query
-     * @param $values
-     * @param string $property
-     * @return Builder
-     */
     public function __invoke(Builder $query, $values, string $property): Builder
     {
         $values = Arr::wrap($values);
@@ -45,8 +38,6 @@ class FuzzyFilter implements Filter
     }
 
     /**
-     * @param Builder $query
-     * @param $values
      * @return $this
      */
     public function addDirectFields(Builder $query, $values)
@@ -85,8 +76,6 @@ class FuzzyFilter implements Filter
 
      */
     /**
-     * @param Builder $query
-     * @param $values
      * @return $this
      */
     public function addRelationShipFields(Builder $query, $values)

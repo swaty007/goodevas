@@ -1,15 +1,16 @@
 <?php
+
 namespace App\Exports\CraftablePro;
 
+use App\Models\Ysell;
+use Brackets\CraftablePro\Queries\Filters\FuzzyFilter;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use Brackets\CraftablePro\Queries\Filters\FuzzyFilter;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
-use App\Models\Ysell;
 
-class YsellsExport implements FromCollection,WithHeadings
+class YsellsExport implements FromCollection, WithHeadings
 {
     protected mixed $request;
 
@@ -18,29 +19,26 @@ class YsellsExport implements FromCollection,WithHeadings
         $this->request = $request;
     }
 
-    /**
-     * @return \Illuminate\Support\Collection
-     */
     public function collection(): Collection
     {
         return QueryBuilder::for(Ysell::class)
             ->allowedFilters([
                 AllowedFilter::custom('search', new FuzzyFilter(
-                    'id','api_key','name'
+                    'id', 'api_key', 'name'
                 )),
             ])
             ->defaultSort('id')
-            ->allowedSorts('id','api_key','name')
-            ->select(['id','api_key','name'])
+            ->allowedSorts('id', 'api_key', 'name')
+            ->select(['id', 'api_key', 'name'])
             ->get();
     }
 
     public function headings(): array
     {
         return [
-            trans("craftable-pro.Id"),
-            trans("craftable-pro.Api Key"),
-            trans("craftable-pro.Name"),
+            trans('craftable-pro.Id'),
+            trans('craftable-pro.Api Key'),
+            trans('craftable-pro.Name'),
         ];
     }
 }

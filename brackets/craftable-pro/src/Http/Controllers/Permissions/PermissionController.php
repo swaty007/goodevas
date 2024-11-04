@@ -15,7 +15,6 @@ use Spatie\Permission\Models\Role;
 class PermissionController extends Controller
 {
     /**
-     * @param IndexPermissionRequest $request
      * @return Response
      */
     public function index(IndexPermissionRequest $request)
@@ -35,7 +34,6 @@ class PermissionController extends Controller
             return ['id' => $role['id'], 'name' => $role['name'], 'permissions' => $role->permissions->map->name];
         });
 
-
         return Inertia::render('Permissions/Index', [
             'roles' => $roleTree,
             'permissions' => $permissionsTree,
@@ -43,7 +41,6 @@ class PermissionController extends Controller
     }
 
     /**
-     * @param UpdatePermissionRequest $request
      * @return RedirectResponse
      */
     public function update(UpdatePermissionRequest $request)

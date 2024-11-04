@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Facades\YsellApiFacade;
+use App\Models\Product;
 use App\Models\Ysell;
 use Illuminate\Console\Command;
 
@@ -28,9 +29,11 @@ class ProductsParserCommand extends Command
     public function handle(): void
     {
         $ysellKeys = Ysell::all();
-        foreach($ysellKeys as $ysellKey) {
+        $products = Product::all();
+        foreach ($ysellKeys as $ysellKey) {
             /* @var $ysellKey Ysell */
             $api = YsellApiFacade::switchAuthKey($ysellKey->api_key);
+            $products = YsellApiFacade::getAllProducts();
         }
     }
 }

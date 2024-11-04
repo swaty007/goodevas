@@ -6,21 +6,18 @@ final class Initials
 {
     public static function new()
     {
-        return new self();
+        return new self;
     }
 
     /**
      * Generate initials from a name
-     *
-     * @param string $name
-     * @return string
      */
     public function generate(string $name): string
     {
         $words = explode(' ', $name);
         if (count($words) >= 2) {
             return mb_strtoupper(
-                mb_substr($words[0], 0, 1, 'UTF-8') .
+                mb_substr($words[0], 0, 1, 'UTF-8').
                 mb_substr(end($words), 0, 1, 'UTF-8'),
                 'UTF-8'
             );
@@ -31,9 +28,6 @@ final class Initials
 
     /**
      * Make initials from a word with no spaces
-     *
-     * @param string $name
-     * @return string
      */
     protected function makeInitialsFromSingleWord(string $name): string
     {

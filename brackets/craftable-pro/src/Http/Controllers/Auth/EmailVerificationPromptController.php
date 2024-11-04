@@ -2,8 +2,8 @@
 
 namespace Brackets\CraftablePro\Http\Controllers\Auth;
 
-use Brackets\CraftablePro\Http\Controllers\Controller;
 use App\Settings\GeneralSettings;
+use Brackets\CraftablePro\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,7 +12,6 @@ class EmailVerificationPromptController extends Controller
     /**
      * Display the email verification prompt.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse|\Inertia\Response
      */
     public function __invoke(Request $request)

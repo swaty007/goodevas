@@ -12,8 +12,6 @@ class TranslatableFormRequest extends FormRequest
      * Define what locales should be required in store/update requests
      *
      * By default all locales are required
-     *
-     * @return Collection
      */
     public function defineRequiredLocales(): Collection
     {
@@ -71,7 +69,6 @@ class TranslatableFormRequest extends FormRequest
     }
 
     /**
-     * @param $locale
      * @return array
      */
     public function translatableRules($locale)

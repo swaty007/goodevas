@@ -10,8 +10,11 @@ use Telegram\Bot\Commands\Command;
 class StartCommand extends Command
 {
     protected string $name = 'start';
+
     protected array $aliases = ['subscribe'];
+
     protected string $pattern = '{admin_id}';
+
     //    protected string $pattern = '{admin_id: \d+}';
     protected string $description = 'Start Command to get you started';
 
@@ -22,8 +25,8 @@ class StartCommand extends Command
         $admin_id = $this->argument(
             'admin_id',
         );
-        if (!empty($admin_id)) {
-            # This will update the chat status to "typing..."
+        if (! empty($admin_id)) {
+            // This will update the chat status to "typing..."
             $this->replyWithChatAction(['action' => Actions::TYPING]);
             try {
                 $admin_id = Crypt::decryptString($admin_id);
@@ -35,16 +38,16 @@ class StartCommand extends Command
                     ['telegram_chat_id' => $chat_id]
                 );
                 $this->replyWithMessage([
-                    'text' => "Hello {$fallbackUsername}! Welcome to our bot :) You connected to {$admin->email} successfully. On " . config('app.name') . " platform."
+                    'text' => "Hello {$fallbackUsername}! Welcome to our bot :) You connected to {$admin->email} successfully. On ".config('app.name').' platform.',
                 ]);
             } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
                 $this->replyWithMessage([
-                    'text' => "Sorry, I can't decrypt this string. Please, try again."
+                    'text' => "Sorry, I can't decrypt this string. Please, try again.",
                 ]);
             }
         } else {
             $this->replyWithMessage([
-                'text' => "Sorry, I can't decrypt this string. Please, try again."
+                'text' => "Sorry, I can't decrypt this string. Please, try again.",
             ]);
         }
         //        dump($this->getName()); //start

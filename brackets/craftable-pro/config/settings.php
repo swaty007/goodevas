@@ -2,6 +2,6 @@
 
 return [
     'settings' => [
-        GeneralSettings::class
+        GeneralSettings::class,
     ],
 ];

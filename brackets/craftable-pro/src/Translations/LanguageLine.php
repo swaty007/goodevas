@@ -39,11 +39,6 @@ class LanguageLine extends ParentLanguageLine
         return Cache::get(static::getCacheKey($group, $locale));
     }
 
-    /**
-     * @param string $locale
-     *
-     * @return string|null
-     */
     public function getTranslation(string $locale): ?string
     {
         if (! isset($this->text[$locale])) {

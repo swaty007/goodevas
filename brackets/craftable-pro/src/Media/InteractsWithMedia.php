@@ -13,10 +13,6 @@ trait InteractsWithMedia
      * Register new Media Collection
      *
      * Adds new collection to model and set its name.
-     *
-     * @param $name
-     *
-     * @return MediaCollection
      */
     public function addMediaCollection($name): MediaCollection
     {
@@ -29,8 +25,6 @@ trait InteractsWithMedia
 
     /**
      * Get the user's media details.
-     *
-     * @return Attribute
      */
     protected function mediaDetails(): Attribute
     {

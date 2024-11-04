@@ -13,6 +13,7 @@ class TelegramHelper
     {
         return config('telegram.api_key');
     }
+
     public static function getBotUsername(): string
     {
         return Cache::remember('telegram_username', 60 * 5, function () {
@@ -21,6 +22,7 @@ class TelegramHelper
                 return '';
             }
             Telegram::setAccessToken($token);
+
             return Telegram::getMe()->username;
         });
     }

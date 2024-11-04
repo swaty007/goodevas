@@ -39,11 +39,12 @@ class CrudGeneratorCommand extends Command
 
     /**
      * @return false|int|void
+     *
      * @throws FileNotFoundException
      */
     public function handle()
     {
-        $this->components->info("Starting the CRUD generation");
+        $this->components->info('Starting the CRUD generation');
 
         if ($this->argument('table_name')) {
             $this->setTableAndClassName($this->argument('table_name'));
@@ -71,20 +72,20 @@ class CrudGeneratorCommand extends Command
             ->getAndSetRelations()
             ->getAndSetWithExport();
 
-        if ($this->option("dry-run")) {
+        if ($this->option('dry-run')) {
             $this->buildDryRun();
 
             return 0;
         }
 
         $this->buildModel()
-            ->buildRequests("index")
-            ->buildRequests("create", "create")
-            ->buildRequests("store", "create")
-            ->buildRequests("edit", "edit")
-            ->buildRequests("update", "edit")
-            ->buildRequests("destroy")
-            ->buildRequests("bulkDestroy")
+            ->buildRequests('index')
+            ->buildRequests('create', 'create')
+            ->buildRequests('store', 'create')
+            ->buildRequests('edit', 'edit')
+            ->buildRequests('update', 'edit')
+            ->buildRequests('destroy')
+            ->buildRequests('bulkDestroy')
             ->buildController()
             ->buildExport()
             ->buildViews();
@@ -99,12 +100,12 @@ class CrudGeneratorCommand extends Command
 
         $this->buildPermissionsMigration();
 
-        if ($this->option('run-migration') || $this->components->ask("Migration introducing new permissions for model '$this->className' was created. Do you want to run `artisan migrate` now?", "yes") === "yes") {
+        if ($this->option('run-migration') || $this->components->ask("Migration introducing new permissions for model '$this->className' was created. Do you want to run `artisan migrate` now?", 'yes') === 'yes') {
             $this->call('migrate');
         }
 
-        $this->call("craftable-pro:scan-translations");
-        $this->call("craftable-pro:publish-translations");
+        $this->call('craftable-pro:scan-translations');
+        $this->call('craftable-pro:publish-translations');
 
         $this->components->info("CRUD for model '$this->className' was generated successfully!");
     }

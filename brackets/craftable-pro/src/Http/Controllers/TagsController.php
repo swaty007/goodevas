@@ -10,7 +10,6 @@ class TagsController extends Controller
 {
     /**
      * Create new tag.
-     *
      */
     public function store(StoreTagRequest $request)
     {

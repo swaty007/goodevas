@@ -21,7 +21,6 @@ class MyPasswordController extends Controller
     }
 
     /**
-     * @param Request $request
      * @return Response
      */
     public function edit(Request $request)
@@ -34,7 +33,6 @@ class MyPasswordController extends Controller
     }
 
     /**
-     * @param Request $request
      * @return RedirectResponse
      */
     public function update(Request $request)

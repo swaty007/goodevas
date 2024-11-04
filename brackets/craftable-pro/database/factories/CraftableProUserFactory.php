@@ -21,7 +21,7 @@ class CraftableProUserFactory extends Factory
         return [
             'first_name' => $this->faker->firstName,
             'last_name' => $this->faker->lastName,
-            'email' => $this->faker->numberBetween(0, 1000) . $this->faker->email,
+            'email' => $this->faker->numberBetween(0, 1000).$this->faker->email,
             'password' => Hash::make($this->faker->password),
             'email_verified_at' => $this->faker->dateTime,
             'remember_token' => $this->faker->md5,

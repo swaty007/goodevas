@@ -11,7 +11,6 @@ use Spatie\MediaLibrary\Conversions\ConversionCollection;
 trait HasMediaPreviewsTrait
 {
     /**
-     * @param string $mediaCollectionName
      * @return mixed
      */
     public function getThumbs200ForCollection(string $mediaCollectionName)

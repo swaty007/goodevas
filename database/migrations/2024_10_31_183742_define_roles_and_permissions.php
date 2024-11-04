@@ -2,10 +2,7 @@
 
 use Carbon\Carbon;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 return new class extends Migration
@@ -55,7 +52,7 @@ return new class extends Migration
 
             // permissions
             'craftable-pro.permission.index',
-            'craftable-pro.permission.edit'
+            'craftable-pro.permission.edit',
         ]);
 
         $adminRoleId = DB::table('roles')->insertGetId([
@@ -115,10 +112,10 @@ return new class extends Migration
             ->delete();
         DB::table('roles')->where('id', $adminRole->id)->delete();
 
-        $this->defaultPermissions->each(function ($permission){
+        $this->defaultPermissions->each(function ($permission) {
             $permissionItem = DB::table('permissions')->where([
                 'name' => $permission,
-                'guard_name' => 'craftable-pro'
+                'guard_name' => 'craftable-pro',
             ])->first();
 
             if ($permissionItem !== null) {

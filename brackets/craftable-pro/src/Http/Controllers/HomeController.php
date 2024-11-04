@@ -10,7 +10,6 @@ class HomeController extends Controller
 {
     /**
      * Display the login view.
-     *
      */
     public function index()
     {

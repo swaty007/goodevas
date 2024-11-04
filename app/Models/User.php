@@ -13,10 +13,10 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
-    use SoftDeletes;
     use HasApiTokens;
+    use HasFactory, Notifiable;
     use LogsActivity;
+    use SoftDeletes;
     use Traits\HasAuthToken;
     use Traits\HasDatabaseSessions;
     use Traits\HasTelegramChat;

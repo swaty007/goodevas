@@ -19,7 +19,6 @@ class InstallCommand extends Command
                                                     {--no-migrate       : Don\'t run migrations}
                                                     {--without-logger   : Don\'t install advanced logger package}';
 
-
     /**
      * @var string
      */
@@ -32,10 +31,10 @@ class InstallCommand extends Command
 
     public function handle(): int
     {
-        $this->components->info("Craftable PRO installation started");
+        $this->components->info('Craftable PRO installation started');
 
-        if ($this->call("craftable-pro:test-db-connection") === 0) {
-            $this->components->error("In order to install Craftable PRO, please check and configure the database connection");
+        if ($this->call('craftable-pro:test-db-connection') === 0) {
+            $this->components->error('In order to install Craftable PRO, please check and configure the database connection');
 
             return false;
         }
@@ -50,33 +49,33 @@ class InstallCommand extends Command
 
         $this->newLine();
 
-        $this->components->info("Publishing migrations...");
+        $this->components->info('Publishing migrations...');
 
         $this->call('vendor:publish', [
             '--provider' => "Spatie\Permission\PermissionServiceProvider",
-            '--tag' => "permission-migrations",
+            '--tag' => 'permission-migrations',
         ]);
 
         $this->call('vendor:publish', [
             '--provider' => "Spatie\LaravelSettings\LaravelSettingsServiceProvider",
-            '--tag' => "settings",
+            '--tag' => 'settings',
         ]);
 
         // check migration is created, because Spatie uses old-way of detecting if migration exists and it doesn't work correctly
         if (count(glob(base_path('database/migrations/*create_settings_table.php'))) === 0) {
             $this->call('vendor:publish', [
                 '--provider' => "Spatie\LaravelSettings\LaravelSettingsServiceProvider",
-                '--tag' => "migrations",
+                '--tag' => 'migrations',
             ]);
         }
 
         $this->call('vendor:publish', [
             '--provider' => "Brackets\CraftablePro\CraftableProServiceProvider",
-            '--tag' => "craftable-pro-migrations",
+            '--tag' => 'craftable-pro-migrations',
         ]);
 
         if (! $this->option('no-migrate')) {
-            $this->components->info("Running migrations...");
+            $this->components->info('Running migrations...');
             $this->call('migrate');
         }
 
@@ -84,7 +83,7 @@ class InstallCommand extends Command
 
         $this->newLine();
 
-        $this->components->info("Craftable PRO successfully installed");
+        $this->components->info('Craftable PRO successfully installed');
 
         if (! $this->option('no-user')) {
             $this->call(
@@ -103,26 +102,25 @@ class InstallCommand extends Command
     /**
      * Update the "package.json" file.
      *
-     * @param callable $callback
-     * @param bool $dev
+     * @param  bool  $dev
      * @return void
      */
     protected function editPackageJson(callable $callback, $dev = true)
     {
         if (! file_exists(base_path('package.json'))) {
-            $this->components->twoColumnDetail("File package.json not found, was not able to install additional packages", '<fg=red;options=bold>ERROR</>');
+            $this->components->twoColumnDetail('File package.json not found, was not able to install additional packages', '<fg=red;options=bold>ERROR</>');
 
             return;
         }
 
-        $this->components->task("Updating package.json", function () use ($callback, $dev) {
+        $this->components->task('Updating package.json', function () use ($callback, $dev) {
             $configurationKey = $dev ? 'devDependencies' : 'dependencies';
 
             $packages = json_decode(file_get_contents(base_path('package.json')), true);
 
             $packages['scripts'] = $packages['scripts'] + [
-                "craftable-pro:dev" => "vite --config admin.vite.config.js",
-                "craftable-pro:build" => "vite build --config admin.vite.config.js",
+                'craftable-pro:dev' => 'vite --config admin.vite.config.js',
+                'craftable-pro:build' => 'vite build --config admin.vite.config.js',
             ];
 
             $packages[$configurationKey] = $callback(
@@ -134,7 +132,7 @@ class InstallCommand extends Command
 
             file_put_contents(
                 base_path('package.json'),
-                json_encode($packages, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . PHP_EOL
+                json_encode($packages, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT).PHP_EOL
             );
         });
     }
@@ -185,9 +183,9 @@ class InstallCommand extends Command
     /**
      * Replace a given string within a given file.
      *
-     * @param string $search
-     * @param string $replace
-     * @param string $path
+     * @param  string  $search
+     * @param  string  $replace
+     * @param  string  $path
      * @return void
      */
     protected function replaceInFile($search, $replace, $path)
@@ -198,8 +196,8 @@ class InstallCommand extends Command
     /**
      * Look if file contains a given string.
      *
-     * @param string $path
-     * @param string $search
+     * @param  string  $path
+     * @param  string  $search
      * @return bool
      */
     protected function fileContains($path, $search)
@@ -207,82 +205,73 @@ class InstallCommand extends Command
         return strpos(file_get_contents($path), $search) !== false;
     }
 
-    /**
-     * @return void
-     */
     protected function installFrontend(): void
     {
-        $this->components->task("Publishing Craftable PRO root template", function () {
-            $this->copyIfNotExistOrOverwrite(__DIR__ . '/../../stubs/resources/views/craftable-pro.blade.php', resource_path('views/craftable-pro.blade.php'));
+        $this->components->task('Publishing Craftable PRO root template', function () {
+            $this->copyIfNotExistOrOverwrite(__DIR__.'/../../stubs/resources/views/craftable-pro.blade.php', resource_path('views/craftable-pro.blade.php'));
         });
 
-        $this->components->task("Publishing Craftable PRO assets", function () {
-            (new Filesystem())->ensureDirectoryExists(resource_path("js/{$this->assetsNamespace}"));
-            (new Filesystem())->ensureDirectoryExists(resource_path("css"));
+        $this->components->task('Publishing Craftable PRO assets', function () {
+            (new Filesystem)->ensureDirectoryExists(resource_path("js/{$this->assetsNamespace}"));
+            (new Filesystem)->ensureDirectoryExists(resource_path('css'));
 
             if ($this->option('overwrite')) {
-                (new Filesystem())->copyDirectory(__DIR__ . '/../../stubs/resources/js', resource_path("js/{$this->assetsNamespace}"));
-                (new Filesystem())->copyDirectory(__DIR__ . '/../../stubs/resources/css', resource_path("css"));
+                (new Filesystem)->copyDirectory(__DIR__.'/../../stubs/resources/js', resource_path("js/{$this->assetsNamespace}"));
+                (new Filesystem)->copyDirectory(__DIR__.'/../../stubs/resources/css', resource_path('css'));
             } else {
-                $this->copyIfNotExistFile(__DIR__ . '/../../stubs/resources/js', resource_path("js/{$this->assetsNamespace}"));
-                $this->copyIfNotExistFile(__DIR__ . '/../../stubs/resources/css', resource_path("css"));
+                $this->copyIfNotExistFile(__DIR__.'/../../stubs/resources/js', resource_path("js/{$this->assetsNamespace}"));
+                $this->copyIfNotExistFile(__DIR__.'/../../stubs/resources/css', resource_path('css'));
             }
         });
 
         $generateTSConfig = true;
         if (file_exists(base_path('tsconfig.json')) || $this->option('overwrite')) {
             $replaceTsConfig = ! $this->option('no-interaction') ? $this->components->choice(
-                question: "It looks like you already have a TS config in this project. Should I overwrite it?",
+                question: 'It looks like you already have a TS config in this project. Should I overwrite it?',
                 choices: ['yes', 'no'],
                 default: 'no',
-            ) : "no";
+            ) : 'no';
 
-            if ($replaceTsConfig === "no") {
+            if ($replaceTsConfig === 'no') {
                 $generateTSConfig = false;
-                $this->printSkipped("Okay, TS config was not replaced. You should update it manually based on the documentation.");
+                $this->printSkipped('Okay, TS config was not replaced. You should update it manually based on the documentation.');
             }
         }
 
-        $this->components->task("Installing and configuring Tailwind and Vite", function () use ($generateTSConfig) {
-            $this->copyIfNotExistOrOverwrite(__DIR__ . '/../../stubs/admin.tailwind.config.js', base_path('admin.tailwind.config.js'));
-            $this->copyIfNotExistOrOverwrite(__DIR__ . '/../../stubs/admin.vite.config.js', base_path('admin.vite.config.js'));
+        $this->components->task('Installing and configuring Tailwind and Vite', function () use ($generateTSConfig) {
+            $this->copyIfNotExistOrOverwrite(__DIR__.'/../../stubs/admin.tailwind.config.js', base_path('admin.tailwind.config.js'));
+            $this->copyIfNotExistOrOverwrite(__DIR__.'/../../stubs/admin.vite.config.js', base_path('admin.vite.config.js'));
 
             if ($generateTSConfig) {
-                copy(__DIR__ . '/../../stubs/tsconfig.json', base_path('tsconfig.json'));
+                copy(__DIR__.'/../../stubs/tsconfig.json', base_path('tsconfig.json'));
             }
         });
     }
 
-    /**
-     * @return void
-     */
     protected function installRoutes(): void
     {
         if (! Route::has('craftable-pro.home')) {
-            $this->components->task("Registering Craftable PRO routes");
-            file_put_contents(base_path('routes/web.php'), PHP_EOL . "\n\nRoute::craftablePro('admin');", FILE_APPEND);
+            $this->components->task('Registering Craftable PRO routes');
+            file_put_contents(base_path('routes/web.php'), PHP_EOL."\n\nRoute::craftablePro('admin');", FILE_APPEND);
         } else {
-            $this->printSkipped("Craftable PRO routes are already installed");
+            $this->printSkipped('Craftable PRO routes are already installed');
         }
     }
 
-    /**
-     * @return void
-     */
     protected function scanAndPublishTranslations(): void
     {
-        $this->components->info("Publishing translations");
+        $this->components->info('Publishing translations');
 
-        $this->components->task("Generate translations for permissions", function () {
+        $this->components->task('Generate translations for permissions', function () {
             $this->call('craftable-pro:generate-permission-translations');
             $this->call('craftable-pro:generate-locale-translations');
         });
 
-        $this->components->task("Scan codebase used for translations", function () {
+        $this->components->task('Scan codebase used for translations', function () {
             $this->call('craftable-pro:scan-translations');
         });
 
-        $this->components->task("Publish translations (generate JSON files)", function () {
+        $this->components->task('Publish translations (generate JSON files)', function () {
             $this->call('craftable-pro:publish-translations');
         });
     }
@@ -291,12 +280,12 @@ class InstallCommand extends Command
     {
         if (! $this->option('without-logger')) {
             $this->newLine();
-            $this->components->info("Craftable PRO supports the package Request Logger that automatically logs all incoming requests with handy information for debugging problems.");
+            $this->components->info('Craftable PRO supports the package Request Logger that automatically logs all incoming requests with handy information for debugging problems.');
             $install = ! $this->option('no-interaction') ? $this->components->choice(
-                question: "Would you like to install Requests Logger? ",
+                question: 'Would you like to install Requests Logger? ',
                 choices: ['yes', 'no'],
                 default: 'no'
-            ) : "no";
+            ) : 'no';
 
             if ($install === 'yes') {
                 $this->call('craftable-pro:install-advanced-logger');
@@ -306,10 +295,6 @@ class InstallCommand extends Command
 
     /**
      * Check in path all files is exist and copy not exists files
-     *
-     * @param $path
-     * @param $destination
-     * @return void
      */
     private function copyIfNotExistFile($path, $destination): void
     {
@@ -322,15 +307,15 @@ class InstallCommand extends Command
 
             if ($item->isDir()) {
                 // not exist directory create then
-                if (! (new Filesystem())->exists($destination_file_path)) {
-                    (new Filesystem())->ensureDirectoryExists($destination_file_path);
+                if (! (new Filesystem)->exists($destination_file_path)) {
+                    (new Filesystem)->ensureDirectoryExists($destination_file_path);
                 }
 
                 $this->copyIfNotExistFile(path: $file_path, destination: $destination_file_path);
             }
 
             if (! file_exists($destination_file_path)) {
-                (new Filesystem())->copy(path: $file_path, target: $destination_file_path);
+                (new Filesystem)->copy(path: $file_path, target: $destination_file_path);
 
                 return true;
             }
@@ -339,10 +324,6 @@ class InstallCommand extends Command
 
     /**
      * check file is exist or called option overwrite and copy file
-     *
-     * @param $path
-     * @param $destination
-     * @return void
      */
     private function copyIfNotExistOrOverwrite($path, $destination): void
     {
@@ -351,10 +332,6 @@ class InstallCommand extends Command
         }
     }
 
-    /**
-     * @param string $text
-     * @return void
-     */
     protected function printSkipped(string $text): void
     {
         $this->components->twoColumnDetail($text, '<fg=yellow;options=bold>SKIPPED</>');

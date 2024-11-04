@@ -38,15 +38,13 @@ class StoreCraftableProUserRequest extends FormRequest
     }
 
     /**
-     * @param $key
-     * @param $default
      * @return mixed
      */
     public function validated($key = null, $default = null)
     {
         $validated = parent::validated($key, $default);
 
-        $validated["password"] = Hash::make($validated["password"]);
+        $validated['password'] = Hash::make($validated['password']);
 
         return $validated;
     }

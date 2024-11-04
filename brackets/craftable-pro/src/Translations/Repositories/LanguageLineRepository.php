@@ -8,13 +8,10 @@ use Illuminate\Support\Collection;
 class LanguageLineRepository
 {
     /**
-     * @param $group
-     * @param $key
-     * @param null $language
-     * @param null $text
-     * @return LanguageLine|null
+     * @param  null  $language
+     * @param  null  $text
      */
-    public function createLanguageLineIfDoesntExist($group, $key, $language = null, $text = null): LanguageLine | null
+    public function createLanguageLineIfDoesntExist($group, $key, $language = null, $text = null): ?LanguageLine
     {
         if (empty(trim($key))) {
             return null;

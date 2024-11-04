@@ -29,7 +29,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
                    $entry->isScheduledTask() ||
                    $entry->hasMonitoredTag() ||
 
-                ($entry->isClientRequest() && (!isset($entry->content['response_status']) || $entry->content['response_status'] !== 200)) ||
+                ($entry->isClientRequest() && (! isset($entry->content['response_status']) || $entry->content['response_status'] !== 200)) ||
 //                   $entry->isQuery() ||
                 $entry->isSlowQuery() ||
                 $entry->type === EntryType::LOG ||
@@ -65,6 +65,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
     {
         Gate::define('viewTelescope', function ($user) {
             return true;
+
             return in_array($user->email, [
                 //
             ]);

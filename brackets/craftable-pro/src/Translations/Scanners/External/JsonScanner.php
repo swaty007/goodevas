@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\File;
 class JsonScanner implements ExternalScannerInterface
 {
     private array $scannedPaths;
+
     private string $group;
 
     public function scanAndSaveTranslations(): void

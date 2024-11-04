@@ -12,18 +12,21 @@ trait HasAuthToken
     {
         $token = Str::random(40);
         $this->forceFill([
-            'auth_token' => $token
+            'auth_token' => $token,
         ])->save();
+
         return $token;
     }
-    public function getAuthToken(): string | null
+
+    public function getAuthToken(): ?string
     {
         return $this->auth_token;
     }
+
     public function removeAuthToken(): void
     {
         $this->forceFill([
-            'auth_token' => null
+            'auth_token' => null,
         ])->save();
     }
 }

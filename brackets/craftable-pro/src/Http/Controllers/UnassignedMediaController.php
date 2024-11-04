@@ -18,10 +18,6 @@ class UnassignedMediaController extends BaseController
     use DispatchesJobs;
     use ValidatesRequests;
 
-    /**
-     * @param UploadMediaRequest $request
-     * @return JsonResponse
-     */
     public function upload(UploadMediaRequest $request): JsonResponse
     {
         if ($request->has('default')) {
@@ -33,11 +29,6 @@ class UnassignedMediaController extends BaseController
         return response()->json(___('craftable-pro', 'File not provided'), 422);
     }
 
-    /**
-     * @param DestroyMediaRequest $request
-     * @param $id
-     * @return JsonResponse
-     */
     public function destroy(DestroyMediaRequest $request, $id): JsonResponse
     {
         $media = Media::findOrFail($id);

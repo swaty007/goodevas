@@ -8,9 +8,6 @@ trait FormCrudGenratorHelperTrait
 {
     /**
      * Build typescript form columns. Usage for create/edit vue files.
-     *
-     * @param bool $edit
-     * @return mixed
      */
     private function buildFormDefaultColumns(bool $edit = false): mixed
     {
@@ -21,31 +18,31 @@ trait FormCrudGenratorHelperTrait
 
             switch ($column['type']) {
                 case 'json':
-                    $columnDefault = $edit ? 'props.' . $model . '?.' . $column["name"] . ' ?? ' . $defaultValue : $defaultValue;
+                    $columnDefault = $edit ? 'props.'.$model.'?.'.$column['name'].' ?? '.$defaultValue : $defaultValue;
 
                     break;
                 case 'text':
-                    $columnDefault = $edit ? 'props.' . $model . '?.' . $column["name"] . ' ?? ' . $defaultValue : $defaultValue;
+                    $columnDefault = $edit ? 'props.'.$model.'?.'.$column['name'].' ?? '.$defaultValue : $defaultValue;
 
                     break;
                 case 'datetime':
-                    $columnDefault = $edit ? 'props.' . $model . '?.' . $column["name"] . ' ?? ' . $defaultValue : $defaultValue;
+                    $columnDefault = $edit ? 'props.'.$model.'?.'.$column['name'].' ?? '.$defaultValue : $defaultValue;
 
                     break;
                 case 'bigint':
-                    $columnDefault = $edit ? 'props.' . $model . '?.' . $column["name"] . ' ?? ' . $defaultValue : $defaultValue;
+                    $columnDefault = $edit ? 'props.'.$model.'?.'.$column['name'].' ?? '.$defaultValue : $defaultValue;
 
                     break;
-                case "boolean":
-                    $columnDefault = $edit ? 'props.' . $model . '?.' . $column["name"] . ' ?? false' : "false";
+                case 'boolean':
+                    $columnDefault = $edit ? 'props.'.$model.'?.'.$column['name'].' ?? false' : 'false';
 
                     break;
-                case "media":
-                    $columnDefault = $edit ? "getMediaCollection(props.$model?.media, '{$column['name']}')" : "[]";
+                case 'media':
+                    $columnDefault = $edit ? "getMediaCollection(props.$model?.media, '{$column['name']}')" : '[]';
 
                     break;
                 default:
-                    $columnDefault = $edit ? 'props.' . $model . '?.' . $column["name"] . ' ?? ' . $defaultValue : $defaultValue;
+                    $columnDefault = $edit ? 'props.'.$model.'?.'.$column['name'].' ?? '.$defaultValue : $defaultValue;
 
                     break;
             }
@@ -53,7 +50,7 @@ trait FormCrudGenratorHelperTrait
             return "{$column['name']}: {$columnDefault}";
         })->filter()->merge(
             $this->relations?->where('type', 'belongsToMany')->map(function ($relation) use ($edit, $model) {
-                $columnDefault = $edit ? 'props.' . $model . '?.' . $relation['name'] . '.map(item => item.id) ?? []' : '[]';
+                $columnDefault = $edit ? 'props.'.$model.'?.'.$relation['name'].'.map(item => item.id) ?? []' : '[]';
 
                 return "{$relation['name']}_ids: {$columnDefault}";
             })->filter()
@@ -62,8 +59,6 @@ trait FormCrudGenratorHelperTrait
 
     /**
      * Build form for Form vue. Uses FormCrudGeneratorHelper.
-     *
-     * @return mixed
      */
     private function buildFullForm(): mixed
     {
@@ -93,11 +88,11 @@ trait FormCrudGenratorHelperTrait
                     $input = $this->dateTime($column['name'], 'date');
 
                     break;
-                case "boolean":
+                case 'boolean':
                     $input = $this->checkbox($column['name']);
 
                     break;
-                case "media":
+                case 'media':
                     $input = $this->dropzone($column['name']);
 
                     break;
@@ -122,16 +117,12 @@ trait FormCrudGenratorHelperTrait
 
     /**
      * Text input.
-     *
-     * @param string $columnName
-     * @param bool $isTranslatable
-     * @return string
      */
     private function textInput(string $columnName, bool $isTranslatable): string
     {
         $label = $isTranslatable ?
-            ":label=\"" . 'getLabelWithLocale($t(\'global\', \'' . Str::headline($columnName) . '\'))' . "\"" :
-            ":label=\"" . '$t(\'global\', \'' . Str::headline($columnName) . '\')' . "\"";
+            ':label="'.'getLabelWithLocale($t(\'global\', \''.Str::headline($columnName).'\'))'.'"' :
+            ':label="'.'$t(\'global\', \''.Str::headline($columnName).'\')'.'"';
 
         $vModel = $isTranslatable ? "{$columnName}[currentLocale]" : $columnName;
 
@@ -146,16 +137,11 @@ trait FormCrudGenratorHelperTrait
             />";
     }
 
-    /**
-     * @param string $columnName
-     * @param bool $isTranslatable
-     * @return string
-     */
     private function wysiwigInput(string $columnName, bool $isTranslatable): string
     {
         $label = $isTranslatable ?
-            ":label=\"" . 'getLabelWithLocale($t(\'global\', \'' . Str::headline($columnName) . '\'))' . "\"" :
-            ":label=\"" . '$t(\'global\', \'' . Str::headline($columnName) . '\')' . "\"";
+            ':label="'.'getLabelWithLocale($t(\'global\', \''.Str::headline($columnName).'\'))'.'"' :
+            ':label="'.'$t(\'global\', \''.Str::headline($columnName).'\')'.'"';
 
         $vModel = $isTranslatable ? "{$columnName}[currentLocale]" : $columnName;
 
@@ -167,16 +153,11 @@ trait FormCrudGenratorHelperTrait
             />";
     }
 
-    /**
-     * @param string $columnName
-     * @param bool $isTranslatable
-     * @return string
-     */
     private function textAreaInput(string $columnName, bool $isTranslatable): string
     {
         $label = $isTranslatable ?
-            ":label=\"" . 'getLabelWithLocale($t(\'global\', \'' . Str::headline($columnName) . '\'))' . "\"" :
-            ":label=\"" . '$t(\'global\', \'' . Str::headline($columnName) . '\')' . "\"";
+            ':label="'.'getLabelWithLocale($t(\'global\', \''.Str::headline($columnName).'\'))'.'"' :
+            ':label="'.'$t(\'global\', \''.Str::headline($columnName).'\')'.'"';
 
         $vModel = $isTranslatable ? "{$columnName}[currentLocale]" : $columnName;
 
@@ -188,21 +169,17 @@ trait FormCrudGenratorHelperTrait
             />";
     }
 
-    /**
-     * @param string $columnName
-     * @return string
-     */
     private function checkbox(string $columnName): string
     {
         return "
             <Checkbox
                 v-model=\"form.$columnName\"
                 name=\"$columnName\"
-                :label=\"" . '$t(\'global\', \'' . Str::headline($columnName) . '\')' . "\"
-            />";
+                :label=\"".'$t(\'global\', \''.Str::headline($columnName).'\')'.'"
+            />';
     }
 
-    private function select(string $columnName, string $optionsName, string $label = null): string
+    private function select(string $columnName, string $optionsName, ?string $label = null): string
     {
         $label = $label ?? Str::headline($columnName);
 
@@ -210,13 +187,13 @@ trait FormCrudGenratorHelperTrait
             <Multiselect
                 v-model=\"form.$columnName\"
                 name=\"$columnName\"
-                :label=\"" . '$t(\'global\', \'' . $label . '\')' . "\"
+                :label=\"".'$t(\'global\', \''.$label.'\')'."\"
                 :options=\"$optionsName\"
                 mode=\"single\"
             />";
     }
 
-    private function multiSelect(string $columnName, string $optionsName, string $label = null): string
+    private function multiSelect(string $columnName, string $optionsName, ?string $label = null): string
     {
         $label = $label ?? Str::headline($columnName);
 
@@ -224,16 +201,11 @@ trait FormCrudGenratorHelperTrait
             <Multiselect
                 v-model=\"form.$columnName\"
                 name=\"$columnName\"
-                :label=\"" . '$t(\'global\', \'' . $label . '\')' . "\"
+                :label=\"".'$t(\'global\', \''.$label.'\')'."\"
                 :options=\"$optionsName\"
             />";
     }
 
-    /**
-     * @param string $columnName
-     * @param string $mode
-     * @return string
-     */
     private function dateTime(string $columnName, string $mode = 'dateTime'): string
     {
         return "
@@ -241,21 +213,21 @@ trait FormCrudGenratorHelperTrait
                 v-model=\"form.$columnName\"
                 name=\"$columnName\"
                 mode=\"$mode\"
-                :label=\"" . '$t(\'global\', \'' . Str::headline($columnName) . '\')' . "\"
-            />";
+                :label=\"".'$t(\'global\', \''.Str::headline($columnName).'\')'.'"
+            />';
     }
 
     protected function dropzone(string $columnName): string
     {
-        $maxFileSize = config("media-library.max_file_size", 1024 * 1024 * 10);
+        $maxFileSize = config('media-library.max_file_size', 1024 * 1024 * 10);
 
         return "
             <Dropzone
                 v-model=\"form.$columnName\"
                 name=\"$columnName\"
                 :maxFileSize=\"$maxFileSize\"
-                :label=\"" . '$t(\'global\', \'' . Str::headline($columnName) . '\')' . "\"
-            />";
+                :label=\"".'$t(\'global\', \''.Str::headline($columnName).'\')'.'"
+            />';
     }
 
     protected function imageUpload(string $columnName): string
@@ -264,7 +236,7 @@ trait FormCrudGenratorHelperTrait
             <ImageUpload
                 v-model=\"form.$columnName\"
                 name=\"$columnName\"
-                :label=\"" . '$t(\'global\', \'' . Str::headline($columnName) . '\')' . "\"
-            />";
+                :label=\"".'$t(\'global\', \''.Str::headline($columnName).'\')'.'"
+            />';
     }
 }

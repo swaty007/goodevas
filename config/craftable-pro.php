@@ -34,15 +34,15 @@ return [
             PHPScanner::class => [
                 'paths' => [
                     base_path('vendor/brackets/craftable-pro/src/Http/Controllers'),
-                    resource_path('views')
-                ]
+                    resource_path('views'),
+                ],
             ],
             JsScanner::class => [
                 'paths' => [
                     base_path('vendor/brackets/craftable-pro/resources/js'),
                     resource_path('js'),
                 ],
-            ]
+            ],
         ],
 
         //-----------------------------------------------------
@@ -56,9 +56,9 @@ return [
                     JsonScanner::class => [
                         'paths' => [
                             resource_path('translations/permissions'),
-                        ]
+                        ],
                     ],
-                ]
+                ],
             ],
             [
                 'group' => 'locales',
@@ -66,10 +66,10 @@ return [
                     JsonScanner::class => [
                         'paths' => [
                             resource_path('translations/locales'),
-                        ]
+                        ],
                     ],
-                ]
-            ]
+                ],
+            ],
         ],
 
         //-----------------------------------------------------
@@ -81,6 +81,6 @@ return [
                 'groups' => ['craftable-pro', 'permissions', 'locales'],
                 'path' => public_path('lang/'),
             ],
-        ]
-    ]
+        ],
+    ],
 ];

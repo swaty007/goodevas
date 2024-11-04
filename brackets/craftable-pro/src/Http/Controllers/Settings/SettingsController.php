@@ -2,9 +2,9 @@
 
 namespace Brackets\CraftablePro\Http\Controllers\Settings;
 
+use App\Settings\GeneralSettings;
 use Brackets\CraftablePro\Http\Controllers\Controller;
 use Brackets\CraftablePro\Http\Requests\Settings\UpdateSettings;
-use App\Settings\GeneralSettings;
 use Brackets\CraftablePro\Translations\TranslationsProcessor;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\RedirectResponse;
@@ -18,6 +18,7 @@ class SettingsController extends Controller
 {
     /**
      * @return Response
+     *
      * @throws AuthorizationException
      */
     public function index()
@@ -51,9 +52,8 @@ class SettingsController extends Controller
     }
 
     /**
-     * @param GeneralSettings $settings
-     * @param UpdateSettings $request
      * @return RedirectResponse
+     *
      * @throws \InvalidScannerException
      */
     public function update(GeneralSettings $settings, UpdateSettings $request)

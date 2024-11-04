@@ -9,8 +9,6 @@ class UpdateTranslation extends TranslatableFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -20,8 +18,7 @@ class UpdateTranslation extends TranslatableFormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @param mixed $locale
-     * @return array
+     * @param  mixed  $locale
      */
     public function translatableRules($locale): array
     {
@@ -30,9 +27,6 @@ class UpdateTranslation extends TranslatableFormRequest
         ];
     }
 
-    /**
-     * @return string
-     */
     public function getChosenLanguage(): string
     {
         return mb_strtolower($this->importLanguage);

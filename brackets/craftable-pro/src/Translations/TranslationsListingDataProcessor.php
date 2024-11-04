@@ -8,14 +8,8 @@ use Illuminate\Contracts\Translation\Translator;
 
 class TranslationsListingDataProcessor
 {
-    public function __construct(private LanguageLineRepository $languageLineRepository)
-    {
-    }
+    public function __construct(private LanguageLineRepository $languageLineRepository) {}
 
-    /**
-     * @param $data
-     * @return array
-     */
     public function getProcessedData($data): array
     {
         $locales = collect(app(GeneralSettings::class)->available_locales);
@@ -29,16 +23,14 @@ class TranslationsListingDataProcessor
             return $translation->getTranslation(app()->getLocale());
         });
 
-        return ([
+        return [
             'data' => $data,
             'locales' => $locales,
             'groups' => $this->languageLineRepository->getGroups(),
-        ]);
+        ];
     }
 
     /**
-     * @param LanguageLine $translation
-     * @param $locale
      * @return array|Translator|string|null
      */
     private function getCurrentTransForTranslation(LanguageLine $translation, $locale)

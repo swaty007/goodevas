@@ -11,8 +11,6 @@ trait HasTelegramChat
 {
     /**
      * Get the entity's notifications.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphOne
      */
     public function telegramChat(): MorphOne
     {
@@ -20,12 +18,12 @@ trait HasTelegramChat
     }
 
     /**
-     * @param null $notification
-     * @return string|null
+     * @param  null  $notification
      */
     public function routeNotificationForTelegram($notification = null): ?string
     {
         $chat = $this->telegramChat()->first();
+
         return $chat?->telegram_chat_id;
     }
 }

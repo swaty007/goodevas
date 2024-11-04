@@ -44,7 +44,6 @@ trait ProcessMediaTrait
      * Firstly it validates input for max files count for mediaCollection, ile mimetype and file size, amd if the
      * validation passes it will add/change/delete media object to model
      *
-     * @param Collection $inputMedia
      * @throws FileCannotBeAdded
      */
     public function processMedia(Collection $inputMedia): void
@@ -70,8 +69,6 @@ trait ProcessMediaTrait
     /**
      * Process single file metadata add/edit/delete to media library
      *
-     * @param array $inputMedium
-     * @param MediaCollection $mediaCollection
      * @throws FileDoesNotExist
      * @throws \Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig
      */
@@ -98,8 +95,6 @@ trait ProcessMediaTrait
     /**
      * Validate input data for media
      *
-     * @param Collection $inputMediaForMediaCollection
-     * @param MediaCollection $mediaCollection
      * @throws FileCannotBeAdded
      */
     public function validate(Collection $inputMediaForMediaCollection, MediaCollection $mediaCollection): void
@@ -117,8 +112,6 @@ trait ProcessMediaTrait
     /**
      * Validate uploaded files count in collection
      *
-     * @param Collection $inputMediaForMediaCollection
-     * @param MediaCollection $mediaCollection
      * @throws TooManyFiles
      */
     public function validateCollectionMediaCount(
@@ -144,8 +137,6 @@ trait ProcessMediaTrait
     /**
      * Validate uploaded file mime type
      *
-     * @param string $mediumFileFullPath
-     * @param MediaCollection $mediaCollection
      * @throws MimeTypeNotAllowed
      */
     public function validateTypeOfFile(string $mediumFileFullPath, MediaCollection $mediaCollection): void
@@ -158,8 +149,6 @@ trait ProcessMediaTrait
     /**
      * Validate uploaded file size
      *
-     * @param string $mediumFileFullPath
-     * @param MediaCollection $mediaCollection
      * @throws FileIsTooBig
      */
     public function validateSize(string $mediumFileFullPath, MediaCollection $mediaCollection): void
@@ -176,16 +165,13 @@ trait ProcessMediaTrait
     /**
      * maybe this could be PR to spatie/laravel-medialibrary
      *
-     * @param string $filePath
-     * @param float $maxFileSize
-     * @param string $name
      * @throws FileIsTooBig
      */
     protected function guardAgainstFileSizeLimit(string $filePath, float $maxFileSize, string $name): void
     {
         $validation = Validator::make(
             ['file' => new File($filePath)],
-            ['file' => 'max:' . round($maxFileSize / 1024)]
+            ['file' => 'max:'.round($maxFileSize / 1024)]
         );
 
         if ($validation->fails()) {

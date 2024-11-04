@@ -11,13 +11,13 @@ use Spatie\QueryBuilder\Filters\Filter;
 
 /**
  * @template TModelClass of Model
+ *
  * @template-implements \Spatie\QueryBuilder\Filters\Filter<TModelClass>
  */
 class FilterWithNull implements Filter
 {
     protected array $relationConstraints = [];
 
-    /** @var bool */
     protected bool $addRelationConstraint = true;
 
     public function __construct(bool $addRelationConstraint = true)
@@ -39,6 +39,7 @@ class FilterWithNull implements Filter
         if (is_array($value)) {
             if (count($value) === 1 && $value[0] === 'null') {
                 $query->whereNull($query->qualifyColumn($property));
+
                 return;
             }
 
@@ -70,9 +71,6 @@ class FilterWithNull implements Filter
     }
 
     /**
-     * @param Builder $query
-     * @param $value
-     * @param string $property
      * @return void
      */
     protected function withRelationConstraint(Builder $query, $value, string $property)
@@ -88,6 +86,7 @@ class FilterWithNull implements Filter
         if (is_array($value)) {
             if (count($value) === 1 && $value[0] === 'null') {
                 $query->whereDoesntHave($relation);
+
                 return;
             }
         }

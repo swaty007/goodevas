@@ -1,5 +1,3 @@
 <?php
 
-class InvalidScannerException extends Exception
-{
-}
+class InvalidScannerException extends Exception {}

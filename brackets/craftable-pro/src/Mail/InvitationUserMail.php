@@ -31,7 +31,7 @@ class InvitationUserMail extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: ___("craftable-pro", "Invite user"),
+            subject: ___('craftable-pro', 'Invite user'),
         );
     }
 

@@ -28,7 +28,7 @@ class TelegramHandlerCommand extends Command
     public function handle(): void
     {
         $token = TelegramHelper::getTelegramToken();
-        if (!empty($token)) {
+        if (! empty($token)) {
             Telegram::setAccessToken($token);
             Telegram::commandsHandler();
         }

@@ -29,7 +29,7 @@ class TestDbConnectionCommand extends Command
 
             return 1;
         } catch (\Exception $e) {
-            $this->output->error("Could not connect to the database.  Please check your configuration. Error: " . $e->getMessage());
+            $this->output->error('Could not connect to the database.  Please check your configuration. Error: '.$e->getMessage());
 
             return 0;
         }

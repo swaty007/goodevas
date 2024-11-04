@@ -25,7 +25,7 @@ class StockSnapshot extends Model
         return $this->belongsTo(Product::class);
     }
 
-    function calculateStockChanges($productId, $startDate, $endDate)
+    public function calculateStockChanges($productId, $startDate, $endDate)
     {
         $snapshots = StockSnapshot::where('product_id', $productId)
             ->whereBetween('snapshot_date', [$startDate, $endDate])

@@ -11,8 +11,8 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class TelegramChat extends Model
 {
-    use HasUuid;
     use HasFactory;
+    use HasUuid;
     use LogsActivity;
 
     /**
@@ -21,6 +21,7 @@ class TelegramChat extends Model
      * @var bool
      */
     public $incrementing = false;
+
     /**
      * The "type" of the primary key ID.
      *

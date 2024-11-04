@@ -10,9 +10,9 @@ use Spatie\MediaLibrary\HasMedia;
 
 class UnassignedMedia extends Model implements HasMedia
 {
+    use AutoProcessMediaTrait;
     use InteractsWithMedia;
     use ProcessMediaTrait;
-    use AutoProcessMediaTrait;
 
     public function registerMediaCollections(): void
     {

@@ -16,6 +16,7 @@ use Throwable;
 class Handler extends ExceptionHandler
 {
     use TelegramSystemLogTrait;
+
     /**
      * The list of the inputs that are never flashed to the session on validation exceptions.
      *
@@ -41,8 +42,8 @@ class Handler extends ExceptionHandler
     {
         $prepareException = $this->prepareException($e);
         if (
-            !$this->shouldReport($e)
-            || !$this->shouldReport($prepareException)
+            ! $this->shouldReport($e)
+            || ! $this->shouldReport($prepareException)
             || $e instanceof ThrottleRequestsException
             || $prepareException instanceof ThrottleRequestsException
             // TODO: maybe shouldReport do all of this
@@ -57,11 +58,12 @@ class Handler extends ExceptionHandler
             return parent::render($request, $e);
         }
         $this->handleException($e);
-//        if ($request->inertia() && !$request->expectsJson()) {
-//            return redirect()
-//                ->back()
-//                ->with(['message_error' => $e->getMessage()]);
-//        }
+
+        //        if ($request->inertia() && !$request->expectsJson()) {
+        //            return redirect()
+        //                ->back()
+        //                ->with(['message_error' => $e->getMessage()]);
+        //        }
         return parent::render($request, $e);
     }
 }

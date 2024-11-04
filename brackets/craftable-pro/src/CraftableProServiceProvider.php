@@ -71,9 +71,9 @@ class CraftableProServiceProvider extends PackageServiceProvider
             ->hasCommand(CrudGeneratorCommand::class)
             ->hasCommand(TestDbConnectionCommand::class);
 
-        $this->loadViewsFrom(__DIR__ . '/../resources/views/generator/', 'brackets/craftable-pro');
-        $this->loadViewsFrom(__DIR__ . '/../resources/views/email_templates/', 'brackets/craftable-pro/email_templates');
-        $this->loadViewsFrom(__DIR__ . '/../resources/views/console', 'brackets/craftable-pro/console');
+        $this->loadViewsFrom(__DIR__.'/../resources/views/generator/', 'brackets/craftable-pro');
+        $this->loadViewsFrom(__DIR__.'/../resources/views/email_templates/', 'brackets/craftable-pro/email_templates');
+        $this->loadViewsFrom(__DIR__.'/../resources/views/console', 'brackets/craftable-pro/console');
     }
 
     public function bootingPackage()
@@ -82,24 +82,24 @@ class CraftableProServiceProvider extends PackageServiceProvider
         Route::pushMiddlewareToGroup('craftable-pro-base-middlewares', TrackLastActive::class);
         Route::pushMiddlewareToGroup('craftable-pro-base-middlewares', config('craftable-pro.handle-inertia-request-class', CraftableProHandleInertiaRequests::class));
 
-        Route::pushMiddlewareToGroup('craftable-pro-auth-middleware', Authenticate::class . ':craftable-pro');
+        Route::pushMiddlewareToGroup('craftable-pro-auth-middleware', Authenticate::class.':craftable-pro');
 
-        Route::pushMiddlewareToGroup('craftable-pro-guest-middleware', RedirectIfAuthenticated::class . ':craftable-pro');
+        Route::pushMiddlewareToGroup('craftable-pro-guest-middleware', RedirectIfAuthenticated::class.':craftable-pro');
 
         Route::pushMiddlewareToGroup('craftable-pro-verified-middleware', EnsureEmailIsVerified::class);
 
         Route::pushMiddlewareToGroup('craftable-pro-middlewares', SetLocale::class);
         Route::pushMiddlewareToGroup('craftable-pro-middlewares', TrackLastActive::class);
-        Route::pushMiddlewareToGroup('craftable-pro-middlewares', Authenticate::class . ':craftable-pro');
+        Route::pushMiddlewareToGroup('craftable-pro-middlewares', Authenticate::class.':craftable-pro');
         Route::pushMiddlewareToGroup('craftable-pro-middlewares', EnsureEmailIsVerified::class);
         Route::pushMiddlewareToGroup('craftable-pro-middlewares', config('craftable-pro.handle-inertia-request-class', CraftableProHandleInertiaRequests::class));
     }
 
     public function packageRegistered()
     {
-        $this->mergeConfigFrom($this->package->basePath("/../config/auth.php"), 'auth');
-        $this->mergeConfigFrom($this->package->basePath("/../config/filesystems.php"), 'filesystems');
-        $this->mergeConfigFrom($this->package->basePath("/../config/translation-loader.php"), 'translation-loader');
+        $this->mergeConfigFrom($this->package->basePath('/../config/auth.php'), 'auth');
+        $this->mergeConfigFrom($this->package->basePath('/../config/filesystems.php'), 'filesystems');
+        $this->mergeConfigFrom($this->package->basePath('/../config/translation-loader.php'), 'translation-loader');
 
         $this->publishes([
             $this->package->basePath('/../resources/js') => resource_path('js/craftable-pro'),
@@ -110,9 +110,8 @@ class CraftableProServiceProvider extends PackageServiceProvider
         ], "{$this->package->shortName()}-seeders");
 
         $this->publishes([
-            $this->package->basePath('/Http/Middleware/CraftableProHandleInertiaRequests.php')
-            => app_path('/Http/Middleware/CraftableProHandleInertiaRequests.php'),
-        ], "craftable-pro-handle-inertia-requests");
+            $this->package->basePath('/Http/Middleware/CraftableProHandleInertiaRequests.php') => app_path('/Http/Middleware/CraftableProHandleInertiaRequests.php'),
+        ], 'craftable-pro-handle-inertia-requests');
 
         // TODO add prefix craftable-pro to the auth routes
 
@@ -241,9 +240,10 @@ class CraftableProServiceProvider extends PackageServiceProvider
     /**
      * Merge the given configuration with the existing configuration.
      *
-     * @param string $path
-     * @param string $key
+     * @param  string  $path
+     * @param  string  $key
      * @return void
+     *
      * @throws BindingResolutionException
      */
     protected function mergeConfigFrom($path, $key)
@@ -261,8 +261,6 @@ class CraftableProServiceProvider extends PackageServiceProvider
     /**
      * Merges the configs together and takes multi-dimensional arrays into account.
      *
-     * @param  array  $original
-     * @param  array  $merging
      * @return array
      */
     protected function mergeConfig(array $original, array $merging)

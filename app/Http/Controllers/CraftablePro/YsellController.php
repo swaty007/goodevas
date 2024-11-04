@@ -1,14 +1,16 @@
 <?php
+
 namespace App\Http\Controllers\CraftablePro;
 
+use App\Exports\CraftablePro\YsellsExport;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CraftablePro\Ysell\IndexYsellRequest;
-use App\Http\Requests\CraftablePro\Ysell\CreateYsellRequest;
-use App\Http\Requests\CraftablePro\Ysell\StoreYsellRequest;
-use App\Http\Requests\CraftablePro\Ysell\EditYsellRequest;
-use App\Http\Requests\CraftablePro\Ysell\UpdateYsellRequest;
-use App\Http\Requests\CraftablePro\Ysell\DestroyYsellRequest;
 use App\Http\Requests\CraftablePro\Ysell\BulkDestroyYsellRequest;
+use App\Http\Requests\CraftablePro\Ysell\CreateYsellRequest;
+use App\Http\Requests\CraftablePro\Ysell\DestroyYsellRequest;
+use App\Http\Requests\CraftablePro\Ysell\EditYsellRequest;
+use App\Http\Requests\CraftablePro\Ysell\IndexYsellRequest;
+use App\Http\Requests\CraftablePro\Ysell\StoreYsellRequest;
+use App\Http\Requests\CraftablePro\Ysell\UpdateYsellRequest;
 use App\Models\Ysell;
 use Brackets\CraftablePro\Queries\Filters\FuzzyFilter;
 use Illuminate\Http\JsonResponse;
@@ -17,10 +19,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 use Inertia\Response;
+use Maatwebsite\Excel\Facades\Excel;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\CraftablePro\YsellsExport;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class YsellController extends Controller
@@ -28,23 +29,23 @@ class YsellController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(IndexYsellRequest $request): Response | JsonResponse
+    public function index(IndexYsellRequest $request): Response|JsonResponse
     {
         $ysellsQuery = QueryBuilder::for(Ysell::class)
             ->allowedFilters([
                 AllowedFilter::custom('search', new FuzzyFilter(
-                    'id','api_key','name'
+                    'id', 'api_key', 'name'
                 )),
             ])
             ->defaultSort('id')
-            ->allowedSorts('id','api_key','name');
+            ->allowedSorts('id', 'api_key', 'name');
 
         if ($request->wantsJson() && $request->get('bulk_select_all')) {
             return response()->json($ysellsQuery->select(['id'])->pluck('id'));
         }
 
         $ysells = $ysellsQuery
-            ->select('id','api_key','name')
+            ->select('id', 'api_key', 'name')
             ->paginate($request->get('per_page'))->withQueryString();
 
         Session::put('ysells_url', $request->fullUrl());
@@ -60,7 +61,7 @@ class YsellController extends Controller
     public function create(CreateYsellRequest $request): Response
     {
         return Inertia::render('Ysell/Create', [
-            
+
         ]);
     }
 
@@ -81,7 +82,7 @@ class YsellController extends Controller
     {
         return Inertia::render('Ysell/Edit', [
             'ysell' => $ysell,
-            
+
         ]);
     }
 
@@ -138,6 +139,6 @@ class YsellController extends Controller
      */
     public function export(IndexYsellRequest $request): BinaryFileResponse
     {
-        return Excel::download(new YsellsExport($request->all()), 'Ysells-'.now()->format("dmYHi").'.xlsx');
+        return Excel::download(new YsellsExport($request->all()), 'Ysells-'.now()->format('dmYHi').'.xlsx');
     }
 }

@@ -19,5 +19,4 @@ class LandingController extends Controller
             'phpVersion' => PHP_VERSION,
         ]);
     }
-
 }

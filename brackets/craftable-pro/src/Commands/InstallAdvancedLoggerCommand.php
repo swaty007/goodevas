@@ -21,7 +21,7 @@ class InstallAdvancedLoggerCommand extends Command
         $this->components->info('Installing Advanced logger...');
 
         // TODO: check and get a more conceptual solution
-        shell_exec("composer require brackets/advanced-logger");
+        shell_exec('composer require brackets/advanced-logger');
 
         $this->call('vendor:publish', [
             '--provider' => 'Brackets\AdvancedLogger\AdvancedLoggerServiceProvider',

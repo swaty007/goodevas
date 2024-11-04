@@ -17,8 +17,6 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-
-
 Route::craftablePro('admin');
 
 /* Auto-generated admin routes */
@@ -33,7 +31,6 @@ Route::middleware('craftable-pro-middlewares')->prefix('admin')->name('craftable
     Route::post('products/bulk-destroy', [App\Http\Controllers\CraftablePro\ProductController::class, 'bulkDestroy'])->name('products.bulk-destroy');
 });
 
-
 /* Auto-generated admin routes */
 Route::middleware('craftable-pro-middlewares')->prefix('admin')->name('craftable-pro.')->group(function () {
     Route::get('product-types', [App\Http\Controllers\CraftablePro\ProductTypeController::class, 'index'])->name('product-types.index');
@@ -44,7 +41,6 @@ Route::middleware('craftable-pro-middlewares')->prefix('admin')->name('craftable
     Route::delete('product-types/{productType}', [App\Http\Controllers\CraftablePro\ProductTypeController::class, 'destroy'])->name('product-types.destroy');
     Route::post('product-types/bulk-destroy', [App\Http\Controllers\CraftablePro\ProductTypeController::class, 'bulkDestroy'])->name('product-types.bulk-destroy');
 });
-
 
 /* Auto-generated admin routes */
 Route::middleware('craftable-pro-middlewares')->prefix('admin')->name('craftable-pro.')->group(function () {
@@ -57,7 +53,6 @@ Route::middleware('craftable-pro-middlewares')->prefix('admin')->name('craftable
     Route::delete('product-types/{productType}', [App\Http\Controllers\CraftablePro\ProductTypeController::class, 'destroy'])->name('product-types.destroy');
     Route::post('product-types/bulk-destroy', [App\Http\Controllers\CraftablePro\ProductTypeController::class, 'bulkDestroy'])->name('product-types.bulk-destroy');
 });
-
 
 /* Auto-generated admin routes */
 Route::middleware('craftable-pro-middlewares')->prefix('admin')->name('craftable-pro.')->group(function () {

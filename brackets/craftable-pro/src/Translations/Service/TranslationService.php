@@ -16,8 +16,6 @@ class TranslationService
 
     /**
      * TranslationService constructor.
-     *
-     * @param LanguageLineRepository $languageLineRepository
      */
     public function __construct(
         LanguageLineRepository $languageLineRepository
@@ -25,10 +23,6 @@ class TranslationService
         $this->languageLineRepository = $languageLineRepository;
     }
 
-    /**
-     * @param Collection $filteredCollection
-     * @param $language
-     */
     public function saveCollection(Collection $filteredCollection, $language): void
     {
         $filteredCollection->each(function ($item) use ($language) {
@@ -36,31 +30,16 @@ class TranslationService
         });
     }
 
-    /**
-     * @param $row
-     * @return string
-     */
     public function buildKeyForArray($row): string
     {
-        return $row['group'] . '.' . $row['default'];
+        return $row['group'].'.'.$row['default'];
     }
 
-    /**
-     * @param $row
-     * @param $array
-     * @return bool
-     */
     public function rowExistsInArray($row, $array): bool
     {
         return array_key_exists($this->buildKeyForArray($row), $array);
     }
 
-    /**
-     * @param $row
-     * @param $array
-     * @param $choosenLanguage
-     * @return bool
-     */
     public function rowValueEqualsValueInArray($row, $array, $choosenLanguage): bool
     {
         if (! empty($array[$this->buildKeyForArray($row)]['text'])) {
@@ -68,7 +47,7 @@ class TranslationService
                 return $this->rowExistsInArray(
                     $row,
                     $array
-                ) && (string)$row[$choosenLanguage] === (string)$array[$this->buildKeyForArray($row)]['text'][$choosenLanguage];
+                ) && (string) $row[$choosenLanguage] === (string) $array[$this->buildKeyForArray($row)]['text'][$choosenLanguage];
             } else {
                 return false;
             }
@@ -77,10 +56,6 @@ class TranslationService
         return true;
     }
 
-    /**
-     * @param $chosenLanguage
-     * @return array
-     */
     public function getAllTranslationsForGivenLang($chosenLanguage): array
     {
         return LanguageLine::all()->filter(static function ($translation) use ($chosenLanguage) {
@@ -88,21 +63,15 @@ class TranslationService
                 return array_key_exists(
                     $chosenLanguage,
                     $translation->text
-                ) && (string)$translation->text->{$chosenLanguage} !== '';
+                ) && (string) $translation->text->{$chosenLanguage} !== '';
             }
 
             return true;
         })->keyBy(static function ($translation) {
-            return $translation->group . '.' . $translation->key;
+            return $translation->group.'.'.$translation->key;
         })->toArray();
     }
 
-    /**
-     * @param $chosenLanguage
-     * @param $existingTranslations
-     * @param $collectionToUpdate
-     * @return array
-     */
     public function checkAndUpdateTranslations($chosenLanguage, $existingTranslations, $collectionToUpdate): array
     {
         $numberOfImportedTranslations = 0;
@@ -142,9 +111,6 @@ class TranslationService
     }
 
     /**
-     * @param $collectionFromImportedFile
-     * @param $existingTranslations
-     * @param $chosenLanguage
      * @return mixed
      */
     public function getCollectionWithConflicts($collectionFromImportedFile, $existingTranslations, $chosenLanguage)
@@ -155,7 +121,7 @@ class TranslationService
                 $row['has_conflict'] = true;
                 if (isset($existingTranslations[$this->buildKeyForArray($row)])) {
                     if (isset($existingTranslations[$this->buildKeyForArray($row)]['text'][$chosenLanguage])) {
-                        $row['current_value'] = (string)$existingTranslations[$this->buildKeyForArray($row)]['text'][$chosenLanguage];
+                        $row['current_value'] = (string) $existingTranslations[$this->buildKeyForArray($row)]['text'][$chosenLanguage];
                     } else {
                         $row['has_conflict'] = false;
                         $row['current_value'] = '';
@@ -171,7 +137,6 @@ class TranslationService
     }
 
     /**
-     * @param $collectionWithConflicts
      * @return mixed
      */
     public function getNumberOfConflicts($collectionWithConflicts)
@@ -182,8 +147,6 @@ class TranslationService
     }
 
     /**
-     * @param $collectionFromImportedFile
-     * @param $existingTranslations
      * @return mixed
      */
     public function getFilteredExistingTranslations($collectionFromImportedFile, $existingTranslations)
@@ -194,11 +157,6 @@ class TranslationService
         });
     }
 
-    /**
-     * @param $collectionToImport
-     * @param $chosenLanguage
-     * @return bool
-     */
     public function validImportFile($collectionToImport, $chosenLanguage): bool
     {
         $requiredHeaders = ['group', 'default', $chosenLanguage];
@@ -213,8 +171,6 @@ class TranslationService
     }
 
     /**
-     * @param $file
-     * @param $chosenLanguage
      * @return mixed
      */
     public function getCollectionFromImportedFile($file, $chosenLanguage)
@@ -223,7 +179,7 @@ class TranslationService
             abort(409, ___('craftable-pro', 'Unsupported file type'));
         }
 
-        $collectionFromImportedFile = (new TranslationsImport())->toCollection($file)->first();
+        $collectionFromImportedFile = (new TranslationsImport)->toCollection($file)->first();
 
         if (! $this->validImportFile($collectionFromImportedFile, $chosenLanguage)) {
             abort(409, ___('craftable-pro', 'Wrong syntax in your import'));

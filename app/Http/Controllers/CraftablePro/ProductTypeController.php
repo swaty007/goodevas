@@ -1,14 +1,16 @@
 <?php
+
 namespace App\Http\Controllers\CraftablePro;
 
+use App\Exports\CraftablePro\ProductTypesExport;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CraftablePro\ProductType\IndexProductTypeRequest;
-use App\Http\Requests\CraftablePro\ProductType\CreateProductTypeRequest;
-use App\Http\Requests\CraftablePro\ProductType\StoreProductTypeRequest;
-use App\Http\Requests\CraftablePro\ProductType\EditProductTypeRequest;
-use App\Http\Requests\CraftablePro\ProductType\UpdateProductTypeRequest;
-use App\Http\Requests\CraftablePro\ProductType\DestroyProductTypeRequest;
 use App\Http\Requests\CraftablePro\ProductType\BulkDestroyProductTypeRequest;
+use App\Http\Requests\CraftablePro\ProductType\CreateProductTypeRequest;
+use App\Http\Requests\CraftablePro\ProductType\DestroyProductTypeRequest;
+use App\Http\Requests\CraftablePro\ProductType\EditProductTypeRequest;
+use App\Http\Requests\CraftablePro\ProductType\IndexProductTypeRequest;
+use App\Http\Requests\CraftablePro\ProductType\StoreProductTypeRequest;
+use App\Http\Requests\CraftablePro\ProductType\UpdateProductTypeRequest;
 use App\Models\ProductType;
 use Brackets\CraftablePro\Queries\Filters\FuzzyFilter;
 use Illuminate\Http\JsonResponse;
@@ -17,10 +19,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 use Inertia\Response;
+use Maatwebsite\Excel\Facades\Excel;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\CraftablePro\ProductTypesExport;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ProductTypeController extends Controller
@@ -28,23 +29,23 @@ class ProductTypeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(IndexProductTypeRequest $request): Response | JsonResponse
+    public function index(IndexProductTypeRequest $request): Response|JsonResponse
     {
         $productTypesQuery = QueryBuilder::for(ProductType::class)
             ->allowedFilters([
                 AllowedFilter::custom('search', new FuzzyFilter(
-                    'id','name'
+                    'id', 'name'
                 )),
             ])
             ->defaultSort('id')
-            ->allowedSorts('id','name');
+            ->allowedSorts('id', 'name');
 
         if ($request->wantsJson() && $request->get('bulk_select_all')) {
             return response()->json($productTypesQuery->select(['id'])->pluck('id'));
         }
 
         $productTypes = $productTypesQuery
-            ->select('id','name')
+            ->select('id', 'name')
             ->paginate($request->get('per_page'))->withQueryString();
 
         Session::put('productTypes_url', $request->fullUrl());
@@ -60,7 +61,7 @@ class ProductTypeController extends Controller
     public function create(CreateProductTypeRequest $request): Response
     {
         return Inertia::render('ProductType/Create', [
-            
+
         ]);
     }
 
@@ -81,7 +82,7 @@ class ProductTypeController extends Controller
     {
         return Inertia::render('ProductType/Edit', [
             'productType' => $productType,
-            
+
         ]);
     }
 
@@ -138,6 +139,6 @@ class ProductTypeController extends Controller
      */
     public function export(IndexProductTypeRequest $request): BinaryFileResponse
     {
-        return Excel::download(new ProductTypesExport($request->all()), 'ProductTypes-'.now()->format("dmYHi").'.xlsx');
+        return Excel::download(new ProductTypesExport($request->all()), 'ProductTypes-'.now()->format('dmYHi').'.xlsx');
     }
 }

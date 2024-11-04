@@ -13,25 +13,23 @@ use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class StoragesImport implements WithHeadingRow, SkipsOnError, ToCollection //ToModel, , WithBatchInserts, WithChunkReading
+class StoragesImport implements SkipsOnError, ToCollection, WithHeadingRow //ToModel, , WithBatchInserts, WithChunkReading
 {
     use Importable;
     use SkipsErrors;
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function collection(Collection $collection)
     {
-//        foreach ($collection as $key => $row) {
-//            $ean = $row['ean'];
-//            $product = DB::connection('bigquery')
-//                ->table('product_report')
-//                ->where('date', '2024-10-10')
-//                ->where('EAN', (string)$ean)
-//                ->get();
-//        }
+        //        foreach ($collection as $key => $row) {
+        //            $ean = $row['ean'];
+        //            $product = DB::connection('bigquery')
+        //                ->table('product_report')
+        //                ->where('date', '2024-10-10')
+        //                ->where('EAN', (string)$ean)
+        //                ->get();
+        //        }
         $products = $collection->toArray();
         $EANs = array_column($products, 'ean');
         $dates = array_column($products, 'date');
@@ -41,7 +39,7 @@ class StoragesImport implements WithHeadingRow, SkipsOnError, ToCollection //ToM
             }
         }
 
-        if (!empty($EANs)) {
+        if (! empty($EANs)) {
             DB::connection('bigquery')
                 ->table($this->table)
                 ->where('date', $this->request->query('date'))
@@ -52,19 +50,19 @@ class StoragesImport implements WithHeadingRow, SkipsOnError, ToCollection //ToM
         }
     }
 
-//    public function batchSize(): int
-//    {
-//        return 500;
-//    }
+    //    public function batchSize(): int
+    //    {
+    //        return 500;
+    //    }
 
-//    public function chunkSize(): int
-//    {
-//        return 1000;
-//    }
+    //    public function chunkSize(): int
+    //    {
+    //        return 1000;
+    //    }
 
     public function onError(\Throwable $e)
     {
-        Log::error('UsersImport Error: ' . $e->getMessage());
+        Log::error('UsersImport Error: '.$e->getMessage());
         $this->errors[] = $e;
     }
 }

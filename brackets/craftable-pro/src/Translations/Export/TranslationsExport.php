@@ -8,16 +8,13 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class TranslationsExport implements FromCollection, WithMapping, WithHeadings
+class TranslationsExport implements FromCollection, WithHeadings, WithMapping
 {
     /**
      * @var Collection
      */
     private $exportLanguages;
 
-    /**
-     * @param $request
-     */
     public function __construct($request)
     {
         $this->exportLanguages = collect($request->exportLanguages);
@@ -31,9 +28,6 @@ class TranslationsExport implements FromCollection, WithMapping, WithHeadings
         return LanguageLine::all();
     }
 
-    /**
-     * @return array
-     */
     public function headings(): array
     {
         $headings = [
@@ -50,8 +44,7 @@ class TranslationsExport implements FromCollection, WithMapping, WithHeadings
     }
 
     /**
-     * @param LanguageLine $languageLine
-     * @return array
+     * @param  LanguageLine  $languageLine
      */
     public function map($languageLine): array
     {

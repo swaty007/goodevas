@@ -31,8 +31,6 @@ class StoreTagRequest extends FormRequest
     }
 
     /**
-     * @param $key
-     * @param $default
      * @return mixed
      */
     public function validated($key = null, $default = null)

@@ -11,17 +11,18 @@ use Inertia\Response;
 
 class ActivityController extends Controller
 {
-    /** @var ActivityService */
     protected ActivityService $activityService;
+
     public function __construct(
         ActivityService $activityService,
     ) {
         $this->activityService = $activityService;
     }
+
     /**
      * Display a listing of the resource.
      */
-    public function index(IndexActivityRequest $request): Response | JsonResponse
+    public function index(IndexActivityRequest $request): Response|JsonResponse
     {
         if ($request->wantsJson() && $request->get('bulk_select_all')) {
             return response()->json($this->activityService->getPluckIndex());
@@ -35,7 +36,7 @@ class ActivityController extends Controller
         ]);
     }
 
-    public function indexUser(IndexActivityRequest $request, User $user): Response | JsonResponse
+    public function indexUser(IndexActivityRequest $request, User $user): Response|JsonResponse
     {
         if ($request->wantsJson() && $request->get('bulk_select_all')) {
             return response()->json($this->activityService->getPluckIndex());

@@ -2,9 +2,9 @@
 
 namespace Brackets\CraftablePro\Http\Controllers\Auth;
 
+use App\Settings\GeneralSettings;
 use Brackets\CraftablePro\Http\Controllers\Controller;
 use Brackets\CraftablePro\Models\CraftableProUser;
-use App\Settings\GeneralSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -25,8 +25,8 @@ class ConfirmablePasswordController extends Controller
     /**
      * Confirm the user's password.
      *
-     * @param Request $request
      * @return mixed
+     *
      * @throws ValidationException
      */
     public function store(Request $request)

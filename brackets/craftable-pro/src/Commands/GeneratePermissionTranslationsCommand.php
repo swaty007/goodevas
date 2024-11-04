@@ -38,10 +38,10 @@ class GeneratePermissionTranslationsCommand extends Command
         }
 
         $permissions = collect(Permission::all()->map->name)->mapWithKeys(function ($permission) {
-            $name = "";
+            $name = '';
             $permissionName = collect();
 
-            collect(explode(".", $permission))->each(function ($value, $key) use (&$name, &$permissionName) {
+            collect(explode('.', $permission))->each(function ($value, $key) use (&$name, &$permissionName) {
                 $name .= $key == 0 ? $value : ".$value";
 
                 $permissionName->put($name, $name);
@@ -50,7 +50,7 @@ class GeneratePermissionTranslationsCommand extends Command
             return $permissionName->all();
         })->toJson();
 
-        File::put(resource_path('translations/permissions') . '/permission_translations.json', $permissions);
+        File::put(resource_path('translations/permissions').'/permission_translations.json', $permissions);
 
         return Command::SUCCESS;
     }

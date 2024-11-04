@@ -21,8 +21,8 @@ use Spatie\QueryBuilder\QueryBuilder;
 class MediaController extends Controller
 {
     /**
-     * @param IndexMedia $request
      * @return Response
+     *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -37,8 +37,8 @@ class MediaController extends Controller
     }
 
     /**
-     * @param IndexMedia $request
      * @return Response
+     *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -55,8 +55,8 @@ class MediaController extends Controller
     }
 
     /**
-     * @param IndexMedia $request
      * @return Response
+     *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -73,8 +73,8 @@ class MediaController extends Controller
     }
 
     /**
-     * @param Builder $query
      * @return LengthAwarePaginator
+     *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -100,7 +100,6 @@ class MediaController extends Controller
     }
 
     /**
-     * @param array $filterOptions
      * @return array
      */
     protected function getFilterOptions(array $filterOptions = [])
@@ -114,8 +113,6 @@ class MediaController extends Controller
     }
 
     /**
-     * @param Media $media
-     * @param UpdateMedia $request
      * @return RedirectResponse
      */
     public function updateMedia(Media $media, UpdateMedia $request)

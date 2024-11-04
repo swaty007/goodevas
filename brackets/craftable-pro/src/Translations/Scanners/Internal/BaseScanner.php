@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\File;
 abstract class BaseScanner implements ScannerInterface
 {
     private array $scannedPaths = [];
+
     private array $scanPatterns = [];
 
     public function __construct()
@@ -38,7 +39,7 @@ abstract class BaseScanner implements ScannerInterface
                         $groups = $options['groupPosition'] ? $matches[$options['groupPosition']] : null;
                         collect($matches[$options['keyPosition']])->each(function ($keyItem, $index) use ($groups) {
                             if (! $keyItem) {
-                                $group = "*";
+                                $group = '*';
                                 $key = $groups[$index];
                             } else {
                                 $key = $keyItem;
@@ -53,9 +54,6 @@ abstract class BaseScanner implements ScannerInterface
     }
 
     /**
-     * @param $pattern
-     * @param $keyPosition
-     * @param $groupPosition
      * @return $this
      */
     public function addScanPattern($pattern, $keyPosition = 4, $groupPosition = 2)

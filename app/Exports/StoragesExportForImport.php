@@ -11,6 +11,7 @@ use PhpOffice\PhpSpreadsheet\Cell\StringValueBinder;
 class StoragesExportForImport extends StringValueBinder implements FromCollection, WithHeadings
 {
     protected Collection $rows;
+
     public function __construct()
     {
         $this->rows = DB::connection('bigquery')
@@ -18,6 +19,7 @@ class StoragesExportForImport extends StringValueBinder implements FromCollectio
             ->where('date', request()->query('date'))
             ->get();
     }
+
     public function collection(): Collection
     {
         return $this->rows;

@@ -18,7 +18,6 @@ trait HasUuid
     }
 
     /**
-     * @param $model
      * @return void
      */
     protected function provideUuidKey($model)

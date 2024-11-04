@@ -24,9 +24,9 @@ class IndexActivityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'search' => ['sometimes','string'],
-            'per_page' => ['sometimes','integer'],
-            'bulk_select_all' => ['sometimes','boolean'],
+            'search' => ['sometimes', 'string'],
+            'per_page' => ['sometimes', 'integer'],
+            'bulk_select_all' => ['sometimes', 'boolean'],
         ];
     }
 }

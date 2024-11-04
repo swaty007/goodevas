@@ -2,10 +2,10 @@
 
 namespace Brackets\CraftablePro\Http\Controllers\Auth;
 
+use App\Settings\GeneralSettings;
 use Brackets\CraftablePro\Http\Controllers\Controller;
 use Brackets\CraftablePro\Http\Requests\Auth\RegisterUserRequest;
 use Brackets\CraftablePro\Models\CraftableProUser;
-use App\Settings\GeneralSettings;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,9 +31,7 @@ class RegisteredUserController extends Controller
     /**
      * Handle an incoming registration request.
      *
-     * @param RegisterUserRequest $request
      * @return RedirectResponse
-     *
      */
     public function store(RegisterUserRequest $request)
     {

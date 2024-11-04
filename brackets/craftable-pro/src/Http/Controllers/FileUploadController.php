@@ -15,10 +15,6 @@ class FileUploadController extends BaseController
     use DispatchesJobs;
     use ValidatesRequests;
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function upload(Request $request): JsonResponse
     {
         // TODO: permission?

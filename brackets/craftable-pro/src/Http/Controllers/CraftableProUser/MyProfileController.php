@@ -20,7 +20,6 @@ class MyProfileController extends Controller
     }
 
     /**
-     * @param Request $request
      * @return Response
      */
     public function edit(Request $request)
@@ -34,7 +33,6 @@ class MyProfileController extends Controller
     }
 
     /**
-     * @param Request $request
      * @return RedirectResponse
      */
     public function update(Request $request)

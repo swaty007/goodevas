@@ -2,10 +2,10 @@
 
 namespace Brackets\CraftablePro\Http\Controllers\Auth;
 
+use App\Settings\GeneralSettings;
 use Brackets\CraftablePro\Http\Controllers\Controller;
 use Brackets\CraftablePro\Http\Requests\Auth\LoginRequest;
 use Brackets\CraftablePro\Models\CraftableProUser;
-use App\Settings\GeneralSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -29,8 +29,8 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      *
-     * @param LoginRequest $request
      * @return \Illuminate\Http\RedirectResponse
+     *
      * @throws \Illuminate\Validation\ValidationException
      */
     public function store(LoginRequest $request)
@@ -39,7 +39,7 @@ class AuthenticatedSessionController extends Controller
         $user = CraftableProUser::whereEmail($data['email'])->first();
 
         if ($user?->wasInvited()) {
-            return redirect()->route("craftable-pro.invite-user.create", $data['email']);
+            return redirect()->route('craftable-pro.invite-user.create', $data['email']);
         }
 
         $request->authenticate();
@@ -52,7 +52,6 @@ class AuthenticatedSessionController extends Controller
     /**
      * Destroy an authenticated session.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Request $request)

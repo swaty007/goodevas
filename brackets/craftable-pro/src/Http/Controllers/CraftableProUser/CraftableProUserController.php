@@ -2,6 +2,7 @@
 
 namespace Brackets\CraftablePro\Http\Controllers\CraftableProUser;
 
+use App\Settings\GeneralSettings;
 use Brackets\CraftablePro\Http\Controllers\Controller;
 use Brackets\CraftablePro\Http\Requests\CraftableProUser\BulkDestroyCraftableProUserRequest;
 use Brackets\CraftablePro\Http\Requests\CraftableProUser\DestroyCraftableProUserRequest;
@@ -12,7 +13,6 @@ use Brackets\CraftablePro\Http\Requests\CraftableProUser\UpdateCraftableProUserR
 use Brackets\CraftablePro\Models\CraftableProUser;
 use Brackets\CraftablePro\Queries\Filters\FuzzyFilter;
 use Brackets\CraftablePro\Queries\Sorts\SortNullsLast;
-use App\Settings\GeneralSettings;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -30,9 +30,8 @@ class CraftableProUserController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
      */
-    public function index(IndexCraftableProUserRequest $request): Response | JsonResponse
+    public function index(IndexCraftableProUserRequest $request): Response|JsonResponse
     {
         $craftableProUsersQuery = QueryBuilder::for(CraftableProUser::class)
             ->allowedFilters([
@@ -45,15 +44,15 @@ class CraftableProUserController extends Controller
                 )),
                 AllowedFilter::callback('role', fn (Builder $query, $value) => $query->role($value)),
                 AllowedFilter::callback('status', function (Builder $query, $value) {
-                    if ($value === "pending") {
-                        return $query->whereNull("email_verified_at");
+                    if ($value === 'pending') {
+                        return $query->whereNull('email_verified_at');
                     } else {
-                        return $query->whereActive($value)->whereNotNull("email_verified_at");
+                        return $query->whereActive($value)->whereNotNull('email_verified_at');
                     }
                 }),
             ])
             ->defaultSort('id')
-            ->allowedSorts(['id', 'first_name', 'email', 'email_verified_at', AllowedSort::custom('last_active_at', new SortNullsLast())]);
+            ->allowedSorts(['id', 'first_name', 'email', 'email_verified_at', AllowedSort::custom('last_active_at', new SortNullsLast)]);
 
         if ($request->wantsJson() && $request->get('bulk_select_all')) {
             return response()->json($craftableProUsersQuery->select(['id'])->pluck('id'));
@@ -75,7 +74,6 @@ class CraftableProUserController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
      */
     public function create(): Response
     {
@@ -92,7 +90,6 @@ class CraftableProUserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreCraftableProUserRequest $request
      * @return RedirectResponse
      */
     public function store(StoreCraftableProUserRequest $request)
@@ -109,8 +106,8 @@ class CraftableProUserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param CraftableProUser $craftableProUser
      * @return Response
+     *
      * @throws AuthorizationException
      */
     public function show(CraftableProUser $craftableProUser)
@@ -125,8 +122,8 @@ class CraftableProUserController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param CraftableProUser $craftableProUser
      * @return Response
+     *
      * @throws AuthorizationException
      */
     public function edit(CraftableProUser $craftableProUser)
@@ -148,8 +145,6 @@ class CraftableProUserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateCraftableProUserRequest $request
-     * @param CraftableProUser $craftableProUser
      * @return JsonResponse|RedirectResponse
      */
     public function update(UpdateCraftableProUserRequest $request, CraftableProUser $craftableProUser)
@@ -172,8 +167,6 @@ class CraftableProUserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param DestroyCraftableProUserRequest $request
-     * @param CraftableProUser $craftableProUser
      * @return RedirectResponse
      */
     public function destroy(DestroyCraftableProUserRequest $request, CraftableProUser $craftableProUser)
@@ -186,7 +179,6 @@ class CraftableProUserController extends Controller
     /**
      * Resend verification notification for user.
      *
-     * @param CraftableProUser $craftableProUser
      * @return RedirectResponse
      */
     public function resendEmailVerificationNotification(CraftableProUser $craftableProUser)
@@ -196,7 +188,7 @@ class CraftableProUserController extends Controller
                 // FIXME: refactor mailable class
                 CraftableProUserInvitationController::sendInvitation(
                     email: $craftableProUser->email,
-                    userFullName: Auth::user()->first_name . " " . Auth::user()->last_name,
+                    userFullName: Auth::user()->first_name.' '.Auth::user()->last_name,
                 );
             } else {
                 $craftableProUser->sendEmailVerificationNotification();
@@ -209,8 +201,8 @@ class CraftableProUserController extends Controller
     /**
      * Bulk destroy users.
      *
-     * @param BulkDestroyCraftableProUserRequest $request
      * @return RedirectResponse
+     *
      * @throws \Throwable
      */
     public function bulkDestroy(BulkDestroyCraftableProUserRequest $request)
@@ -228,8 +220,9 @@ class CraftableProUserController extends Controller
 
     /**
      * Bulk deactivate users.
-     * @param BulkDestroyCraftableProUserRequest $request
+     *
      * @return RedirectResponse
+     *
      * @throws \Throwable
      */
     public function bulkDeactivate(BulkDestroyCraftableProUserRequest $request)
@@ -247,8 +240,9 @@ class CraftableProUserController extends Controller
 
     /**
      * Bulk activate users.
-     * @param BulkDestroyCraftableProUserRequest $request
+     *
      * @return RedirectResponse
+     *
      * @throws \Throwable
      */
     public function bulkActivate(BulkDestroyCraftableProUserRequest $request)
@@ -265,8 +259,6 @@ class CraftableProUserController extends Controller
     }
 
     /**
-     * @param ImpersonalLoginCraftableProUserRequest $request
-     * @param CraftableProUser $craftableProUser
      * @return RedirectResponse
      */
     public function impersonalLogin(ImpersonalLoginCraftableProUserRequest $request, CraftableProUser $craftableProUser)

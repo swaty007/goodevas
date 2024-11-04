@@ -13,7 +13,7 @@ trait BuildCrudGeneratorTrait
      */
     protected function getOptionArray(string $optionName): array
     {
-        return array_map('trim', explode(",", $this->option($optionName)));
+        return array_map('trim', explode(',', $this->option($optionName)));
     }
 
     /**
@@ -42,15 +42,15 @@ trait BuildCrudGeneratorTrait
     /**
      * Check if selected columns are available in database
      */
-    protected function selectedColumnsAreAvailable(array $columns, array $availableColumns = null): bool
+    protected function selectedColumnsAreAvailable(array $columns, ?array $availableColumns = null): bool
     {
         $columnsNotFound = collect([]);
 
         collect($columns)->map(function ($column) use (&$columnsNotFound, $availableColumns) {
             if (! $availableColumns) {
-                $columnFoundInDb = $this->tableColumns->where("name", $column)->count();
+                $columnFoundInDb = $this->tableColumns->where('name', $column)->count();
             } else {
-                $columnFoundInDb = collect($availableColumns)->where("name", $column)->count();
+                $columnFoundInDb = collect($availableColumns)->where('name', $column)->count();
             }
 
             if (! $columnFoundInDb) {
@@ -59,7 +59,7 @@ trait BuildCrudGeneratorTrait
         });
 
         if (! $columnsNotFound->isEmpty()) {
-            $this->components->error("Following columns were not found in available selection: " . implode(", ", $columnsNotFound->values()->all()));
+            $this->components->error('Following columns were not found in available selection: '.implode(', ', $columnsNotFound->values()->all()));
         }
 
         return $columnsNotFound->isEmpty();
@@ -71,7 +71,7 @@ trait BuildCrudGeneratorTrait
     protected function mapColumnsData(array $columns): Collection
     {
         return collect($columns)->map(function ($column) {
-            $columnData = $this->tableColumns->where("name", $column)->first();
+            $columnData = $this->tableColumns->where('name', $column)->first();
 
             return [
                 'name' => $column,
@@ -95,7 +95,7 @@ trait BuildCrudGeneratorTrait
             'modelNamePluralUpperCase' => ucfirst(Str::plural($this->className)),
             'modelNameLowerCase' => Str::camel($this->className),
             'requestNamespace' => $this->requestNamespace,
-            'modelRoute' => "craftable-pro." . Str::kebab(Str::plural($this->className)),
+            'modelRoute' => 'craftable-pro.'.Str::kebab(Str::plural($this->className)),
             'indexRequestNamespace' => $this->indexRequestNamespace,
             'createRequestNamespace' => $this->createRequestNamespace,
             'storeRequestNamespace' => $this->storeRequestNamespace,
@@ -112,7 +112,7 @@ trait BuildCrudGeneratorTrait
             'bulkDestroyRequest' => $this->bulkDestroyRequest,
             'showIndexColumns' => $this->indexColumns->map(function ($column) {
                 return "'{$column['name']}'";
-            })->implode(","),
+            })->implode(','),
             'hasMediaCollections' => ! empty($this->mediaCollections),
             'relations' => $this->relations ?? collect([]),
             'modelRelations' => $this->buildModelRelations(),
@@ -121,7 +121,7 @@ trait BuildCrudGeneratorTrait
             'modelRelationsDetachQueries' => $this->modelRelationsDetachQueries(),
             'modelRelationsLoad' => $this->buildModelRelationsLoad(),
             'export' => $this->withExport,
-            'exportName' => Str::plural($this->className) . "Export",
+            'exportName' => Str::plural($this->className).'Export',
             'exportNamespace' => $this->exportNamespace,
             'exportFileName' => Str::plural($this->className),
         ];
@@ -154,15 +154,15 @@ trait BuildCrudGeneratorTrait
     {
         $rules = $this->ruleList->all();
 
-        if ($request === "create" || $request === "edit" || $request === "destroy") {
+        if ($request === 'create' || $request === 'edit' || $request === 'destroy') {
             $rules = [];
         }
 
-        if ($request === "index") {
+        if ($request === 'index') {
             $rules = $this->indexRuleList();
         }
 
-        if ($request === "update") {
+        if ($request === 'update') {
             // Replacing 'required' rules by 'sometimes'. To make 'partial update' work
             $rules = collect($rules)->map(function ($rule) {
                 return array_replace(
@@ -175,8 +175,8 @@ trait BuildCrudGeneratorTrait
             })->toArray();
         }
 
-        if ($request === "bulkDestroy") {
-            $permissionName = "destroy";
+        if ($request === 'bulkDestroy') {
+            $permissionName = 'destroy';
             $rules = $this->bulkDestoryRuleList();
         }
 
@@ -184,7 +184,7 @@ trait BuildCrudGeneratorTrait
             'requestClassName' => $requestClassName,
             'requestNamespace' => $this->requestNamespace,
             'rules' => $rules,
-            'permissionName' => "global." . Str::kebab($this->className) . ".$permissionName",
+            'permissionName' => 'global.'.Str::kebab($this->className).".$permissionName",
         ]);
     }
 
@@ -217,7 +217,7 @@ trait BuildCrudGeneratorTrait
     {
         return array_merge($this->baseBuildReplacements(), [
             'fullNameControllerClass' => "$this->controllerNamespace\\{$this->controllerName}::class",
-            'routeVariable' => "{" . Str::camel($this->className) . "}",
+            'routeVariable' => '{'.Str::camel($this->className).'}',
             'baseUrl' => 'admin', //Todo: this add config ?
             'routeName' => Str::kebab(Str::plural($this->className)),
         ]);
@@ -228,7 +228,7 @@ trait BuildCrudGeneratorTrait
      */
     protected function viewsBuildReplacements(): array
     {
-        $baseRouteName = "craftable-pro." . Str::kebab(Str::plural($this->className));
+        $baseRouteName = 'craftable-pro.'.Str::kebab(Str::plural($this->className));
 
         return [
             '[[modelIndexRoute]]' => "{$baseRouteName}.index",
@@ -252,7 +252,7 @@ trait BuildCrudGeneratorTrait
             '[[createFormColumns]]' => $this->buildFormDefaultColumns(),
             '[[editFormColumns]]' => $this->buildFormDefaultColumns(edit: true),
             '[[modelFullForm]]' => $this->buildFullForm(),
-            '[[indexTypescriptExport]]' => ! empty($this->mediaCollections) ? "media?: UploadedFile[];" : "",
+            '[[indexTypescriptExport]]' => ! empty($this->mediaCollections) ? 'media?: UploadedFile[];' : '',
             '[[exportButton]]' => $this->buildExportButton(),
             '[[exportFunctionality]]' => $this->buildExportFunctionality(),
             '[[editVueImports]]' => $this->getEditVueImports(),
@@ -261,7 +261,7 @@ trait BuildCrudGeneratorTrait
             })->implode(";\n") ?? '',
             '[[relationsFormProps]]' => $this->relations?->map(function ($relation) {
                 return ":{$relation['optionsName']}=\"{$relation['optionsName']}\"";
-            })->implode(" ") ?? '',
+            })->implode(' ') ?? '',
             '[[exportButton]]' => $this->buildExportButton(),
             '[[exportFunctionality]]' => $this->buildExportFunctionality(),
             '[[translatableFunctionality]]' => $this->buildTranslatableFunctionality(),
@@ -275,9 +275,8 @@ trait BuildCrudGeneratorTrait
     protected function buildPermissionMigrationReplace(): array
     {
         return [
-            'permissionsList' =>
-            collect(['index', 'create', 'edit', 'destroy'])->map(function ($permission) {
-                return "global." . Str::kebab($this->className) . ".$permission";
+            'permissionsList' => collect(['index', 'create', 'edit', 'destroy'])->map(function ($permission) {
+                return 'global.'.Str::kebab($this->className).".$permission";
             }),
             'permissionGuardName' => 'craftable-pro',
         ];
@@ -296,16 +295,16 @@ trait BuildCrudGeneratorTrait
     protected function buildVueIndexHeader(): mixed
     {
         return $this->indexColumns->map(function ($column) {
-            $sortable = in_array($column['name'], $this->sortableColumns) ? " sortBy=\"{$column["name"]}\"" : "";
+            $sortable = in_array($column['name'], $this->sortableColumns) ? " sortBy=\"{$column['name']}\"" : '';
             $relation = $this->relations?->firstWhere('foreignKey', $column['name']);
 
-            $columnName = $relation ? Str::headline($relation["model"]) : Str::headline($column["name"]);
+            $columnName = $relation ? Str::headline($relation['model']) : Str::headline($column['name']);
 
             return '
-        <ListingHeaderCell' . $sortable . '>
-            {{ $t("global", "' . $columnName . '") }}
+        <ListingHeaderCell'.$sortable.'>
+            {{ $t("global", "'.$columnName.'") }}
         </ListingHeaderCell>';
-        })->implode(" ");
+        })->implode(' ');
     }
 
     /**
@@ -315,37 +314,37 @@ trait BuildCrudGeneratorTrait
     {
         return $this->indexColumns->map(function ($column) {
             $showDateFormat = $this->getDateFormatWithColumnType($column['type']);
-            $dataCellContent = ' {{ item.' . $column["name"] . ' }}';
+            $dataCellContent = ' {{ item.'.$column['name'].' }}';
 
             if ($column['translatable']) {
-                $dataCellContent = ' {{ item.' . $column["name"] . '?.[currentLocale] }}';
+                $dataCellContent = ' {{ item.'.$column['name'].'?.[currentLocale] }}';
             }
 
             if ($showDateFormat) {
-                $dataCellContent = " {{ dayjs(item.{$column["name"]}).format('$showDateFormat') }}";
+                $dataCellContent = " {{ dayjs(item.{$column['name']}).format('$showDateFormat') }}";
             }
 
             if ($relation = $this->relations?->firstWhere(fn ($relation) => $relation['foreignKey'] === $column['name'] && $relation['type'] === 'belongsTo')) {
-                $dataCellContent = ' {{ item.' . Str::snake($relation['model']) . '.' .  $relation['label'] . ' }}';
+                $dataCellContent = ' {{ item.'.Str::snake($relation['model']).'.'.$relation['label'].' }}';
             }
 
             if ($column['publishable']) {
-                $updateRoute = Str::kebab(Str::plural($this->className)) . '.update';
-                $datePickerMode = $column["type"] === 'date' ? 'date' : 'dateTime';
+                $updateRoute = Str::kebab(Str::plural($this->className)).'.update';
+                $datePickerMode = $column['type'] === 'date' ? 'date' : 'dateTime';
                 $dataCellContent =
-                    '<Publish :publishedAt="item.' . $column["name"] . '" :updateUrl="route(\'craftable-pro.' . $updateRoute . '\', item.id)" columnName="' . $column["name"] . '" mode="' . $datePickerMode . '"/>';
+                    '<Publish :publishedAt="item.'.$column['name'].'" :updateUrl="route(\'craftable-pro.'.$updateRoute.'\', item.id)" columnName="'.$column['name'].'" mode="'.$datePickerMode.'"/>';
             }
 
             return '
         <ListingDataCell>
-            ' .  $dataCellContent . '
+            '.$dataCellContent.'
         </ListingDataCell>';
-        })->implode(" ");
+        })->implode(' ');
     }
 
     protected function getEditVueImports(): string
     {
-        $return = "";
+        $return = '';
         if (! empty($this->mediaCollections)) {
             $return .= 'import {getMediaCollection} from "craftable-pro/helpers";';
         }
@@ -362,16 +361,16 @@ trait BuildCrudGeneratorTrait
         $rules->push($required ? 'required' : 'nullable');
 
         switch ($columnType) {
-            case "array":
+            case 'array':
                 $rules->push('array');
 
                 break;
-            case "string":
+            case 'string':
                 $rules->push('string');
 
                 break;
-            case "boolean":
-                $rules->push("boolean");
+            case 'boolean':
+                $rules->push('boolean');
 
                 break;
         }
@@ -399,7 +398,7 @@ trait BuildCrudGeneratorTrait
     </Button>';
         }
 
-        return "";
+        return '';
     }
 
     protected function buildExportFunctionality(): string
@@ -408,14 +407,14 @@ trait BuildCrudGeneratorTrait
             return 'const downloadFile = () => {
     const url = window.location.href.split("?");
     if(url.length > 1) {
-      window.location = route(\'craftable-pro.' . Str::kebab(Str::plural($this->className)) . '.export\', url.pop()).slice(0, -1);
+      window.location = route(\'craftable-pro.'.Str::kebab(Str::plural($this->className)).'.export\', url.pop()).slice(0, -1);
     } else {
-      window.location = route(\'craftable-pro.' . Str::kebab(Str::plural($this->className)) . '.export\');
+      window.location = route(\'craftable-pro.'.Str::kebab(Str::plural($this->className)).'.export\');
     }
 }';
         }
 
-        return "";
+        return '';
     }
 
     protected function buildTranslatableFunctionality(): string
@@ -427,7 +426,7 @@ const { availableLocales, currentLocale, translatableDefaultValue, getLabelWithL
             ";
         }
 
-        return "";
+        return '';
     }
 
     protected function buildTranslatableLocaleSwitcher(): string
@@ -436,7 +435,7 @@ const { availableLocales, currentLocale, translatableDefaultValue, getLabelWithL
             return '<CardLocaleSwitcher v-model="currentLocale" class="mb-6" />';
         }
 
-        return "";
+        return '';
     }
 
     /**
@@ -477,7 +476,7 @@ const { availableLocales, currentLocale, translatableDefaultValue, getLabelWithL
 
     protected function getTypeScriptImports(): string
     {
-        $return = "";
+        $return = '';
         if (! empty($this->mediaCollections)) {
             $return .= 'import type { UploadedFile } from "craftable-pro/types";';
         }
@@ -505,7 +504,7 @@ const { availableLocales, currentLocale, translatableDefaultValue, getLabelWithL
             } else {
                 $name = Str::camel($relatedModel);
                 $foreignKey = isset($parts[1]) ? $parts[1] : "{$name}_id";
-                $ownerKey = isset($parts[2]) ? $parts[2] : "id";
+                $ownerKey = isset($parts[2]) ? $parts[2] : 'id';
                 $tableName = Str::snake(Str::plural($relatedModel));
             }
 
@@ -556,18 +555,18 @@ const { availableLocales, currentLocale, translatableDefaultValue, getLabelWithL
             }
 
             return "
-    public function {$relation['name']}(): " . ucfirst($relation['type']) . "
+    public function {$relation['name']}(): ".ucfirst($relation['type']).'
     {
-        return \$this->" . lcfirst($relation['type']) . "({$relationDefinition});
+        return $this->'.lcfirst($relation['type'])."({$relationDefinition});
     }";
-        })->implode("\n\n") ?? "";
+        })->implode("\n\n") ?? '';
     }
 
     protected function buildModelRelationsGetQueries(): string
     {
         return $this->relations?->map(function ($relation) {
             return "'{$relation['optionsName']}' => {$relation['model']}::all()->map(fn (\$model) => ['value' => \$model->id, 'label' => \$model->{$relation['label']}]),";
-        })->implode("\n") ?? "";
+        })->implode("\n") ?? '';
     }
 
     protected function buildModelRelationsSyncQueries(): string
@@ -579,7 +578,7 @@ const { availableLocales, currentLocale, translatableDefaultValue, getLabelWithL
         if (\$request->input('{$relation['name']}_ids')) {
             \${$modelName}->{$relation['name']}()->sync(\$request->input('{$relation['name']}_ids'));
         }";
-        })->implode("\n") ?? "";
+        })->implode("\n") ?? '';
     }
 
     protected function modelRelationsDetachQueries(): string
@@ -590,7 +589,7 @@ const { availableLocales, currentLocale, translatableDefaultValue, getLabelWithL
             return "
         \${$modelName}->{$relation['name']}()->detach();
         ";
-        })->implode("\n") ?? "";
+        })->implode("\n") ?? '';
     }
 
     protected function buildModelRelationsLoad(): string
@@ -598,13 +597,13 @@ const { availableLocales, currentLocale, translatableDefaultValue, getLabelWithL
         $modelName = Str::camel($this->className);
 
         if (! $this->relations?->where('type', 'belongsToMany')->count()) {
-            return "";
+            return '';
         }
 
         $relationsNamesToLoad = $this->relations
             ->where('type', 'belongsToMany')
             ->map(fn ($relation) => "'{$relation['name']}'")
-            ->implode(", ");
+            ->implode(', ');
 
         return "\${$modelName}->load({$relationsNamesToLoad});";
     }

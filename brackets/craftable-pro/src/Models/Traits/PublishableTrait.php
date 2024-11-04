@@ -7,9 +7,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 trait PublishableTrait
 {
-    /**
-     * @return bool
-     */
     private function hasPublishedTo(): bool
     {
         return in_array('published_to', $this->dates, true);
@@ -17,9 +14,6 @@ trait PublishableTrait
 
     /**
      * Scope a query to only include published models.
-     *
-     * @param Builder $query
-     * @return Builder
      */
     public function scopePublished(Builder $query): Builder
     {
@@ -36,9 +30,6 @@ trait PublishableTrait
 
     /**
      * Scope a query to only include unpublished models.
-     *
-     * @param Builder $query
-     * @return Builder
      */
     public function scopeUnpublished(Builder $query): Builder
     {
@@ -48,9 +39,6 @@ trait PublishableTrait
             });
     }
 
-    /**
-     * @return bool
-     */
     public function isPublished(): bool
     {
         if ($this->published_at === null) {
@@ -60,17 +48,11 @@ trait PublishableTrait
         return $this->published_at->lte(Carbon::now()) && ($this->hasPublishedTo() ? ($this->published_to->gte(Carbon::now()) || $this->published_to === null) : true);
     }
 
-    /**
-     * @return bool
-     */
     public function isUnpublished(): bool
     {
         return ! $this->isPublished();
     }
 
-    /**
-     * @return bool
-     */
     public function publish(): bool
     {
         $data = ['published_at' => Carbon::now()->toDateTimeString()];
@@ -82,9 +64,6 @@ trait PublishableTrait
         return $this->update($data);
     }
 
-    /**
-     * @return bool
-     */
     public function unpublish(): bool
     {
         return $this->update([

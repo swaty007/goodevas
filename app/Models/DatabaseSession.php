@@ -25,6 +25,7 @@ class DatabaseSession extends Model
      * @var bool
      */
     public $incrementing = false;
+
     /**
      * @var bool
      */
@@ -40,6 +41,7 @@ class DatabaseSession extends Model
         'payload',
         'last_activity',
     ];
+
     /**
      * @var string[]
      */
@@ -50,13 +52,13 @@ class DatabaseSession extends Model
     // Метод для расшифровки и десериализации payload
 
     /**
-     * @param $value
      * @return mixed|null
      */
     public function getPayloadAttribute($value): mixed
     {
         try {
             $decryptedPayload = Crypt::decrypt(base64_decode($value));
+
             return unserialize($decryptedPayload);
         } catch (\Exception $e) {
             return null;
@@ -65,8 +67,6 @@ class DatabaseSession extends Model
 
     /**
      * Get the prunable model query.
-     *
-     * @return Builder
      */
     public function prunable(): Builder
     {

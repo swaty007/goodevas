@@ -15,9 +15,9 @@ trait WizardGeneratorTrait
     {
         if ($this->shouldAskForOptionValue('listing-columns')) {
             $selectedColumns = $this->components->choice(
-                question: "Which columns should be visible on the listing page?",
+                question: 'Which columns should be visible on the listing page?',
                 choices: $this->onlyTableColumns,
-                default: implode(",", $this->onlyTableColumns),
+                default: implode(',', $this->onlyTableColumns),
                 multiple: true,
             );
         } else {
@@ -31,12 +31,12 @@ trait WizardGeneratorTrait
             }
         }
 
-        if (is_bool(array_search("id", $selectedColumns))) {
+        if (is_bool(array_search('id', $selectedColumns))) {
             array_unshift($selectedColumns, 'id');
         }
 
-        if (array_search("password", $selectedColumns) !== false) {
-            $selectedColumns = array_merge(array_diff($selectedColumns, ["password"]));
+        if (array_search('password', $selectedColumns) !== false) {
+            $selectedColumns = array_merge(array_diff($selectedColumns, ['password']));
         }
 
         if (! $this->selectedColumnsAreAvailable($selectedColumns)) {
@@ -55,9 +55,9 @@ trait WizardGeneratorTrait
     {
         if ($this->shouldAskForOptionValue('sortable-columns')) {
             $this->sortableColumns = $this->components->choice(
-                question: "Which columns should be sortable in the listing page?",
+                question: 'Which columns should be sortable in the listing page?',
                 choices: $this->indexColumns->map(fn ($column) => $column['name'])->values()->all(),
-                default: implode(",", $this->indexColumns->map(fn ($column) => $column['name'])->values()->all()),
+                default: implode(',', $this->indexColumns->map(fn ($column) => $column['name'])->values()->all()),
                 multiple: true,
             );
         } else {
@@ -83,9 +83,9 @@ trait WizardGeneratorTrait
 
         if ($this->shouldAskForOptionValue('form-columns')) {
             $selectedColumns = $this->components->choice(
-                question: "Which columns should be visible on the form page?",
+                question: 'Which columns should be visible on the form page?',
                 choices: $availableColumns,
-                default: implode(",", $availableColumns),
+                default: implode(',', $availableColumns),
                 multiple: true,
             );
         } else {
@@ -126,16 +126,16 @@ trait WizardGeneratorTrait
         if (! empty($jsonColumnsNames)) {
             if ($this->shouldAskForOptionValue('translatable-columns')) {
                 $selectedColumns = $this->components->choice(
-                    question: "Which columns should be translatable (select only columns of type json or jsonb)?",
+                    question: 'Which columns should be translatable (select only columns of type json or jsonb)?',
                     choices: ['none', ...$jsonColumnsNames],
-                    default: implode(",", $jsonColumnsNames),
+                    default: implode(',', $jsonColumnsNames),
                     multiple: true,
                 );
             } else {
                 $selectedColumns = $this->option('translatable-columns') ? $this->getOptionArray('translatable-columns') : $jsonColumnsNames;
 
                 if (collect($selectedColumns)->diff($jsonColumnsNames)->isNotEmpty()) {
-                    $this->components->error("Not all selected columns are of type json or jsonb, please, try again.");
+                    $this->components->error('Not all selected columns are of type json or jsonb, please, try again.');
                     exit(1);
                 }
             }
@@ -194,15 +194,15 @@ trait WizardGeneratorTrait
         if (! empty($dateTimeColumnsNames)) {
             if ($this->shouldAskForOptionValue('publishable-column')) {
                 $selectedColumn = $this->components->choice(
-                    question: "Which column should be used for publishable feature (only date or dateTime columns)?",
+                    question: 'Which column should be used for publishable feature (only date or dateTime columns)?',
                     choices: ['none', ...$dateTimeColumnsNames],
                     default: collect($dateTimeColumnsNames)->first(fn ($column) => $column === 'published_at') ?? 'none',
                 );
             } else {
                 $selectedColumn = $this->option('publishable-column') ?
-                    $this->option('publishable-column') : (in_array("published_at", $dateTimeColumnsNames) ? "published_at" : "none");
+                    $this->option('publishable-column') : (in_array('published_at', $dateTimeColumnsNames) ? 'published_at' : 'none');
 
-                if ($selectedColumn !== "none" && ! in_array($selectedColumn, $dateTimeColumnsNames)) {
+                if ($selectedColumn !== 'none' && ! in_array($selectedColumn, $dateTimeColumnsNames)) {
                     $this->components->error("Selected publishable column {$selectedColumn} is not type dateTime");
                     exit(1);
                 }
@@ -212,7 +212,6 @@ trait WizardGeneratorTrait
         }
 
         $selectedColumn = $selectedColumn === 'none' ? null : $selectedColumn;
-
 
         // TODO: Refactor
         $this->tableColumns = $this->tableColumns->map(function ($column) use ($selectedColumn) {
@@ -253,7 +252,7 @@ trait WizardGeneratorTrait
     {
         if ($this->shouldAskForOptionValue('taggable')) {
             $taggable = $this->components->choice(
-                question: "Do you want to use taggable feature?",
+                question: 'Do you want to use taggable feature?',
                 choices: ['yes', 'no'],
                 default: 'no',
             );
@@ -300,7 +299,7 @@ trait WizardGeneratorTrait
     {
         if ($this->shouldAskForOptionValue('image-collections') && ! empty($this->mediaCollections)) {
             $imageCollections = $this->components->choice(
-                question: "Select which of those media collections should be of type image?",
+                question: 'Select which of those media collections should be of type image?',
                 choices: [...$this->mediaCollections, 'none'],
                 multiple: true,
             );
@@ -342,13 +341,13 @@ trait WizardGeneratorTrait
                 $models = Arr::sort(array_unique($models));
 
                 $relation['type'] = lcfirst($this->components->choice(
-                    question: "What is the type of the relation?",
+                    question: 'What is the type of the relation?',
                     choices: ['belongsTo', 'belongsToMany'],
                     default: 'belongsTo'
                 ));
 
                 $relation['model'] = $this->components->choice(
-                    question: "What is the name of the related model?",
+                    question: 'What is the name of the related model?',
                     // TODO: list all models
                     choices: [...$models, 'custom'],
                 );
@@ -356,7 +355,7 @@ trait WizardGeneratorTrait
                 if ($relation['model'] === 'custom') {
                     $customRelatedModel = true;
                     $relation['model'] = $this->components->ask(
-                        question: "What is the name of the custom related model?",
+                        question: 'What is the name of the custom related model?',
                     );
                 }
 
@@ -365,18 +364,18 @@ trait WizardGeneratorTrait
 
                 if ($relation['type'] === 'belongsToMany') {
                     $relation['tableName'] = $this->components->ask(
-                        question: "What is the name of the pivot table?",
+                        question: 'What is the name of the pivot table?',
                         default: Str::lower(Arr::join(Arr::sort([$this->className, $relation['model']]), '_'))
                     );
 
                     $relation['foreignKey'] = $this->components->ask(
                         question: "What is the foreign pivot key in '{$relation['tableName']}' table?",
-                        default: Str::lower(Str::snake($this->className)) . '_id'
+                        default: Str::lower(Str::snake($this->className)).'_id'
                     );
 
                     $relation['ownerKey'] = $this->components->ask(
                         question: "What is the related pivot key in '{$relation['tableName']}' table?",
-                        default: Str::lower(Str::snake($relation['model'])) . '_id'
+                        default: Str::lower(Str::snake($relation['model'])).'_id'
                     );
                 } else {
                     $relation['tableName'] = Str::snake(Str::plural($relation['model']));
@@ -437,7 +436,7 @@ trait WizardGeneratorTrait
     {
         if ($this->shouldAskForOptionValue('with-export')) {
             $this->withExport = $this->components->choice(
-                question: "Do you want to use export feature?",
+                question: 'Do you want to use export feature?',
                 choices: ['yes', 'no'],
                 default: 'no',
             ) === 'yes';

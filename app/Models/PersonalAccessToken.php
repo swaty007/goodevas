@@ -17,12 +17,14 @@ class PersonalAccessToken extends SanctumPersonalAccessToken
             $dirty = $personalAccessToken->getDirty();
             if (
                 count($dirty) !== 1 ||
-                !isset($dirty['last_used_at']) ||
-                !Cache::has('user-personal-token-' . $personalAccessToken->id)
+                ! isset($dirty['last_used_at']) ||
+                ! Cache::has('user-personal-token-'.$personalAccessToken->id)
             ) {
-                Cache::put('user-personal-token-' . $personalAccessToken->id, true, 60);
+                Cache::put('user-personal-token-'.$personalAccessToken->id, true, 60);
+
                 return true;
             }
+
             return false;
         });
     }

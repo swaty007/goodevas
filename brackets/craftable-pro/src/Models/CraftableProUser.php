@@ -28,18 +28,18 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $email
  * @property string $password
  */
-class CraftableProUser extends Authenticatable implements MustVerifyEmail, HasMedia
+class CraftableProUser extends Authenticatable implements HasMedia, MustVerifyEmail
 {
+    use AutoProcessMediaTrait;
     use HasApiTokens;
     use HasFactory;
-    use Notifiable;
-    use InteractsWithMedia;
-    use ProcessMediaTrait;
-    use AutoProcessMediaTrait;
     use HasMediaPreviewsTrait;
     use HasRoles;
-    use SoftDeletes;
+    use InteractsWithMedia;
     use LogsActivity;
+    use Notifiable;
+    use ProcessMediaTrait;
+    use SoftDeletes;
 
     /**
      * @var string
@@ -89,9 +89,9 @@ class CraftableProUser extends Authenticatable implements MustVerifyEmail, HasMe
      */
     protected $appends = [
         'resource_url',
-//        'avatar',
-//        'avatar_url',
-//        'media_details',
+        //        'avatar',
+        //        'avatar_url',
+        //        'media_details',
     ];
 
     /**
@@ -104,20 +104,16 @@ class CraftableProUser extends Authenticatable implements MustVerifyEmail, HasMe
 
     /**
      * Get the user's initials.
-     *
-     * @return \Illuminate\Database\Eloquent\Casts\Attribute
      */
     protected function initials(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => Initials::new()->generate($this->first_name . ' ' . $this->last_name)
+            get: fn ($value) => Initials::new()->generate($this->first_name.' '.$this->last_name)
         );
     }
 
     /**
      * Get the user's avatar media object.
-     *
-     * @return \Illuminate\Database\Eloquent\Casts\Attribute
      */
     protected function avatar(): Attribute
     {
@@ -128,8 +124,6 @@ class CraftableProUser extends Authenticatable implements MustVerifyEmail, HasMe
 
     /**
      * Get the user's avatar URL.
-     *
-     * @return \Illuminate\Database\Eloquent\Casts\Attribute
      */
     protected function avatarUrl(): Attribute
     {
@@ -140,8 +134,6 @@ class CraftableProUser extends Authenticatable implements MustVerifyEmail, HasMe
 
     /**
      * Get the user's resource url.
-     *
-     * @return \Illuminate\Database\Eloquent\Casts\Attribute
      */
     protected function resourceUrl(): Attribute
     {
@@ -173,7 +165,7 @@ class CraftableProUser extends Authenticatable implements MustVerifyEmail, HasMe
             ->singleFile();
     }
 
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversions(?Media $media = null): void
     {
         $this->autoRegisterPreviews();
 

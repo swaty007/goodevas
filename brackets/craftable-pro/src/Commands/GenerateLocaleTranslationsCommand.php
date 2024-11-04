@@ -37,7 +37,7 @@ class GenerateLocaleTranslationsCommand extends Command
             ];
         })->toJson();
 
-        File::put(resource_path('translations/locales') . '/locales_translations.json', $locales);
+        File::put(resource_path('translations/locales').'/locales_translations.json', $locales);
 
         return Command::SUCCESS;
     }

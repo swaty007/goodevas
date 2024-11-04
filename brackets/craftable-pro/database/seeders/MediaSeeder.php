@@ -19,22 +19,22 @@ class MediaSeeder extends Seeder
         UnassignedMedia::create()
             ->addMedia(Storage::disk('local')->path('file.txt'))
             ->withCustomProperties([
-                "name" => "An important text file",
-                "extension" => "txt",
-                "size" => rand(10, 100) * 1024,
-                "alt" => "An important text file",
+                'name' => 'An important text file',
+                'extension' => 'txt',
+                'size' => rand(10, 100) * 1024,
+                'alt' => 'An important text file',
             ])
             ->toMediaCollection('default');
 
         collect(range(1, 10))->each(function () {
-            $fullName = fake()->firstName . ' ' . fake()->lastName;
+            $fullName = fake()->firstName.' '.fake()->lastName;
             UnassignedMedia::create()
-                ->addMediaFromUrl("https://i.pravatar.cc/800")
+                ->addMediaFromUrl('https://i.pravatar.cc/800')
                 ->withCustomProperties([
-                    "name" => $fullName,
-                    "extension" => "jpg",
-                    "size" => rand(10, 100) * 1024,
-                    "alt" => $fullName,
+                    'name' => $fullName,
+                    'extension' => 'jpg',
+                    'size' => rand(10, 100) * 1024,
+                    'alt' => $fullName,
                 ])
                 ->toMediaCollection('default');
         });

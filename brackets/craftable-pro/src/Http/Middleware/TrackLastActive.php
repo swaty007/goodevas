@@ -9,8 +9,6 @@ use Illuminate\Support\Facades\Cache;
 class TrackLastActive
 {
     /**
-     * @param Request $request
-     * @param Closure $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
@@ -20,11 +18,11 @@ class TrackLastActive
         }
 
         if (
-            !$request->user()->last_active_at ||
+            ! $request->user()->last_active_at ||
             ($request->user()->last_active_at->addSeconds(60)->isPast() &&
-                !Cache::has('user-online-' . $request->user()->getTable() . '_' . $request->user()->id))
+                ! Cache::has('user-online-'.$request->user()->getTable().'_'.$request->user()->id))
         ) {
-            Cache::put('user-online-' . $request->user()->getTable() . '_' . $request->user()->id, true, 60);
+            Cache::put('user-online-'.$request->user()->getTable().'_'.$request->user()->id, true, 60);
             $request->user()->last_active_at = now();
             $request->user()->saveQuietly();
         }

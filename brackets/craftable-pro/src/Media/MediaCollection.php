@@ -14,8 +14,6 @@ class MediaCollection extends ParentMediaCollection
 
     /**
      * MediaCollection constructor.
-     *
-     * @param string $name
      */
     public function __construct(string $name)
     {
@@ -28,7 +26,6 @@ class MediaCollection extends ParentMediaCollection
     /**
      * Set the file size limit
      *
-     * @param $maxFileSize
      *
      * @return $this
      */
@@ -46,7 +43,6 @@ class MediaCollection extends ParentMediaCollection
      *
      * Otherwise, you may use other private disk for your own. Just be sure, your file is not accessible
      *
-     * @param $viewPermission
      *
      * @return $this
      */
@@ -60,7 +56,6 @@ class MediaCollection extends ParentMediaCollection
     /**
      * Set the ability (Gate) which is required to upload & attach new files to the model
      *
-     * @param $uploadPermission
      *
      * @return $this
      */
@@ -71,9 +66,6 @@ class MediaCollection extends ParentMediaCollection
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isImage(): bool
     {
         return collect($this->acceptsMimeTypes)->reject(static function ($mimeType) {
@@ -81,33 +73,21 @@ class MediaCollection extends ParentMediaCollection
         })->count() === 0;
     }
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDisk(): ?string
     {
         return $this->diskName;
     }
 
-    /**
-     * @return string|null
-     */
     public function getViewPermission(): ?string
     {
         return $this->viewPermission;
     }
 
-    /**
-     * @return string|null
-     */
     public function getUploadPermission(): ?string
     {
         return $this->uploadPermission;
