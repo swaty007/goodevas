@@ -28,6 +28,7 @@ class ProductsParserCommand extends Command
      */
     public function handle(): void
     {
+
         $ysellKeys = Ysell::all();
         $products = Product::all();
         foreach ($ysellKeys as $ysellKey) {

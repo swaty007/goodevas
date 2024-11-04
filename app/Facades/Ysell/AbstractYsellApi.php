@@ -45,7 +45,7 @@ abstract class AbstractYsellApi
 
     protected function getTradeServerLink(): string
     {
-        return (string) 'https://daansamol.ysell.pro/api/v1';
+        return (string) 'https://daansamol.ysell.pro/api/v1/';
     }
 
     /**
@@ -58,6 +58,7 @@ abstract class AbstractYsellApi
         try {
             $response = $this->callServer($method, $uri, $params);
         } catch (InternalExchangeResponseException $exception) {
+            throw $exception;
         }
 
         return $response;
