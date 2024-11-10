@@ -30,6 +30,13 @@
                     >
                         {{ $t("global", "Ysells") }}
                     </SidebarItem>
+                    <SidebarItem
+                        :href="route('craftable-pro.warehouses.index')"
+                        :icon="CubeTransparentIcon"
+                        v-can="'global.warehouse.index'"
+                    >
+                        {{ $t("global", "Warehouses") }}
+                    </SidebarItem>
                     <!--AppendGeneratorLink-->
       </SidebarGroup>
 
@@ -70,6 +77,14 @@
         >
           {{ $t("craftable-pro", "Settings") }}
         </SidebarItem>
+
+          <SidebarItem
+              :href="route('craftable-pro.activity.index')"
+              :icon="InboxStackIcon"
+              v-can="'craftable-pro.settings.edit'"
+          >
+              {{ $t("craftable-pro", "Logs") }}
+          </SidebarItem>
       </SidebarGroup>
     </nav>
   </div>
@@ -83,6 +98,7 @@ import {
   UsersIcon,
   Cog8ToothIcon,
   CubeTransparentIcon,
+    InboxStackIcon
 } from "@heroicons/vue/24/outline";
 import { SidebarItem, SidebarGroup } from "craftable-pro/Components";
 </script>

@@ -56,8 +56,8 @@ createInertiaApp({
           .use(plugin)
           .use(Toast, {
             transition: "Vue-Toastification__fade",
-            rootComponent: Notification,
-            position: POSITION.BOTTOM_RIGHT,
+            // rootComponent: Notification,
+            position: POSITION.TOP_RIGHT,
           })
           .use(i18nVue, {
             resolve: (lang: string) => {

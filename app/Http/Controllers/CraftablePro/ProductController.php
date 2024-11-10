@@ -10,9 +10,12 @@ use App\Http\Requests\CraftablePro\Product\DestroyProductRequest;
 use App\Http\Requests\CraftablePro\Product\EditProductRequest;
 use App\Http\Requests\CraftablePro\Product\IndexProductRequest;
 use App\Http\Requests\CraftablePro\Product\StoreProductRequest;
+use App\Http\Requests\CraftablePro\Product\UpdateProductIncomeRequest;
 use App\Http\Requests\CraftablePro\Product\UpdateProductRequest;
 use App\Models\Product;
 use App\Models\ProductType;
+use App\Models\StockSnapshot;
+use App\Models\Warehouse;
 use Brackets\CraftablePro\Queries\Filters\FuzzyFilter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -46,6 +49,10 @@ class ProductController extends Controller
         }
 
         $products = $productsQuery
+            ->with([
+                'type',
+                'warehouses',
+            ])
             ->select('id', 'ext_id', 'ean', 'additional_data', 'product_type_id')
             ->paginate($request->get('per_page'))->withQueryString();
 
@@ -53,7 +60,36 @@ class ProductController extends Controller
 
         return Inertia::render('Product/Index', [
             'products' => $products,
+            'warehouses' => Warehouse::all(),
         ]);
+    }
+
+    private function calculateStockChanges($productId, $startDate, $endDate)
+    {
+        $snapshots = StockSnapshot::where('product_id', $productId)
+            ->whereBetween('snapshot_date', [$startDate, $endDate])
+            ->orderBy('snapshot_date')
+            ->get();
+
+        $totalConsumption = 0;
+        $totalRestock = 0;
+
+        for ($i = 1; $i < $snapshots->count(); $i++) {
+            $previousStock = array_sum($snapshots[$i - 1]->warehouse_stock);
+            $currentStock = array_sum($snapshots[$i]->warehouse_stock);
+            $difference = $currentStock - $previousStock;
+
+            if ($difference < 0) {
+                $totalConsumption += abs($difference);
+            } elseif ($difference > 0) {
+                $totalRestock += $difference;
+            }
+        }
+
+        return [
+            'total_consumption' => $totalConsumption,
+            'total_restock' => $totalRestock,
+        ];
     }
 
     /**
@@ -105,6 +141,17 @@ class ProductController extends Controller
         }
 
         return redirect()->route('craftable-pro.products.index')->with(['message' => ___('craftable-pro', 'Operation successful')]);
+    }
+
+    public function updateIncome(UpdateProductIncomeRequest $request, Product $product, Warehouse $warehouse): RedirectResponse
+    {
+        $product->warehouses()->syncWithoutDetaching([
+            $warehouse->id => [
+                'income_quantity' => $request->validated()['income_quantity'],
+            ],
+        ]);
+
+        return redirect()->back()->with(['message' => ___('craftable-pro', 'Operation successful')]);
     }
 
     /**

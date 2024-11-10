@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('warehouses', function (Blueprint $table) {
             $table->id();
+//            $table->integer('ysell_id')->unique();
             $table->string('name');
+            $table->string('country_id')->nullable();
             $table->timestamps();
         });
 
@@ -22,6 +24,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->foreignId('warehouse_id')->constrained('warehouses')->onDelete('cascade');
             $table->integer('stock_quantity')->default(0);
+            $table->integer('income_quantity')->default(0);
             $table->timestamps();
         });
     }

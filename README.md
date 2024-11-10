@@ -163,3 +163,7 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
     php artisan craftable-pro:create-admin-user
     php artisan db:seed
 ```
+
+
+php artisan queue:work // workers
+php artisan schedule:run

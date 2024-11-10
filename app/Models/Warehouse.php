@@ -12,11 +12,12 @@ class Warehouse extends Model
 
     protected $fillable = [
         'name',
+        'country_id',
     ];
 
     public function products()
     {
-        return $this->belongsToMany(Product::class)->withPivot('stock_quantity')->withTimestamps();
+        return $this->belongsToMany(Product::class)->withPivot(['stock_quantity', 'income_quantity'])->withTimestamps();
     }
 
     public function getActivitylogOptions(): LogOptions

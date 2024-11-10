@@ -14,8 +14,12 @@ class YsellApiService extends YsellApiMethods
         $endList = true;
         while ($endList) {
             $productPage = $this->getProductList($page, $perPage);
-            dd($productPage);
-            $endList = false;
+            $products = array_merge($products, $productPage);
+            if (count($productPage) < $perPage) {
+                $endList = false;
+            }
+            $page++;
         }
+        return $products;
     }
 }

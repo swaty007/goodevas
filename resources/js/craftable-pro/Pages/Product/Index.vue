@@ -76,43 +76,97 @@
         </Modal>
       </template>
       <template #tableHead>
-        
-        <ListingHeaderCell sortBy="id">
-            {{ $t("global", "Id") }}
-        </ListingHeaderCell> 
+
+<!--        <ListingHeaderCell sortBy="id">-->
+<!--            {{ $t("global", "Id") }}-->
+<!--        </ListingHeaderCell>-->
         <ListingHeaderCell sortBy="ext_id">
             {{ $t("global", "Ext Id") }}
-        </ListingHeaderCell> 
+        </ListingHeaderCell>
         <ListingHeaderCell sortBy="ean">
             {{ $t("global", "Ean") }}
-        </ListingHeaderCell> 
-        <ListingHeaderCell sortBy="additional_data">
-            {{ $t("global", "Additional Data") }}
-        </ListingHeaderCell> 
+        </ListingHeaderCell>
         <ListingHeaderCell sortBy="product_type_id">
             {{ $t("global", "Product Type Id") }}
         </ListingHeaderCell>
+        <ListingHeaderCell>
+            {{ $t("global", "Image") }}
+        </ListingHeaderCell>
+          <ListingHeaderCell>
+              {{ $t("global", "Title") }}
+          </ListingHeaderCell>
+          <ListingHeaderCell>
+              {{ $t("global", "Price") }}
+          </ListingHeaderCell>
+          <ListingHeaderCell>
+              {{ $t("global", "Stock") }}
+          </ListingHeaderCell>
+          <template v-for="warehouse in warehouses">
+              <ListingHeaderCell>
+                  {{ warehouse.name }} / {{ $t("global", "Income") }}
+              </ListingHeaderCell>
+          </template>
+          <ListingHeaderCell sortBy="additional_data">
+              {{ $t("global", "Additional Data") }}
+          </ListingHeaderCell>
         <ListingHeaderCell>
           <span class="sr-only">{{ $t("global", "Actions") }}</span>
         </ListingHeaderCell>
       </template>
       <template #tableRow="{ item, action }: any">
-        
-        <ListingDataCell>
-             {{ item.id }}
-        </ListingDataCell> 
+
+<!--        <ListingDataCell>-->
+<!--             {{ item.id }}-->
+<!--        </ListingDataCell>-->
         <ListingDataCell>
              {{ item.ext_id }}
-        </ListingDataCell> 
+        </ListingDataCell>
         <ListingDataCell>
              {{ item.ean }}
-        </ListingDataCell> 
-        <ListingDataCell>
-             {{ item.additional_data }}
-        </ListingDataCell> 
-        <ListingDataCell>
-             {{ item.product_type_id }}
         </ListingDataCell>
+
+          <ListingDataCell>
+              {{ item?.type?.name }}
+          </ListingDataCell>
+        <ListingDataCell>
+            <Avatar
+                :src="item?.additional_data?.image"
+                name="Logo"
+                size="xl"
+            />
+        </ListingDataCell>
+          <ListingDataCell>
+              {{ item?.additional_data?.title }}
+          </ListingDataCell>
+          <ListingDataCell>
+              {{ item?.additional_data?.purchase_price }}
+          </ListingDataCell>
+          <ListingDataCell>
+              {{ item?.additional_data?.netto }}
+          </ListingDataCell>
+          <template v-for="warehouse in warehouses">
+                <ListingDataCell>
+                    <div class="flex gap-2 items-center">
+                        <strong>
+                            {{ item?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.stock_quantity }}
+                        </strong>
+                        <p>
+                            /
+                        </p>
+                        <TextInput
+                            :model-value="item?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.income_quantity"
+                            name="income_quantity"
+                            :label="$t('global', 'Income')"
+                            @update:model-value="updateProductIncome(item, warehouse, $event)"
+                        />
+                    </div>
+                </ListingDataCell>
+          </template>
+          <ListingDataCell>
+             <pre>
+                 {{ item.additional_data }}
+             </pre>
+          </ListingDataCell>
         <ListingDataCell>
           <div class="flex items-center justify-end gap-3">
             <IconButton
@@ -197,17 +251,21 @@ import {
     Multiselect,
     IconButton,
     FiltersDropdown,
-    Publish,
+    Publish, TextInput,
 } from "craftable-pro/Components";
 import { PaginatedCollection } from "craftable-pro/types/pagination";
 import type { Product } from "./types";
 import type { PageProps } from "craftable-pro/types/page";
 import dayjs from "dayjs";
+import { Warehouse } from "@/craftable-pro/Pages/Warehouse/types";
+import { useAction } from "craftable-pro/hooks/useAction";
+import debounce from "lodash/debounce";
 
 
 
 interface Props {
   products: PaginatedCollection<Product>;
+  warehouses: Warehouse[]
 }
 defineProps<Props>();
 const downloadFile = () => {
@@ -218,4 +276,14 @@ const downloadFile = () => {
       window.location = route('craftable-pro.products.export');
     }
 }
+
+const { action } = useAction();
+
+const updateProductIncome = debounce((product: Product, warehouse: Warehouse, value: string) => {
+    action('patch',
+        route('craftable-pro.products.update-income', {product: product.id, warehouse: warehouse.id }),
+        { income_quantity: value }
+    )
+}, 1000);
+
 </script>

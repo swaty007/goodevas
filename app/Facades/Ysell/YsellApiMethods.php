@@ -22,8 +22,11 @@ use RuntimeException;
  */
 class YsellApiMethods extends AbstractYsellApi
 {
-    public function getProductList(int $page = 1, int $perPage = 100): array
+    public function getProductList(int $page = 1, int $perPage = 50): array
     {
+        if ($perPage > 50) {
+            throw new RuntimeException('Per page limit is 50');
+        }
         $data = [
             'page' => $page,
             'per-page' => $perPage,

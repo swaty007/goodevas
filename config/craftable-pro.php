@@ -78,7 +78,12 @@ return [
 
         'publish' => [
             'craftable-pro' => [
-                'groups' => ['craftable-pro', 'permissions', 'locales'],
+                'groups' => [
+                    'craftable-pro',
+                    'permissions',
+                    'locales',
+                    'global',
+                ],
                 'path' => public_path('lang/'),
             ],
         ],

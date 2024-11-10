@@ -14,6 +14,7 @@ class Product extends Model
         'ext_id',
         'ean',
         'additional_data',
+        'product_type_id',
     ];
 
     protected $casts = [
@@ -22,7 +23,7 @@ class Product extends Model
 
     public function warehouses()
     {
-        return $this->belongsToMany(Warehouse::class)->withPivot('stock_quantity')->withTimestamps();
+        return $this->belongsToMany(Warehouse::class)->withPivot(['stock_quantity', 'income_quantity'])->withTimestamps();
     }
 
     public function stockSnapshots()
@@ -32,7 +33,7 @@ class Product extends Model
 
     public function type()
     {
-        return $this->belongsTo(ProductType::class);
+        return $this->belongsTo(ProductType::class, 'product_type_id');
     }
 
     public function getActivitylogOptions(): LogOptions

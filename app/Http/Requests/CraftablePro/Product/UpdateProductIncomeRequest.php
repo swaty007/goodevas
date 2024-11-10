@@ -5,7 +5,7 @@ namespace App\Http\Requests\CraftablePro\Product;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
 
-class StoreProductRequest extends FormRequest
+class UpdateProductIncomeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,7 +14,7 @@ class StoreProductRequest extends FormRequest
      */
     public function authorize()
     {
-        return Gate::allows('global.product.create');
+        return Gate::allows('global.product.edit');
     }
 
     /**
@@ -25,10 +25,7 @@ class StoreProductRequest extends FormRequest
     public function rules()
     {
         return [
-            'ext_id' => ['required'],
-            'ean' => ['nullable'],
-//            'additional_data' => ['nullable'],
-            'product_type_id' => ['required'],
+            'income_quantity' => ['required', 'numeric', 'integer', 'min:0'],
         ];
     }
 }

@@ -23,6 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command(\App\Console\Commands\TelegramHandlerCommand::class)
             ->everyThirtySeconds()
             ->withoutOverlapping(1);
+        $schedule->command(\App\Console\Commands\ProductsParserCommand::class)
+            ->everyFiveMinutes()
+            ->withoutOverlapping(5);
     })
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [

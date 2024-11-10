@@ -1,5 +1,29 @@
 @import "craftable-pro/../css/craftable-pro.css";
 
+@config "../../admin.tailwind.config.js";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.dark {
+    color-scheme: dark;
+}
+
+.global__table table thead th{
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    padding: 5px 6px;
+}
+.global__table table tbody td {
+    padding: 5px 6px;
+}
+.global__table>div>.overflow-x-auto {
+    min-height: 500px;
+}
+@media(min-width: 768px) {
+    .global__table>div>.overflow-x-auto {
+        max-height: calc(100vh - 250px);
+    }
+}

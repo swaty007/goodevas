@@ -12,7 +12,7 @@ class IndexActivityRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Gate::allows("global.activity.index")
+        return Gate::allows("craftable-pro.settings.edit");
         return false;
     }
 

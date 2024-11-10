@@ -19,19 +19,6 @@
 
             />
 
-            <TextArea
-                v-model="form.additional_data"
-                name="additional_data"
-                :label="$t('global', 'Additional Data')"
-            />
-
-            <TextInput
-                v-model="form.product_type_id"
-                name="product_type_id"
-                :label="$t('global', 'Product Type Id')"
-
-            />
-
             <Multiselect
                 v-model="form.product_type_id"
                 name="product_type_id"
@@ -39,6 +26,13 @@
                 :options="productTypes"
                 mode="single"
             />
+
+            <label for="additional_data" class="flex items-center justify-between gap-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                {{ $t('global', 'Additional Data') }}
+            </label>
+            <pre>
+                {{ form.additional_data }}
+            </pre>
 
         </div>
       </Card>

@@ -1,5 +1,5 @@
 <template>
-  <Card noPadding :class="[$attrs.class]">
+  <Card noPadding :class="[$attrs.class, 'global__table']">
     <template #header>
       <CardHeader
         class="border border-transparent"

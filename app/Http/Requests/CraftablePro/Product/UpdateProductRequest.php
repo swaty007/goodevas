@@ -27,7 +27,7 @@ class UpdateProductRequest extends FormRequest
         return [
             'ext_id' => ['sometimes'],
             'ean' => ['nullable'],
-            'additional_data' => ['nullable'],
+//            'additional_data' => ['nullable'],
             'product_type_id' => ['sometimes'],
         ];
     }

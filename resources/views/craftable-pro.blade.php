@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html class="h-full bg-gray-100/50" lang="{{ app()->getLocale() }}">
+<html class="h-full bg-gray-100/50 dark:bg-gray-500 text-gray-800 dark:text-gray-200" lang="{{ app()->getLocale() }}">
+
 
 <head>
     <meta charset="utf-8" />
