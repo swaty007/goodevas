@@ -26,6 +26,7 @@ class StoreWarehouseRequest extends FormRequest
         return [
             'name' => ['required'],
             'country_id' => ['nullable'],
+            'virtual' => ['nullable', 'boolean'],
         ];
     }
 }

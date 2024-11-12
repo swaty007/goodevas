@@ -2,7 +2,7 @@
 
 # {{ ___('craftable-pro', 'Invite user') }}
 
-You were invited by user {{ $userFullName }} to join {{ App\Facades\DomainFacade::getDomainSettings()->name }}.
+You were invited by user {{ $userFullName }} to join.
 
 Please follow the link bellow to create your account.
 

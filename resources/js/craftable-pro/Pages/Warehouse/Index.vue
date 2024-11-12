@@ -76,31 +76,37 @@
         </Modal>
       </template>
       <template #tableHead>
-        
+
         <ListingHeaderCell sortBy="id">
             {{ $t("global", "Id") }}
-        </ListingHeaderCell> 
+        </ListingHeaderCell>
         <ListingHeaderCell sortBy="name">
             {{ $t("global", "Name") }}
-        </ListingHeaderCell> 
+        </ListingHeaderCell>
         <ListingHeaderCell sortBy="country_id">
             {{ $t("global", "Country Id") }}
         </ListingHeaderCell>
+          <ListingHeaderCell sortBy="virtual">
+              {{ $t("global", "Virtual") }}
+          </ListingHeaderCell>
         <ListingHeaderCell>
           <span class="sr-only">{{ $t("global", "Actions") }}</span>
         </ListingHeaderCell>
       </template>
       <template #tableRow="{ item, action }: any">
-        
+
         <ListingDataCell>
              {{ item.id }}
-        </ListingDataCell> 
+        </ListingDataCell>
         <ListingDataCell>
              {{ item.name }}
-        </ListingDataCell> 
+        </ListingDataCell>
         <ListingDataCell>
              {{ item.country_id }}
         </ListingDataCell>
+          <ListingDataCell>
+              {{ item.virtual }}
+          </ListingDataCell>
         <ListingDataCell>
           <div class="flex items-center justify-end gap-3">
             <IconButton

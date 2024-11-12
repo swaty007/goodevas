@@ -102,8 +102,8 @@
               {{ $t("global", "Stock") }}
           </ListingHeaderCell>
           <template v-for="warehouse in warehouses">
-              <ListingHeaderCell v-if="!warehouse?.virtual">
-                  {{ warehouse.name }}
+              <ListingHeaderCell>
+                  {{ warehouse.name }} / {{ $t("global", "Income") }}
               </ListingHeaderCell>
           </template>
 <!--          <ListingHeaderCell sortBy="additional_data">-->
@@ -145,9 +145,16 @@
               {{ item?.additional_data?.netto }}
           </ListingDataCell>
           <template v-for="warehouse in warehouses">
-                <ListingDataCell v-if="!warehouse?.virtual">
+                <ListingDataCell>
                     <div class="flex gap-2 items-center">
-                        <strong>
+                        <TextInput
+                            v-if="!warehouse?.virtual"
+                            :model-value="item?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.income_quantity"
+                            name="income_quantity"
+                            :label="$t('global', 'Income')"
+                            @update:model-value="updateProductIncome(item, warehouse, $event)"
+                        />
+                        <strong v-else>
                             {{ item?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.stock_quantity }}
                         </strong>
                     </div>

@@ -12,4 +12,5 @@ country_id: varchar
 export type WarehouseForm = {
     name: string;
 country_id: string
+hidden: string
 };

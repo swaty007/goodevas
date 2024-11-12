@@ -26,6 +26,7 @@ class UpdateWarehouseRequest extends FormRequest
         return [
             'name' => ['sometimes'],
             'country_id' => ['nullable'],
+            'virtual' => ['nullable', 'boolean'],
         ];
     }
 }

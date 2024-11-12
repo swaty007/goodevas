@@ -16,6 +16,14 @@
                     >
                         {{ $t("global", "Products") }}
                     </SidebarItem>
+
+          <SidebarItem
+              :href="route('craftable-pro.products.index-income')"
+              :icon="CubeTransparentIcon"
+              v-can="'global.product.index'"
+          >
+              {{ $t("global", "Products Income") }}
+          </SidebarItem>
                     <SidebarItem
                         :href="route('craftable-pro.product-types.index')"
                         :icon="CubeTransparentIcon"

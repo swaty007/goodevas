@@ -23,15 +23,16 @@ import type { WarehouseForm } from "./types";
 
 
 interface Props {
-  
+
 }
 
 const props = defineProps<Props>();
 
 const { form, submit } = useForm<WarehouseForm>(
     {
-          name: "", 
-country_id: ""
+          name: "",
+country_id: "",
+        virtual: "",
     },
     route("craftable-pro.warehouses.store"),
     "post"

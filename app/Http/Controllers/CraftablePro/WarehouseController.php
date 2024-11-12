@@ -44,7 +44,12 @@ class WarehouseController extends Controller
         }
 
         $warehouses = $warehousesQuery
-            ->select('id','name','country_id')
+            ->select(
+                'id',
+                'name',
+                'country_id',
+                'virtual',
+            )
             ->paginate($request->get('per_page'))->withQueryString();
 
         Session::put('warehouses_url', $request->fullUrl());
@@ -60,7 +65,7 @@ class WarehouseController extends Controller
     public function create(CreateWarehouseRequest $request): Response
     {
         return Inertia::render('Warehouse/Create', [
-            
+
         ]);
     }
 
@@ -81,7 +86,7 @@ class WarehouseController extends Controller
     {
         return Inertia::render('Warehouse/Edit', [
             'warehouse' => $warehouse,
-            
+
         ]);
     }
 

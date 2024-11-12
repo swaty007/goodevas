@@ -54,11 +54,42 @@ class ProductController extends Controller
                 'warehouses',
             ])
             ->select('id', 'ext_id', 'ean', 'additional_data', 'product_type_id')
-            ->paginate($request->get('per_page'))->withQueryString();
+            ->paginate($request->get('per_page') ?? 100)->withQueryString();
 
         Session::put('products_url', $request->fullUrl());
 
         return Inertia::render('Product/Index', [
+            'products' => $products,
+            'warehouses' => Warehouse::all(),
+        ]);
+    }
+
+    public function indexIncome(IndexProductRequest $request): Response|JsonResponse
+    {
+        $productsQuery = QueryBuilder::for(Product::class)
+            ->allowedFilters([
+                AllowedFilter::custom('search', new FuzzyFilter(
+                    'id', 'ext_id', 'ean', 'additional_data', 'product_type_id'
+                )),
+            ])
+            ->defaultSort('id')
+            ->allowedSorts('id', 'ext_id', 'ean', 'additional_data', 'product_type_id');
+
+        if ($request->wantsJson() && $request->get('bulk_select_all')) {
+            return response()->json($productsQuery->select(['id'])->pluck('id'));
+        }
+
+        $products = $productsQuery
+            ->with([
+                'type',
+                'warehouses',
+            ])
+            ->select('id', 'ext_id', 'ean', 'additional_data', 'product_type_id')
+            ->paginate($request->get('per_page') ?? 100)->withQueryString();
+
+        Session::put('products_url', $request->fullUrl());
+
+        return Inertia::render('Product/IndexIncome', [
             'products' => $products,
             'warehouses' => Warehouse::all(),
         ]);

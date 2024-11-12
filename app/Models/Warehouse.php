@@ -13,6 +13,7 @@ class Warehouse extends Model
     protected $fillable = [
         'name',
         'country_id',
+        'virtual',
     ];
 
     public function products()
