@@ -21,6 +21,9 @@ use App\Utils\Paginate;
 use Brackets\CraftablePro\Queries\Filters\FuzzyFilter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
@@ -55,7 +58,6 @@ class ProductController extends Controller
 
     public function indexIncome(IndexProductRequest $request): Response|JsonResponse
     {
-        //        dd($this->calculateStockChanges(3, '2021-01-01', '2024-11-14'));
         $productsQuery = $this->getProductionQuery();
 
         if ($request->wantsJson() && $request->get('bulk_select_all')) {
@@ -103,44 +105,92 @@ class ProductController extends Controller
 
     private function getProductsFromQuery(QueryBuilder $query, $perPage = 50): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
-        return $query
+        $products = $query
             ->with([
                 'type',
                 'warehouses',
             ])
             ->select('id', 'ext_id', 'ean', 'additional_data', 'product_type_id')
             ->paginate($perPage)->withQueryString();
-    }
 
-    private function calculateStockChanges($productId, $startDate, $endDate)
-    {
-        $snapshots = StockSnapshot::where('product_id', $productId)
-            ->whereBetween('snapshot_date', [$startDate, $endDate])
-            ->orderBy('snapshot_date')
-            ->get();
-
-        $totalConsumption = 0;
-        $totalRestock = 0;
-
-        $snapshots->each(function (StockSnapshot $snapshot) use (&$totalConsumption, &$totalRestock) {
-            $previousStock = array_sum($snapshot->warehouse_stock['stock'] ?? []);
-            $previousIncome = array_sum($snapshot->warehouse_stock['income'] ?? []);
-            $currentStock = array_sum($snapshot->warehouse_stock);
-            $currentIncome = array_sum($snapshot->warehouse_stock);
-            $differenceStock = $currentStock - $previousStock;
-            $differenceIncome = $currentIncome - $previousIncome;
-
-            if ($differenceStock < 0) {
-                $totalConsumption += abs($differenceStock);
-            } elseif ($differenceStock > 0) {
-                $totalRestock += $differenceStock;
-            }
+        $days = Paginator::resolveQueryString()['filter']['days'] ?? 7;
+        $products->getCollection()->each(function (Product $product) use ($days) {
+            $product->stock_changes = $this->calculateStockChanges($product->id, (int) $days);
         });
 
-        return [
-            'total_consumption' => $totalConsumption,
-            'total_restock' => $totalRestock,
-        ];
+        return $products;
+    }
+
+    private function calculateStockChanges(int|string $productId, int $days): array
+    {
+        return Cache::remember('stock_changes_'.$productId.'_'.$days, now()->addMinutes(5), function () use ($productId, $days) {
+            $snapshots = StockSnapshot::where('product_id', $productId)
+                ->where('snapshot_date', '>=', now()->subDays($days))
+                ->orderBy('snapshot_date')
+                ->get();
+
+            $totalConsumption = [];
+            $totalRestock = [];
+
+            $previousStocks = [];
+            $previousIncomes = null;
+            // считать только когда с клада отнимается
+            // делим на количество дней
+            $snapshots->each(function (StockSnapshot $snapshot) use (&$totalConsumption, &$totalRestock, &$previousStocks, &$previousIncomes) {
+                $stocks = $snapshot->warehouse_stock['stock'];
+                $incomes = $snapshot->warehouse_stock['income'];
+                foreach ($stocks as $key => $stock) {
+                    if (! isset($previousStocks[$key])) {
+                        $previousStocks[$key] = $stock;
+                    }
+                    if (! isset($totalConsumption[$key])) {
+                        $totalConsumption[$key] = 0;
+                    }
+                    if (! isset($totalRestock[$key])) {
+                        $totalRestock[$key] = 0;
+                    }
+
+                    $currentStock = $stock;
+
+                    $differenceStock = $stock - $previousStocks[$key];
+
+                    if ($differenceStock < 0) {
+                        $totalConsumption[$key] += abs($differenceStock);
+                    } elseif ($differenceStock > 0) {
+                        $totalRestock[$key] += $differenceStock;
+                    }
+                    $previousStocks[$key] = $currentStock;
+                }
+
+                $currentIncome = array_sum($incomes);
+                $differenceIncome = $currentIncome - $previousIncomes;
+                if (is_null($previousIncomes)) {
+                    $previousIncomes = array_sum($incomes);
+                }
+                $previousIncomes = $currentIncome;
+            });
+
+            return [
+                'total_consumption' => $totalConsumption,
+                'total_restock' => $totalRestock,
+            ];
+        });
+    }
+
+    private function calculateWarehousesChanges(array $warehousesData) {}
+
+    protected Collection $warehouses;
+
+    private function getWarehouses(): Collection
+    {
+        if (empty($this->warehouses)) {
+            $this->warehouses = Cache::remember('warehouses', now()->addMinutes(5), function () {
+                return Warehouse::all()->keyBy('ysell_name');
+            });
+        }
+
+        return $this->warehouses;
+
     }
 
     /**
