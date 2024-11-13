@@ -89,6 +89,9 @@
           <ListingHeaderCell sortBy="virtual">
               {{ $t("global", "Virtual") }}
           </ListingHeaderCell>
+          <ListingHeaderCell sortBy="ysell_name">
+              {{ $t("global", "Ysell Name") }}
+          </ListingHeaderCell>
         <ListingHeaderCell>
           <span class="sr-only">{{ $t("global", "Actions") }}</span>
         </ListingHeaderCell>
@@ -106,6 +109,9 @@
         </ListingDataCell>
           <ListingDataCell>
               {{ item.virtual }}
+          </ListingDataCell>
+          <ListingDataCell>
+              {{ item.ysell_name }}
           </ListingDataCell>
         <ListingDataCell>
           <div class="flex items-center justify-end gap-3">

@@ -36,8 +36,8 @@ class ProductsSnapshotCommand extends Command
                 $income = [];
                 $stock = [];
                 $product->warehouses->each(function (Warehouse $warehouse) use (&$stock, &$income) {
-                    $stock[$warehouse->name] = $warehouse->pivot->stock_quantity;
-                    $income[$warehouse->name] = $warehouse->pivot->income_quantity;
+                    $stock[$warehouse->ysell_name] = $warehouse->pivot->stock_quantity;
+                    $income[$warehouse->ysell_name] = $warehouse->pivot->income_quantity;
                 });
 
                 $product->stockSnapshots()->updateOrCreate([

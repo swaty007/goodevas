@@ -95,14 +95,14 @@
           <ListingHeaderCell>
               {{ $t("global", "Title") }}
           </ListingHeaderCell>
-          <ListingHeaderCell>
-              {{ $t("global", "Price") }}
-          </ListingHeaderCell>
+<!--          <ListingHeaderCell>-->
+<!--              {{ $t("global", "Price") }}-->
+<!--          </ListingHeaderCell>-->
           <ListingHeaderCell>
               {{ $t("global", "Stock") }}
           </ListingHeaderCell>
           <template v-for="warehouse in warehouses">
-              <ListingHeaderCell v-if="!warehouse?.virtual">
+              <ListingHeaderCell v-if="!warehouse?.virtual" class="max-w-[70px]">
                   {{ warehouse.name }}
               </ListingHeaderCell>
           </template>
@@ -132,20 +132,19 @@
             <Avatar
                 :src="item?.additional_data?.image"
                 name="Logo"
-                size="xl"
             />
         </ListingDataCell>
           <ListingDataCell>
               {{ item?.additional_data?.title }}
           </ListingDataCell>
-          <ListingDataCell>
-              {{ item?.additional_data?.purchase_price }}
-          </ListingDataCell>
+<!--          <ListingDataCell>-->
+<!--              {{ item?.additional_data?.purchase_price }}-->
+<!--          </ListingDataCell>-->
           <ListingDataCell>
               {{ item?.additional_data?.netto }}
           </ListingDataCell>
           <template v-for="warehouse in warehouses">
-                <ListingDataCell v-if="!warehouse?.virtual">
+                <ListingDataCell v-if="!warehouse?.virtual" class="max-w-[70px]">
                     <div class="flex gap-2 items-center">
                         <strong>
                             {{ item?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.stock_quantity }}

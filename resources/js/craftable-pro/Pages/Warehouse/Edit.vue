@@ -42,6 +42,7 @@ const { form, submit } = useForm<WarehouseForm>(
           name: props.warehouse?.name ?? "",
 country_id: props.warehouse?.country_id ?? "",
         virtual: props.warehouse?.country_id ?? "",
+        ysell_name: props.warehouse?.ysell_name ?? "",
     },
     route("craftable-pro.warehouses.update", [props.warehouse?.id])
 );

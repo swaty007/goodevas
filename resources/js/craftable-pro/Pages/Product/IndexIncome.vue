@@ -20,7 +20,7 @@
 
   <PageContent>
     <Listing
-      :baseUrl="route('craftable-pro.products.index')"
+      :baseUrl="route('craftable-pro.products.index-income')"
       :data="products"
       dataKey="products"
     >
@@ -95,14 +95,14 @@
           <ListingHeaderCell>
               {{ $t("global", "Title") }}
           </ListingHeaderCell>
-          <ListingHeaderCell>
-              {{ $t("global", "Price") }}
-          </ListingHeaderCell>
+<!--          <ListingHeaderCell>-->
+<!--              {{ $t("global", "Price") }}-->
+<!--          </ListingHeaderCell>-->
           <ListingHeaderCell>
               {{ $t("global", "Stock") }}
           </ListingHeaderCell>
           <template v-for="warehouse in warehouses">
-              <ListingHeaderCell>
+              <ListingHeaderCell class="max-w-[70px]">
                   {{ warehouse.name }} / {{ $t("global", "Income") }}
               </ListingHeaderCell>
           </template>
@@ -132,28 +132,32 @@
             <Avatar
                 :src="item?.additional_data?.image"
                 name="Logo"
-                size="xl"
             />
         </ListingDataCell>
           <ListingDataCell>
               {{ item?.additional_data?.title }}
           </ListingDataCell>
-          <ListingDataCell>
-              {{ item?.additional_data?.purchase_price }}
-          </ListingDataCell>
+<!--          <ListingDataCell>-->
+<!--              {{ item?.additional_data?.purchase_price }}-->
+<!--          </ListingDataCell>-->
           <ListingDataCell>
               {{ item?.additional_data?.netto }}
           </ListingDataCell>
           <template v-for="warehouse in warehouses">
-                <ListingDataCell>
+                <ListingDataCell class="max-w-[70px]">
                     <div class="flex gap-2 items-center">
-                        <TextInput
-                            v-if="!warehouse?.virtual"
-                            :model-value="item?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.income_quantity"
-                            name="income_quantity"
-                            :label="$t('global', 'Income')"
-                            @update:model-value="updateProductIncome(item, warehouse, $event)"
-                        />
+                        <template v-if="!warehouse?.virtual">
+                            <TextInput
+                                v-can="'global.product.edit-income'"
+                                :model-value="item?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.income_quantity"
+                                name="income_quantity"
+                                class="income__input"
+                                @update:model-value="updateProductIncome(item, warehouse, $event)"
+                            />
+                            <span>
+                                {{ item?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.income_quantity }}
+                            </span>
+                        </template>
                         <strong v-else>
                             {{ item?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.stock_quantity }}
                         </strong>
@@ -285,3 +289,9 @@ const updateProductIncome = debounce((product: Product, warehouse: Warehouse, va
 }, 1000);
 
 </script>
+
+<style lang="scss" scoped>
+.income__input + * {
+    display: none;
+}
+</style>

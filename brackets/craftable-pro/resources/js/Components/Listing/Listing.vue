@@ -1,190 +1,209 @@
 <template>
-  <Card noPadding :class="[$attrs.class, 'global__table']">
-    <template #header>
-      <CardHeader
-        class="border border-transparent"
-        :class="{
-          'border-2 border-b-2 border-dashed !border-primary-400 bg-primary-50':
-            indeterminate || allItemsSelected,
-        }"
-      >
-        <div
-          class="relative flex items-center"
-          :class="{ '-m-px': indeterminate || allItemsSelected }"
-          v-auto-animate="{ duration: 150 }"
-        >
-          <div class="h-[34px]" />
-          <Checkbox
-            v-if="withBulkSelect"
-            class="-ml-px"
-            :checked="indeterminate || allItemsSelected"
-            :indeterminate="indeterminate"
-            @change="
-              $event.target.checked
-                ? (selectedItems = collection.map((p) => p.id))
-                : unselectAllItems()
-            "
-          />
-          <div
-            v-if="selectedItems?.length > 0"
-            class="flex items-center gap-x-4 pl-6 text-sm text-gray-700 dark:text-gray-200"
-            v-auto-animate
-          >
-            <div class="flex-shrink-0">
-              <span class="leading-8 sm:whitespace-nowrap">
-                {{
-                  $tChoice(
-                    "craftable-pro",
-                    "{1} :count item selected.|[2,*] :count items selected.",
-                    selectedItems.length
-                  )
-                }}
-              </span>
-              &nbsp;
-              <span v-if="!allItemsSelected">
-                <Button
-                  @click="selectAllItems"
-                  :disabled="loadingAllItems"
-                  size="sm"
-                  class="whitespace-nowrap"
-                  variant="link"
-                >
-                  {{ $t("craftable-pro", "Select all items.") }}
-                </Button>
-              </span>
-            </div>
-
-            <slot
-              name="bulkActions"
-              :baseUrl="baseUrl"
-              :selectedItems="selectedItems"
-              :bulkAction="bulkAction"
-              :bulkActionForm="bulkActionForm"
-            >
-              <Button
-                @click="() => bulkAction('delete', `${baseUrl}/bulk-delete`)"
-                color="gray"
-                variant="outline"
-                size="sm"
-                :leftIcon="TrashIcon"
-              >
-                {{ $t("craftable-pro", "Delete") }}
-              </Button>
-            </slot>
-          </div>
-          <div
-            v-else
-            class="flex w-full items-center justify-between gap-3 flex-col sm:flex-row"
-            :class="{ 'pl-6': withBulkSelect }"
-          >
-            <slot
-              name="header"
-              :searchForm="searchForm"
-              :resetSearch="resetSearch"
-            >
-              <div class="w-2/6">
-                <TextInput
-                  v-model="searchForm.search"
-                  name="search"
-                  size="sm"
-                  :leftIcon="MagnifyingGlassIcon"
-                  :placeholder="$t('craftable-pro', 'Search')"
-                  :clearable="true"
-                  class="w-full"
-                />
-              </div>
-              <slot name="actions" />
-            </slot>
-          </div>
-        </div>
-      </CardHeader>
-    </template>
-
-    <div class="overflow-x-auto">
-      <div class="inline-block min-w-full align-middle">
-        <div class="relative overflow-hidden md:overflow-visible">
-          <EmptyListing v-if="!collection?.length" />
-          <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
-            <thead class="bg-gray-50">
-              <tr>
-                <ListingHeaderCell v-if="withBulkSelect" class="w-8 sm:w-14" />
-                <slot name="tableHead">
-                  <ListingHeaderCell v-for="column in columns" :sortBy="column">
-                    <!-- TODO: get translation for col -->
-                    {{ column }}
-                  </ListingHeaderCell>
-                  <ListingHeaderCell>
-                    <span class="sr-only">{{
-                      $t("craftable-pro", "Edit")
-                    }}</span>
-                  </ListingHeaderCell>
-                </slot>
-              </tr>
-            </thead>
-
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-600 bg-white dark:bg-gray-700">
-              <tr
-                v-for="item in collection"
-                :key="item.id"
+    <Card
+        no-padding
+        :class="[$attrs.class, 'global__table']"
+    >
+        <template #header>
+            <CardHeader
+                class="border border-transparent"
                 :class="{
-                  'bg-gray-200': selectedItems.includes(item.id),
+                    'border-2 border-b-2 border-dashed !border-primary-400 bg-primary-50 dark:bg-primary-800':
+                        indeterminate || allItemsSelected,
                 }"
-              >
-                <ListingDataCell
-                  v-if="withBulkSelect"
-                  class="relative w-8 sm:w-14"
-                  v-auto-animate="{ duration: 150 }"
+            >
+                <div
+                    v-auto-animate="{ duration: 150 }"
+                    class="relative flex items-center"
+                    :class="{ '-m-px': indeterminate || allItemsSelected }"
                 >
-                  <div
-                    v-if="selectedItems.includes(item.id)"
-                    class="absolute inset-y-0 left-0 w-0.5 bg-primary-600"
-                  />
-                  <Checkbox :inputValue="item.id" v-model="selectedItems" />
-                </ListingDataCell>
-                <slot name="tableRow" :item="item" :action="action">
-                  <ListingDataCell v-for="column in columns">
-                    {{ item[column] }}
-                  </ListingDataCell>
-                  <ListingDataCell>
-                    <Link
-                      :href="item.resource_url"
-                      class="text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:text-gray-200"
+                    <div class="h-[34px]" />
+                    <Checkbox
+                        v-if="withBulkSelect"
+                        class="-ml-px"
+                        :checked="indeterminate || allItemsSelected"
+                        :indeterminate="indeterminate"
+                        @change="
+                            $event.target.checked
+                                ? (selectedItems = collection.map((p) => p.id))
+                                : unselectAllItems()
+                        "
+                    />
+                    <div
+                        v-if="selectedItems?.length > 0"
+                        v-auto-animate
+                        class="flex items-center gap-x-4 pl-6 text-sm text-gray-700 dark:text-gray-200"
                     >
-                      <ChevronRightIcon class="ml-auto h-5 w-5" />
-                    </Link>
-                  </ListingDataCell>
-                </slot>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+                        <div class="flex-shrink-0">
+                            <span class="leading-8 sm:whitespace-nowrap">
+                                {{
+                                    $tChoice(
+                                        "craftable-pro",
+                                        "{1} :count item selected.|[2,*] :count items selected.",
+                                        selectedItems.length
+                                    )
+                                }}
+                            </span>
+                            &nbsp;
+                            <span v-if="!allItemsSelected">
+                                <Button
+                                    :disabled="loadingAllItems"
+                                    size="sm"
+                                    class="whitespace-nowrap"
+                                    variant="link"
+                                    @click="selectAllItems"
+                                >
+                                    {{ $t("craftable-pro", "Select all items.") }}
+                                </Button>
+                            </span>
+                        </div>
 
-    <template #footer>
-      <CardFooter v-if="withPagination">
-        <Pagination :pagination="pagination" />
-      </CardFooter>
-    </template>
-  </Card>
+                        <slot
+                            name="bulkActions"
+                            :base-url="baseUrl"
+                            :selected-items="selectedItems"
+                            :bulk-action="bulkAction"
+                            :bulk-action-form="bulkActionForm"
+                        >
+                            <Button
+                                color="gray"
+                                variant="outline"
+                                size="sm"
+                                :left-icon="TrashIcon"
+                                @click="() => bulkAction('delete', `${baseUrl}/bulk-delete`)"
+                            >
+                                {{ $t("craftable-pro", "Delete") }}
+                            </Button>
+                        </slot>
+                    </div>
+                    <div
+                        v-else
+                        class="flex w-full items-center justify-between gap-3 flex-col sm:flex-row"
+                        :class="{ 'pl-6': withBulkSelect }"
+                    >
+                        <slot
+                            name="header"
+                            :search-form="searchForm"
+                            :reset-search="resetSearch"
+                        >
+                            <div class="w-2/6">
+                                <TextInput
+                                    v-model="searchForm.search"
+                                    name="search"
+                                    size="sm"
+                                    :left-icon="MagnifyingGlassIcon"
+                                    :placeholder="$t('craftable-pro', 'Search')"
+                                    :clearable="true"
+                                    class="w-full"
+                                />
+                            </div>
+                            <slot name="actions" />
+                        </slot>
+                    </div>
+                </div>
+            </CardHeader>
+        </template>
+
+        <div class="overflow-x-auto">
+            <div class="inline-block min-w-full align-middle">
+                <div class="relative overflow-hidden md:overflow-visible">
+                    <EmptyListing v-if="!collection?.length" />
+                    <table
+                        v-else
+                        class="min-w-full divide-y divide-gray-200 dark:divide-gray-600"
+                    >
+                        <thead class="bg-gray-50 dark:bg-gray-800">
+                        <tr>
+                            <ListingHeaderCell
+                                v-if="withBulkSelect"
+                                class="w-8 sm:w-14"
+                            />
+                            <slot name="tableHead">
+                                <ListingHeaderCell
+                                    v-for="column in columns"
+                                    :sort-by="column"
+                                >
+                                    <!-- TODO: get translation for col -->
+                                    {{ column }}
+                                </ListingHeaderCell>
+                                <ListingHeaderCell>
+                                        <span class="sr-only">{{
+                                                $t("craftable-pro", "Edit")
+                                            }}</span>
+                                </ListingHeaderCell>
+                            </slot>
+                        </tr>
+                        </thead>
+
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-600 bg-white dark:bg-gray-700">
+                        <tr
+                            v-for="item in collection"
+                            :key="item.id"
+                            :class="{
+                                    'bg-gray-200 dark:bg-gray-600': selectedItems.includes(item.id),
+                                }"
+                        >
+                            <ListingDataCell
+                                v-if="withBulkSelect"
+                                v-auto-animate="{ duration: 150 }"
+                                class="relative w-8 sm:w-14"
+                            >
+                                <div
+                                    v-if="selectedItems.includes(item.id)"
+                                    class="absolute inset-y-0 left-0 w-0.5 bg-primary-600"
+                                />
+                                <Checkbox
+                                    v-model="selectedItems"
+                                    :input-value="item.id"
+                                />
+                            </ListingDataCell>
+                            <slot
+                                name="tableRow"
+                                :item="item"
+                                :action="action"
+                            >
+                                <ListingDataCell v-for="column in columns">
+                                    {{ item[column] }}
+                                </ListingDataCell>
+                                <ListingDataCell>
+                                    <Link
+                                        :href="item.resource_url"
+                                        class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
+                                    >
+                                        <ChevronRightIcon class="ml-auto h-5 w-5" />
+                                    </Link>
+                                </ListingDataCell>
+                            </slot>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <template #footer>
+            <CardFooter v-if="withPagination">
+                <Pagination :pagination="pagination" />
+            </CardFooter>
+        </template>
+    </Card>
 </template>
 <script setup lang="ts">
 import { computed, defineEmits, provide, useSlots, watch } from "vue";
 import {
-  ChevronRightIcon,
-  MagnifyingGlassIcon,
-  CheckIcon,
+    ChevronRightIcon,
+    MagnifyingGlassIcon,
+    CheckIcon,
 } from "@heroicons/vue/24/outline";
 import { TrashIcon, PencilIcon } from "@heroicons/vue/24/solid";
 import {
-  Button,
-  Checkbox,
-  TextInput,
-  Dropdown,
-  Pagination,
-  Card,
-  CardFooter,
-  CardHeader,
+    Button,
+    Checkbox,
+    TextInput,
+    Dropdown,
+    Pagination,
+    Card,
+    CardFooter,
+    CardHeader,
 } from "craftable-pro/Components";
 import { EmptyListing, ListingHeaderCell, ListingDataCell } from "./index";
 import { PaginatedCollection } from "craftable-pro/types/pagination";
@@ -195,26 +214,26 @@ import { useAction } from "craftable-pro/hooks/useAction";
 import { useListingSearch } from "craftable-pro/hooks/useListingSearch";
 
 interface Props {
-  data: PaginatedCollection<Model>;
-  dataKey?: string;
-  baseUrl?: string;
-  columns?: string[];
-  withBulkSelect?: boolean;
-  filters?: object;
-  withPagination?: boolean;
+    data: PaginatedCollection<Model>;
+    dataKey?: string;
+    baseUrl?: string;
+    columns?: string[];
+    withBulkSelect?: boolean;
+    filters?: object;
+    withPagination?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  withBulkSelect: true,
-  baseUrl: route(route().current(), route().params),
-  dataKey: "data",
-  withPagination: true,
+    withBulkSelect: true,
+    baseUrl: route(route().current(), route().params),
+    dataKey: "data",
+    withPagination: true,
 });
 
 provide("listingBaseUrl", props.baseUrl);
 
 if (props.dataKey) {
-  provide("listingDataKey", props.dataKey);
+    provide("listingDataKey", props.dataKey);
 }
 
 const slots = useSlots();
@@ -226,12 +245,12 @@ const collection = computed(() => props.data.data);
 const pagination = computed(() => props.data);
 
 const {
-  selectedItems,
-  indeterminate,
-  allItemsSelected,
-  selectAllItems,
-  loadingAllItems,
-  unselectAllItems,
+    selectedItems,
+    indeterminate,
+    allItemsSelected,
+    selectAllItems,
+    loadingAllItems,
+    unselectAllItems,
 } = useBulkSelect();
 
 const { bulkAction, bulkActionForm } = useBulkAction(selectedItems);

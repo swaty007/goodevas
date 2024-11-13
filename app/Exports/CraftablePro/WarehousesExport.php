@@ -26,12 +26,12 @@ class WarehousesExport implements FromCollection,WithHeadings
         return QueryBuilder::for(Warehouse::class)
             ->allowedFilters([
                 AllowedFilter::custom('search', new FuzzyFilter(
-                    'id','name','country_id'
+                    'id','name','country_id', 'ysell_name'
                 )),
             ])
             ->defaultSort('id')
-            ->allowedSorts('id','name','country_id')
-            ->select(['id','name','country_id'])
+            ->allowedSorts('id','name','country_id', 'ysell_name')
+            ->select(['id','name','country_id', 'ysell_name'])
             ->get();
     }
 
@@ -41,6 +41,7 @@ class WarehousesExport implements FromCollection,WithHeadings
             trans("craftable-pro.Id"),
             trans("craftable-pro.Name"),
             trans("craftable-pro.Country Id"),
+            trans("craftable-pro.Ysell Name"),
         ];
     }
 }

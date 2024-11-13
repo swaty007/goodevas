@@ -33,6 +33,7 @@ const { form, submit } = useForm<WarehouseForm>(
           name: "",
 country_id: "",
         virtual: "",
+        ysell_name: "",
     },
     route("craftable-pro.warehouses.store"),
     "post"

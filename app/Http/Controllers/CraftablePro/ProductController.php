@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\CraftablePro;
 
 use App\Exports\CraftablePro\ProductsExport;
+use App\Facades\YsellApiFacade;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CraftablePro\Product\BulkDestroyProductRequest;
 use App\Http\Requests\CraftablePro\Product\CreateProductRequest;
@@ -16,6 +17,7 @@ use App\Models\Product;
 use App\Models\ProductType;
 use App\Models\StockSnapshot;
 use App\Models\Warehouse;
+use App\Utils\Paginate;
 use Brackets\CraftablePro\Queries\Filters\FuzzyFilter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -35,26 +37,13 @@ class ProductController extends Controller
      */
     public function index(IndexProductRequest $request): Response|JsonResponse
     {
-        $productsQuery = QueryBuilder::for(Product::class)
-            ->allowedFilters([
-                AllowedFilter::custom('search', new FuzzyFilter(
-                    'id', 'ext_id', 'ean', 'additional_data', 'product_type_id'
-                )),
-            ])
-            ->defaultSort('id')
-            ->allowedSorts('id', 'ext_id', 'ean', 'additional_data', 'product_type_id');
+        $productsQuery = $this->getProductionQuery();
 
         if ($request->wantsJson() && $request->get('bulk_select_all')) {
             return response()->json($productsQuery->select(['id'])->pluck('id'));
         }
 
-        $products = $productsQuery
-            ->with([
-                'type',
-                'warehouses',
-            ])
-            ->select('id', 'ext_id', 'ean', 'additional_data', 'product_type_id')
-            ->paginate($request->get('per_page') ?? 100)->withQueryString();
+        $products = $this->getProductsFromQuery($productsQuery, $request->get('per_page') ?? 100);
 
         Session::put('products_url', $request->fullUrl());
 
@@ -66,26 +55,14 @@ class ProductController extends Controller
 
     public function indexIncome(IndexProductRequest $request): Response|JsonResponse
     {
-        $productsQuery = QueryBuilder::for(Product::class)
-            ->allowedFilters([
-                AllowedFilter::custom('search', new FuzzyFilter(
-                    'id', 'ext_id', 'ean', 'additional_data', 'product_type_id'
-                )),
-            ])
-            ->defaultSort('id')
-            ->allowedSorts('id', 'ext_id', 'ean', 'additional_data', 'product_type_id');
+        //        dd($this->calculateStockChanges(3, '2021-01-01', '2024-11-14'));
+        $productsQuery = $this->getProductionQuery();
 
         if ($request->wantsJson() && $request->get('bulk_select_all')) {
             return response()->json($productsQuery->select(['id'])->pluck('id'));
         }
 
-        $products = $productsQuery
-            ->with([
-                'type',
-                'warehouses',
-            ])
-            ->select('id', 'ext_id', 'ean', 'additional_data', 'product_type_id')
-            ->paginate($request->get('per_page') ?? 100)->withQueryString();
+        $products = $this->getProductsFromQuery($productsQuery, $request->get('per_page') ?? 100);
 
         Session::put('products_url', $request->fullUrl());
 
@@ -93,6 +70,46 @@ class ProductController extends Controller
             'products' => $products,
             'warehouses' => Warehouse::all(),
         ]);
+    }
+
+    public function indexApiProducts(IndexProductRequest $request): Response|JsonResponse
+    {
+        $productsApi = YsellApiFacade::getProductAllByAllYsellKeys();
+        $productsApi = Paginate::defaultSort('isOpen')->paginate(
+            $productsApi,
+            $request->get('per_page', 100),
+            $request->get('page', 1),
+            $request->get('filter', [
+                'search' => null,
+            ]),
+        );
+
+        return Inertia::render('Product/IndexApi', [
+            'productsApi' => $productsApi,
+        ]);
+    }
+
+    private function getProductionQuery(): QueryBuilder
+    {
+        return QueryBuilder::for(Product::class)
+            ->allowedFilters([
+                AllowedFilter::custom('search', new FuzzyFilter(
+                    'id', 'ext_id', 'ean', 'additional_data', 'product_type_id'
+                )),
+            ])
+            ->defaultSort('id')
+            ->allowedSorts('id', 'ext_id', 'ean', 'additional_data', 'product_type_id');
+    }
+
+    private function getProductsFromQuery(QueryBuilder $query, $perPage = 50): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        return $query
+            ->with([
+                'type',
+                'warehouses',
+            ])
+            ->select('id', 'ext_id', 'ean', 'additional_data', 'product_type_id')
+            ->paginate($perPage)->withQueryString();
     }
 
     private function calculateStockChanges($productId, $startDate, $endDate)
@@ -105,17 +122,20 @@ class ProductController extends Controller
         $totalConsumption = 0;
         $totalRestock = 0;
 
-        for ($i = 1; $i < $snapshots->count(); $i++) {
-            $previousStock = array_sum($snapshots[$i - 1]->warehouse_stock);
-            $currentStock = array_sum($snapshots[$i]->warehouse_stock);
-            $difference = $currentStock - $previousStock;
+        $snapshots->each(function (StockSnapshot $snapshot) use (&$totalConsumption, &$totalRestock) {
+            $previousStock = array_sum($snapshot->warehouse_stock['stock'] ?? []);
+            $previousIncome = array_sum($snapshot->warehouse_stock['income'] ?? []);
+            $currentStock = array_sum($snapshot->warehouse_stock);
+            $currentIncome = array_sum($snapshot->warehouse_stock);
+            $differenceStock = $currentStock - $previousStock;
+            $differenceIncome = $currentIncome - $previousIncome;
 
-            if ($difference < 0) {
-                $totalConsumption += abs($difference);
-            } elseif ($difference > 0) {
-                $totalRestock += $difference;
+            if ($differenceStock < 0) {
+                $totalConsumption += abs($differenceStock);
+            } elseif ($differenceStock > 0) {
+                $totalRestock += $differenceStock;
             }
-        }
+        });
 
         return [
             'total_consumption' => $totalConsumption,

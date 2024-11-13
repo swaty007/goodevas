@@ -26,6 +26,13 @@
 
             />
 
+            <TextInput
+                v-model="form.ysell_name"
+                name="ysell_name"
+                :label="$t('global', 'Ysell Name')"
+                :disabled="true"
+            />
+
 
         </div>
       </Card>

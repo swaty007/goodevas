@@ -2,13 +2,13 @@
   <div>
     <nav class="mt-5 space-y-1">
       <SidebarGroup :title="$t('craftable-pro', 'Content')">
-        <SidebarItem
-          :href="route('craftable-pro.media.index')"
-          :icon="PhotoIcon"
-          v-can="'craftable-pro.media.index'"
-        >
-          {{ $t("craftable-pro", "Media") }}
-        </SidebarItem>
+<!--        <SidebarItem-->
+<!--          :href="route('craftable-pro.media.index')"-->
+<!--          :icon="PhotoIcon"-->
+<!--          v-can="'craftable-pro.media.index'"-->
+<!--        >-->
+<!--          {{ $t("craftable-pro", "Media") }}-->
+<!--        </SidebarItem>-->
         <SidebarItem
                         :href="route('craftable-pro.products.index')"
                         :icon="CubeTransparentIcon"
@@ -24,6 +24,13 @@
           >
               {{ $t("global", "Products Income") }}
           </SidebarItem>
+          <SidebarItem
+              :href="route('craftable-pro.products.index-api')"
+              :icon="CubeTransparentIcon"
+              v-can="'global.product.index'"
+          >
+              {{ $t("global", "Products Api") }}
+          </SidebarItem>
                     <SidebarItem
                         :href="route('craftable-pro.product-types.index')"
                         :icon="CubeTransparentIcon"
@@ -31,20 +38,7 @@
                     >
                         {{ $t("global", "Product Types") }}
                     </SidebarItem>
-                    <SidebarItem
-                        :href="route('craftable-pro.ysells.index')"
-                        :icon="CubeTransparentIcon"
-                        v-can="'global.ysell.index'"
-                    >
-                        {{ $t("global", "Ysells") }}
-                    </SidebarItem>
-                    <SidebarItem
-                        :href="route('craftable-pro.warehouses.index')"
-                        :icon="CubeTransparentIcon"
-                        v-can="'global.warehouse.index'"
-                    >
-                        {{ $t("global", "Warehouses") }}
-                    </SidebarItem>
+
                     <!--AppendGeneratorLink-->
       </SidebarGroup>
 
@@ -71,6 +65,20 @@
         >
           {{ $t("craftable-pro", "Roles") }}
         </SidebarItem>
+          <SidebarItem
+              :href="route('craftable-pro.warehouses.index')"
+              :icon="CubeTransparentIcon"
+              v-can="'global.warehouse.index'"
+          >
+              {{ $t("global", "Warehouses") }}
+          </SidebarItem>
+          <SidebarItem
+              :href="route('craftable-pro.ysells.index')"
+              :icon="CubeTransparentIcon"
+              v-can="'global.ysell.index'"
+          >
+              {{ $t("global", "Ysells") }}
+          </SidebarItem>
         <SidebarItem
           :href="route('craftable-pro.translations.index')"
           :icon="LanguageIcon"

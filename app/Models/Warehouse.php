@@ -14,6 +14,7 @@ class Warehouse extends Model
         'name',
         'country_id',
         'virtual',
+        'ysell_name',
     ];
 
     public function products()

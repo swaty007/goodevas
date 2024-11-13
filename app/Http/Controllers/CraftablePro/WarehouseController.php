@@ -37,6 +37,7 @@ class WarehouseController extends Controller
                     'name',
                     'country_id',
                     'virtual',
+                    'ysell_name',
                 )),
             ])
             ->defaultSort('id')
@@ -45,6 +46,7 @@ class WarehouseController extends Controller
                 'name',
                 'country_id',
                 'virtual',
+                'ysell_name',
             );
 
         if ($request->wantsJson() && $request->get('bulk_select_all')) {
@@ -57,6 +59,7 @@ class WarehouseController extends Controller
                 'name',
                 'country_id',
                 'virtual',
+                'ysell_name',
             )
             ->paginate($request->get('per_page'))->withQueryString();
 

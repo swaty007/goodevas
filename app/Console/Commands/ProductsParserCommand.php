@@ -31,18 +31,10 @@ class ProductsParserCommand extends Command
     public function handle(): void
     {
 
-        $ysellKeys = Ysell::all();
         $products = Product::all();
-        $productsApi = [];
-        $existingWarehouses = Warehouse::all()->keyBy('name'); // Загружаем все склады и индексируем по имени
-        foreach ($ysellKeys as $ysellKey) {
-            /* @var $ysellKey Ysell */
-            YsellApiFacade::switchAuthKey($ysellKey->api_key);
-            $productsApiKey = Cache::remember('products_'.$ysellKey->api_key, 60 * 5, function () {
-                return YsellApiFacade::getAllProducts();
-            });
-            $productsApi = array_merge($productsApi, $productsApiKey);
-        }
+
+        $existingWarehouses = Warehouse::all()->keyBy('ysell_name'); // Загружаем все склады и индексируем по имени
+        $productsApi = YsellApiFacade::getProductAllByAllYsellKeys();
 
         foreach ($products as $product) {
             /* @var $product Product */
@@ -63,6 +55,7 @@ class ProductsParserCommand extends Command
                     if (! $existingWarehouses->has($warehouseName)) {
                         $warehouseModel = Warehouse::create([
                             'name' => $warehouseName,
+                            'ysell_name' => $warehouseName,
                             'country_id' => $warehouseStock['warehouse']['country_id'],
                         ]);
                         $existingWarehouses->put($warehouseName, $warehouseModel);
