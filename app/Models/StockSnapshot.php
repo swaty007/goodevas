@@ -14,6 +14,7 @@ class StockSnapshot extends Model
         'product_id',
         'snapshot_date',
         'warehouse_stock',
+        'warehouse_income',
     ];
 
     protected $casts = [

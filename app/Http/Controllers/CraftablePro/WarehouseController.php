@@ -33,11 +33,19 @@ class WarehouseController extends Controller
         $warehousesQuery = QueryBuilder::for(Warehouse::class)
             ->allowedFilters([
                 AllowedFilter::custom('search', new FuzzyFilter(
-                    'id','name','country_id'
+                    'id',
+                    'name',
+                    'country_id',
+                    'virtual',
                 )),
             ])
             ->defaultSort('id')
-            ->allowedSorts('id','name','country_id');
+            ->allowedSorts(
+                'id',
+                'name',
+                'country_id',
+                'virtual',
+            );
 
         if ($request->wantsJson() && $request->get('bulk_select_all')) {
             return response()->json($warehousesQuery->select(['id'])->pluck('id'));

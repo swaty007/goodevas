@@ -26,6 +26,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command(\App\Console\Commands\ProductsParserCommand::class)
             ->everyFiveMinutes()
             ->withoutOverlapping(5);
+        $schedule->command(\App\Console\Commands\ProductsSnapshotCommand::class)
+            ->hourly()
+            ->withoutOverlapping(5);
     })
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
