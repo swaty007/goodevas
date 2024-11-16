@@ -5,9 +5,7 @@ namespace App\Console\Commands;
 use App\Facades\YsellApiFacade;
 use App\Models\Product;
 use App\Models\Warehouse;
-use App\Models\Ysell;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Cache;
 
 class ProductsParserCommand extends Command
 {

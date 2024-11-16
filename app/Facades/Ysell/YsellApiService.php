@@ -20,6 +20,7 @@ class YsellApiService extends YsellApiMethods
             }
             $page++;
         }
+
         return $products;
     }
 }

@@ -1,28 +1,30 @@
 <?php
-use Illuminate\Support\Facades\DB;
+
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
+    /**
+     * @var Repository|mixed
+     */
+    protected $guardName;
 
     /**
-    * @var Repository|mixed
-    */
-    protected $guardName;
-    /**
-    * @var array
-    */
+     * @var array
+     */
     protected $permissions;
+
     /**
-    * @var array
-    */
+     * @var array
+     */
     protected $roles;
 
     public function __construct()
     {
-        $this->guardName = "craftable-pro";
+        $this->guardName = 'craftable-pro';
 
-        $permissions = collect(["global.warehouse.index","global.warehouse.create","global.warehouse.edit","global.warehouse.destroy"]);
+        $permissions = collect(['global.warehouse.index', 'global.warehouse.create', 'global.warehouse.edit', 'global.warehouse.destroy']);
 
         //Add New permissions
         $this->permissions = $permissions->map(function ($permission) {
@@ -41,11 +43,10 @@ return new class extends Migration
             ],
         ];
     }
+
     /**
-    * Run the migrations.
-    *
-    * @return void
-    */
+     * Run the migrations.
+     */
     public function up(): void
     {
 
@@ -61,7 +62,7 @@ return new class extends Migration
             foreach ($this->permissions as $permission) {
                 $permissionItem = DB::table($tableNames['permissions'])->where([
                     'name' => $permission['name'],
-                    'guard_name' => $permission['guard_name']
+                    'guard_name' => $permission['guard_name'],
                 ])->first();
 
                 if ($permissionItem === null) {
@@ -75,7 +76,7 @@ return new class extends Migration
 
                 $roleItem = DB::table($tableNames['roles'])->where([
                     'name' => $role['name'],
-                    'guard_name' => $role['guard_name']
+                    'guard_name' => $role['guard_name'],
                 ])->first();
 
                 if ($roleItem !== null) {
@@ -89,7 +90,7 @@ return new class extends Migration
                     foreach ($permissionItems as $permissionItem) {
                         $roleHasPermissionData = [
                             'permission_id' => $permissionItem->id,
-                            'role_id' => $roleId
+                            'role_id' => $roleId,
                         ];
                         $roleHasPermissionItem = DB::table($tableNames['role_has_permissions'])->where($roleHasPermissionData)->first();
                         if ($roleHasPermissionItem === null) {
@@ -104,10 +105,8 @@ return new class extends Migration
     }
 
     /**
-    * Reverse the migrations.
-    *
-    * @return void
-    */
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         $tableNames = config('permission.table_names', [
@@ -122,7 +121,7 @@ return new class extends Migration
             foreach ($this->permissions as $permission) {
                 $permissionItem = DB::table($tableNames['permissions'])->where([
                     'name' => $permission['name'],
-                    'guard_name' => $permission['guard_name']
+                    'guard_name' => $permission['guard_name'],
                 ])->first();
                 if ($permissionItem !== null) {
                     DB::table($tableNames['permissions'])->where('id', $permissionItem->id)->delete();

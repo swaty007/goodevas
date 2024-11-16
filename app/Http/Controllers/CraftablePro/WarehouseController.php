@@ -1,14 +1,16 @@
 <?php
+
 namespace App\Http\Controllers\CraftablePro;
 
+use App\Exports\CraftablePro\WarehousesExport;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CraftablePro\Warehouse\IndexWarehouseRequest;
-use App\Http\Requests\CraftablePro\Warehouse\CreateWarehouseRequest;
-use App\Http\Requests\CraftablePro\Warehouse\StoreWarehouseRequest;
-use App\Http\Requests\CraftablePro\Warehouse\EditWarehouseRequest;
-use App\Http\Requests\CraftablePro\Warehouse\UpdateWarehouseRequest;
-use App\Http\Requests\CraftablePro\Warehouse\DestroyWarehouseRequest;
 use App\Http\Requests\CraftablePro\Warehouse\BulkDestroyWarehouseRequest;
+use App\Http\Requests\CraftablePro\Warehouse\CreateWarehouseRequest;
+use App\Http\Requests\CraftablePro\Warehouse\DestroyWarehouseRequest;
+use App\Http\Requests\CraftablePro\Warehouse\EditWarehouseRequest;
+use App\Http\Requests\CraftablePro\Warehouse\IndexWarehouseRequest;
+use App\Http\Requests\CraftablePro\Warehouse\StoreWarehouseRequest;
+use App\Http\Requests\CraftablePro\Warehouse\UpdateWarehouseRequest;
 use App\Models\Warehouse;
 use Brackets\CraftablePro\Queries\Filters\FuzzyFilter;
 use Illuminate\Http\JsonResponse;
@@ -17,10 +19,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 use Inertia\Response;
+use Maatwebsite\Excel\Facades\Excel;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\CraftablePro\WarehousesExport;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class WarehouseController extends Controller
@@ -28,7 +29,7 @@ class WarehouseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(IndexWarehouseRequest $request): Response | JsonResponse
+    public function index(IndexWarehouseRequest $request): Response|JsonResponse
     {
         $warehousesQuery = QueryBuilder::for(Warehouse::class)
             ->allowedFilters([
@@ -60,6 +61,7 @@ class WarehouseController extends Controller
                 'country_id',
                 'virtual',
                 'ysell_name',
+                'settings',
             )
             ->paginate($request->get('per_page'))->withQueryString();
 
@@ -76,7 +78,7 @@ class WarehouseController extends Controller
     public function create(CreateWarehouseRequest $request): Response
     {
         return Inertia::render('Warehouse/Create', [
-
+            'defaultSettings' => (new Warehouse)->defaultSettings(),
         ]);
     }
 
@@ -97,7 +99,7 @@ class WarehouseController extends Controller
     {
         return Inertia::render('Warehouse/Edit', [
             'warehouse' => $warehouse,
-
+            'defaultSettings' => (new Warehouse)->defaultSettings(),
         ]);
     }
 
@@ -154,6 +156,6 @@ class WarehouseController extends Controller
      */
     public function export(IndexWarehouseRequest $request): BinaryFileResponse
     {
-        return Excel::download(new WarehousesExport($request->all()), 'Warehouses-'.now()->format("dmYHi").'.xlsx');
+        return Excel::download(new WarehousesExport($request->all()), 'Warehouses-'.now()->format('dmYHi').'.xlsx');
     }
 }

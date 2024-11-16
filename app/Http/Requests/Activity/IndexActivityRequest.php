@@ -12,7 +12,8 @@ class IndexActivityRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Gate::allows("craftable-pro.settings.edit");
+        return Gate::allows('craftable-pro.settings.edit');
+
         return false;
     }
 

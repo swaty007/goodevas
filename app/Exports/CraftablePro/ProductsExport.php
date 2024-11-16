@@ -40,7 +40,7 @@ class ProductsExport implements FromCollection, WithHeadings
             trans('craftable-pro.Ext Id'),
             trans('craftable-pro.Ean'),
             trans('craftable-pro.Additional Data'),
-            trans('craftable-pro.Product Type Id'),
+            trans('craftable-pro.Product Type'),
         ];
     }
 }

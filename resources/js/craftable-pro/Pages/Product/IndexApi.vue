@@ -87,7 +87,7 @@ import debounce from "lodash/debounce";
 
 interface Props {
   productsApi: object[];
-  warehouses: Warehouse[]
+  warehouses: Object<string, Warehouse>;
 }
 defineProps<Props>();
 const downloadFile = () => {

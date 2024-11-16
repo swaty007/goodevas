@@ -46,7 +46,7 @@ import ProductTable from "@/craftable-pro/Components/Product/ProductTable.vue";
 
 interface Props {
   products: PaginatedCollection<Product>;
-  warehouses: Warehouse[]
+  warehouses: Object<string, Warehouse>;
 }
 defineProps<Props>();
 const downloadFile = () => {

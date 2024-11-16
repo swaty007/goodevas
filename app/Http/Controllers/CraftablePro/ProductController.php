@@ -52,7 +52,7 @@ class ProductController extends Controller
 
         return Inertia::render('Product/Index', [
             'products' => $products,
-            'warehouses' => Warehouse::all(),
+            'warehouses' => $this->getWarehouses(),
         ]);
     }
 
@@ -70,7 +70,7 @@ class ProductController extends Controller
 
         return Inertia::render('Product/IndexIncome', [
             'products' => $products,
-            'warehouses' => Warehouse::all(),
+            'warehouses' => $this->getWarehouses(),
         ]);
     }
 
@@ -134,8 +134,6 @@ class ProductController extends Controller
 
             $previousStocks = [];
             $previousIncomes = null;
-            // считать только когда с клада отнимается
-            // делим на количество дней
             $snapshots->each(function (StockSnapshot $snapshot) use (&$totalConsumption, &$totalRestock, &$previousStocks, &$previousIncomes) {
                 $stocks = $snapshot->warehouse_stock['stock'];
                 $incomes = $snapshot->warehouse_stock['income'];

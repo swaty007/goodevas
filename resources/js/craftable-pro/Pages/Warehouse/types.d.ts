@@ -1,17 +1,24 @@
-
+export type WarehouseSettings = {
+    ranges: Array<{
+        min: number;
+        max: number;
+        color: string;
+    }>
+}
 
 export type Warehouse = {
     id: string | number;
-name: string;
+    name: string;
     ysell_name: string;
-created_at: string;
-updated_at: string;
-country_id: varchar
-
+    created_at: string;
+    updated_at: string;
+    country_id: varchar
+    settings: WarehouseSettings
 };
 
 export type WarehouseForm = {
     name: string;
-country_id: string
-hidden: string
+    country_id: string
+    hidden: string
+    settings: WarehouseSettings
 };

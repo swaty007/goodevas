@@ -7,24 +7,13 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     public $withinTransaction = false;
-
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         Schema::table('warehouses', function (Blueprint $table) {
-            // Добавляем новый столбец ysell_name
-            $table->string('ysell_name')->nullable()->unique();
-        });
-
-        // Копируем данные из поля name в поле ysell_name
-        DB::table('warehouses')->update([
-            'ysell_name' => DB::raw('name'),
-        ]);
-
-        Schema::table('warehouses', function (Blueprint $table) {
-            $table->string('ysell_name')->nullable(false)->change();
+            $table->json('settings')->nullable();
         });
     }
 
@@ -34,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('warehouses', function (Blueprint $table) {
-            $table->dropColumn('ysell_name');
+            $table->dropColumn('settings');
         });
     }
 };

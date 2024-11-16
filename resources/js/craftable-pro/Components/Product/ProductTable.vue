@@ -86,7 +86,7 @@
                 {{ $t("global", "Ean") }}
             </ListingHeaderCell>
             <ListingHeaderCell sortBy="product_type_id">
-                {{ $t("global", "Product Type Id") }}
+                {{ $t("global", "Product Type") }}
             </ListingHeaderCell>
             <ListingHeaderCell>
                 {{ $t("global", "Image") }}
@@ -156,9 +156,10 @@
                                         :model-value="getPivotValue(item, warehouse, 'income_quantity')"
                                         name="income_quantity"
                                         class="income__input"
+                                        :inputClass="stockClass(item, warehouse, true)"
                                         @update:model-value="updateProductIncome(item, warehouse, $event)"
                                     />
-                                    <span>
+                                    <span :class="stockClass(item, warehouse, true)">
                                         {{ getPivotValue (item, warehouse, 'income_quantity') }}
                                     </span>
                                 </template>
@@ -280,7 +281,7 @@ import { useListingFilters } from "craftable-pro/hooks/useListingFilters";
 interface Props {
     baseUrl: string;
     products: PaginatedCollection<Product>;
-    warehouses: Warehouse[]
+    warehouses: Object<string, Warehouse>;
     income: boolean
 }
 const props = defineProps<Props>();
@@ -314,25 +315,20 @@ const getPivotValue = (product: Product, warehouse: Warehouse, key) => {
     return wh?.pivot?.[key] ?? 0; // Возвращаем 0 по умолчанию, если данных нет
 };
 
-function stockClass(product: Product, warehouse: Warehouse) {
+function stockClass(product: Product, warehouse: Warehouse, includeIncome: boolean = false) {
     let consumption = product?.stock_changes?.total_consumption?.[warehouse.ysell_name]
     const stock = product?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.stock_quantity
+    const income = includeIncome ? product?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.income_quantity : 0;
     if (consumption !== undefined && stock !== undefined) {
-        consumption = stock / (consumption / filtersForm.days)
-        if (consumption < 45) {
-            return 'text-red-500'; // Deficit (< 45 days)
-        }
-        if (consumption >= 45 && consumption < 90) {
-            return 'text-yellow-500'; // Sufficient stock (45-90 days)
-        }
-        if (consumption >= 90 && consumption <= 120) {
-            return 'text-green-500'; // Ideal stock (90-120 days)
-        }
-        if (consumption > 120 && consumption <= 180) {
-            return 'text-blue-500'; // Overstock (120-180 days)
-        }
-        if (consumption > 180) {
-            return 'text-purple-500'; // Super overstock (> 180 days)
+        consumption = (stock + (income ?? 0)) / (consumption / filtersForm.days)
+        for (const range of warehouse?.settings?.ranges) {
+            if (consumption >= range.from && consumption <= range.to) {
+                return range.color;
+            }
+            if ((range?.min === undefined || consumption >= range.min) &&
+                (range?.max === undefined || consumption <= range.max)) {
+                return `!text-${range.color}-500`;
+            }
         }
     }
 

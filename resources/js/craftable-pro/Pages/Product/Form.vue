@@ -22,7 +22,7 @@
             <Multiselect
                 v-model="form.product_type_id"
                 name="product_type_id"
-                :label="$t('global', 'Product Type Id')"
+                :label="$t('global', 'Product Type')"
                 :options="productTypes"
                 mode="single"
             />

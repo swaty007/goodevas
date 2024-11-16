@@ -27,7 +27,7 @@ class StoreProductRequest extends FormRequest
         return [
             'ext_id' => ['required'],
             'ean' => ['nullable'],
-//            'additional_data' => ['nullable'],
+            //            'additional_data' => ['nullable'],
             'product_type_id' => ['required'],
         ];
     }

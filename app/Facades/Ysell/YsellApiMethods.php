@@ -54,6 +54,7 @@ class YsellApiMethods extends AbstractYsellApi
                 });
                 $productsApi = array_merge($productsApi, $productsApiKey);
             }
+
             return $productsApi;
         });
 

@@ -33,6 +33,57 @@
                 :disabled="true"
             />
 
+            <div v-for="setting in form.settings.ranges" class="flex gap-2 w-full">
+                <TextInput
+                    v-model.number="setting.min"
+                    name="min"
+                    class="w-full"
+                    :label="$t('global', 'Min')"
+                />
+                <TextInput
+                    v-model.number="setting.max"
+                    name="max"
+                    class="w-full"
+                    :label="$t('global', 'Max')"
+                />
+                <Multiselect
+                    v-model="setting.color"
+                    name="color"
+                    class="w-full"
+                    :options="['success',
+                                   'info',
+                                   'warning',
+                                   'danger',
+                                   'primary',
+                                   'secondary',
+                                   'amber',
+                                   'purple',
+                                   'cyan',
+                                   'gray',]"
+                    mode="single"
+                    :label="$t('global', 'Color')"
+                >
+                    <template #singlelabel="{ value }">
+                        <Tag
+                            :color="value.value"
+                            rounded
+                            size="sm"
+                        >
+                            {{ value.value }}
+                        </Tag>
+                    </template>
+                    <template #option="{ option, search }">
+                        <Tag
+                            :color="option.value"
+                            rounded
+                            size="sm"
+                        >
+                            {{ option.value }}
+                        </Tag>
+                    </template>
+                </Multiselect>
+            </div>
+
 
         </div>
       </Card>
@@ -55,14 +106,15 @@ import {
     CardLocaleSwitcher
 } from "craftable-pro/Components";
 import { InertiaForm } from "craftable-pro/types";
-import type { WarehouseForm } from "./types";
+import { WarehouseForm, WarehouseSettings } from "./types";
+import { Tag } from "craftable-pro/Components";
 
 
 
 interface Props {
   form: InertiaForm<WarehouseForm>;
   submit: void;
-
+    defaultSettings: WarehouseSettings
 }
 
 const props = defineProps<Props>();

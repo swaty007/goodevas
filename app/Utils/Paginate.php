@@ -11,13 +11,12 @@ class Paginate
      * @var null
      */
     protected static $defaultSortColumn = null;
+
     /**
-     * @param array $items
-     * @param int|string $perPage
-     * @param int|null $page
-     * @param array|null $searchSymbol
-     * @param string|null $searchKey
-     * @return LengthAwarePaginator
+     * @param  array  $items
+     * @param  int|null  $page
+     * @param  array|null  $searchSymbol
+     * @param  string|null  $searchKey
      */
     public static function paginate($items, int|string $perPage = 5, $page = null, $searchSymbol = null, $searchKey = null): LengthAwarePaginator
     {
@@ -38,6 +37,7 @@ class Paginate
                         str_contains(mb_strtolower($value), mb_strtolower($searchText)) :
                         str_starts_with(mb_strtolower($value), mb_strtolower($searchText));
                 }
+
                 return false;
             });
             $total = count($items);
@@ -50,8 +50,10 @@ class Paginate
                     if (is_array($value)) {
                         return in_array($item[$key], $value);
                     }
+
                     return $item[$key] == $value;
                 }
+
                 return true;
             });
             $total = count($items);
@@ -59,7 +61,7 @@ class Paginate
 
         $sort = Paginator::resolveQueryString()['sort'] ?? self::$defaultSortColumn;
         // Сортировка
-        if ((string)$sort) {
+        if ((string) $sort) {
             $descending = $sort[0] === '-';
             $sort = ltrim($sort, '-');
             $items = $items->{$descending ? 'sortBy' : 'sortByDesc'}($sort);
@@ -72,6 +74,7 @@ class Paginate
         //        array_splice($items, $offset, $perPage);
 
         $urlparts = parse_url(Paginator::resolveCurrentPath()); // for 2 domains fixes
+
         return new LengthAwarePaginator($itemstoshow, $total, $perPage, $page, [
             'path' => $urlparts['path'],
             'query' => Paginator::resolveQueryString(),
@@ -79,13 +82,10 @@ class Paginate
         ]);
     }
 
-    /**
-     * @param $sorts
-     * @return static
-     */
     public static function defaultSort($sorts): static
     {
         static::$defaultSortColumn = $sorts;
-        return new static();
+
+        return new static;
     }
 }
