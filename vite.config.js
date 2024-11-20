@@ -42,4 +42,29 @@ export default defineConfig({
             ],
         },
     },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        const commonLibs = [
+                            'calendar',
+                            'echo',
+                            'axios',
+                            'pusher-js',
+                            'vuex',
+                            'cropperjs',
+                            'vueform',
+                            'chart',
+                        ];
+                        if (commonLibs.some(lib => id.includes(lib))) {
+                            return id.toString().split('node_modules/')[1].split('/')[0].toString();
+                        }
+                        // return id.toString().split('node_modules/')[1].split('/')[0].toString();
+                    }
+                }
+            }
+        },
+        minify: true,
+    }
 });

@@ -5,7 +5,7 @@
     >
         <img
             v-if="src"
-            :src="src"
+            v-lazy="src"
             class="absolute inset-0 h-full w-full object-contain"
             alt=""
         >

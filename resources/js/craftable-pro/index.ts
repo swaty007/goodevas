@@ -13,8 +13,9 @@ import {
 } from "craftable-pro/plugins/laravel-vue-i18n";
 import { can } from "craftable-pro/plugins/can";
 import { PageProps } from "craftable-pro/types/page";
+import VueLazyLoad from "vue3-lazyload"
 
-const appName = "Craftable PRO";
+const appName = "Goodevas PRO";
 
 const lang = document.documentElement.lang
   ? document.documentElement.lang.replace("-", "_")
@@ -66,6 +67,7 @@ createInertiaApp({
           })
           .use(autoAnimatePlugin)
           .use(ZiggyVue)
+          .use(VueLazyLoad)
           .component("Link", Link)
           .directive("can", can)
           .mount(el);

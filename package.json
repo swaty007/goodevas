@@ -3,7 +3,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "serve": "php artisan serve",
+        "serve": "php artisan serve --port=8001",
         "build": "vite build",
         "lint": "eslint resources/js --ext .js,.ts,.vue --ignore-path .gitignore --fix",
         "craftable-pro:dev": "vite --config admin.vite.config.js",
@@ -58,6 +58,7 @@
         "vue-tsc": "^2.0.24"
     },
     "dependencies": {
-        "@inertiajs/vue3": "^1.2.0"
+        "@inertiajs/vue3": "^1.2.0",
+        "vue3-lazyload": "^0.3.8"
     }
 }

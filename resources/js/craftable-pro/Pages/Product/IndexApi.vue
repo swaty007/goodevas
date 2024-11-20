@@ -25,6 +25,27 @@
       dataKey="productsApi"
       :with-bulk-select="false"
     >
+        <template #actions>
+            <FiltersDropdown
+                :active-filters-count="activeFiltersCount"
+                :reset-filters="resetFilters"
+            >
+                <template
+                    v-for="(filter, key) in productsOptions"
+                    :key="key"
+                >
+                    <Multiselect
+                        v-if="filter?.length"
+                        v-model="filtersForm[key]"
+                        :name="key"
+                        :label="key"
+                        :options="filter"
+                        :can-clear="true"
+                    />
+                    <!--                                    :mode="Array.isArray(filtersForm[filter]) ? 'multiple' : 'single'"-->
+                </template>
+            </FiltersDropdown>
+        </template>
       <template #tableHead>
 
         <ListingHeaderCell v-for="(field, key) in productsApi?.data[0]" :sort-by="key">
@@ -82,12 +103,14 @@ import dayjs from "dayjs";
 import { Warehouse } from "@/craftable-pro/Pages/Warehouse/types";
 import { useAction } from "craftable-pro/hooks/useAction";
 import debounce from "lodash/debounce";
+import { useListingFilters } from "craftable-pro/hooks/useListingFilters";
 
 
 
 interface Props {
   productsApi: object[];
   warehouses: Object<string, Warehouse>;
+  productsOptions: Object<string, string[]>;
 }
 defineProps<Props>();
 const downloadFile = () => {
@@ -98,5 +121,12 @@ const downloadFile = () => {
       window.location = route('craftable-pro.products.export');
     }
 }
+
+const { filtersForm, resetFilters, activeFiltersCount } = useListingFilters(
+    route('craftable-pro.products.index-api'),
+    {
+        condition: (usePage().props as unknown as PageProps).filter?.condition ?? [],
+    }
+);
 
 </script>

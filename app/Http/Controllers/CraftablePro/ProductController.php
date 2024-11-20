@@ -76,9 +76,9 @@ class ProductController extends Controller
 
     public function indexApiProducts(IndexProductRequest $request): Response|JsonResponse
     {
-        $productsApi = YsellApiFacade::getProductAllByAllYsellKeys();
+        $productsApiData = YsellApiFacade::getProductAllByAllYsellKeys();
         $productsApi = Paginate::defaultSort('isOpen')->paginate(
-            $productsApi,
+            $productsApiData,
             $request->get('per_page', 100),
             $request->get('page', 1),
             $request->get('filter', [
@@ -88,6 +88,9 @@ class ProductController extends Controller
 
         return Inertia::render('Product/IndexApi', [
             'productsApi' => $productsApi,
+            'productsOptions' => [
+                'condition' => collect($productsApiData)->pluck('condition')->unique()->values(),
+            ],
         ]);
     }
 
