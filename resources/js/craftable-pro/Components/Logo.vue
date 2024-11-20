@@ -2,7 +2,7 @@
   <div>
     <Link :href="route('craftable-pro.home')">
       <span class="sr-only">Craftable PRO</span>
-       <h2><strong>Goodevas</strong></h2>
+       <h2><strong>{{ $t('global', 'Goodevas') }}</strong></h2>
     </Link>
   </div>
 </template>

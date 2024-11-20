@@ -100,14 +100,34 @@
             <ListingHeaderCell>
                 {{ $t("global", "Stock") }}
             </ListingHeaderCell>
-            <template v-for="warehouse in warehouses">
-                <ListingHeaderCell v-if="!warehouse?.virtual || income" class="max-w-[70px]">
-                    {{ warehouse.name }}
-                    <template v-if="income">
-                        / {{ $t("global", "Income") }}
+            <template v-if="income">
+                <template v-for="warehouse in warehousesWithDates">
+                    <template v-if="!warehouse?.virtual">
+                        <ListingHeaderCell v-for="(date, index) of warehouse.futureIncomesDates" class="max-w-[70px] min-w-[70px]">
+                            {{ warehouse.name }}<br>
+                            <span class="text-[9px]">{{ date }}</span>
+                            <div class="flex gap-1">
+                                <ModalDateMove :warehouse="warehouse" :date_from="date" />
+                                <ModalDateAdd
+                                    v-if="index === warehouse.futureIncomesDates.length - 1"
+                                    :warehouse="warehouse"
+                                    @submit="dateSubmit"/>
+                            </div>
+                        </ListingHeaderCell>
                     </template>
-                </ListingHeaderCell>
+                    <ListingHeaderCell v-else class="max-w-[70px]">
+                        {{ warehouse.name }}
+                    </ListingHeaderCell>
+                </template>
             </template>
+            <template v-else>
+                <template v-for="warehouse in warehouses">
+                    <ListingHeaderCell v-if="!warehouse?.virtual" class="max-w-[70px]">
+                        {{ warehouse.name }}
+                    </ListingHeaderCell>
+                </template>
+            </template>
+
             <!--          <ListingHeaderCell sortBy="additional_data">-->
             <!--              {{ $t("global", "Additional Data") }}-->
             <!--          </ListingHeaderCell>-->
@@ -145,37 +165,46 @@
             <ListingDataCell>
                 {{ item?.additional_data?.netto }}
             </ListingDataCell>
-            <template v-for="warehouse in warehouses">
-                <template v-if="!warehouse?.virtual || income">
-                    <ListingDataCell class="max-w-[70px]">
+            <template v-if="income">
+                <template v-for="warehouse in warehousesWithDates">
+                    <template v-if="!warehouse?.virtual">
+                        <template v-for="date in warehouse.futureIncomesDates">
+                        <ListingDataCell class="max-w-[70px]">
+                            <div class="flex gap-2 items-center">
+                                <TextInput
+                                    v-can="'global.product.edit-income'"
+                                    :model-value="getIncomeByDateAndWarehouse(item, warehouse, date)"
+                                    name="income_quantity"
+                                    class="income__input"
+                                    :inputClass="stockClass(item, warehouse, getIncomeByDateAndWarehouse(item, warehouse, date))"
+                                    @update:model-value="updateProductIncome(item, warehouse, date, $event)"
+                                />
+                                <span :class="stockClass(item, warehouse, getIncomeByDateAndWarehouse(item, warehouse, date))">
+                                    {{ getIncomeByDateAndWarehouse(item, warehouse, date) }}
+                                </span>
+                            </div>
+                        </ListingDataCell>
+                        </template>
+                    </template>
+                    <ListingDataCell v-else class="max-w-[70px]">
                         <div class="flex gap-2 items-center">
-                            <template v-if="income">
-                                <template v-if="!warehouse?.virtual && income">
-                                    <TextInput
-                                        v-can="'global.product.edit-income'"
-                                        :model-value="getPivotValue(item, warehouse, 'income_quantity')"
-                                        name="income_quantity"
-                                        class="income__input"
-                                        :inputClass="stockClass(item, warehouse, true)"
-                                        @update:model-value="updateProductIncome(item, warehouse, $event)"
-                                    />
-                                    <span :class="stockClass(item, warehouse, true)">
-                                        {{ getPivotValue (item, warehouse, 'income_quantity') }}
-                                    </span>
-                                </template>
-                                <strong v-else>
-                                    {{ getPivotValue(item, warehouse, 'stock_quantity') }}
-                                </strong>
-                            </template>
-                            <strong v-else>
-                                <div :class="stockClass(item, warehouse)">
-                                    {{ getPivotValue(item, warehouse, 'stock_quantity') }}
-                                </div>
-                            </strong>
+                            {{ getPivotValue(item, warehouse, 'stock_quantity') }}
                         </div>
                     </ListingDataCell>
                 </template>
             </template>
+            <template v-else>
+                <template v-for="warehouse in warehouses">
+                    <ListingDataCell v-if="!warehouse?.virtual" class="max-w-[70px]">
+                        <div class="flex gap-2 items-center">
+                            <div :class="stockClass(item, warehouse)">
+                                {{ getPivotValue(item, warehouse, 'stock_quantity') }}
+                            </div>
+                        </div>
+                    </ListingDataCell>
+                </template>
+            </template>
+
             <!--          <ListingDataCell>-->
             <!--             <pre>-->
             <!--                 {{ item.additional_data }}-->
@@ -275,6 +304,9 @@ import { Warehouse } from "@/craftable-pro/Pages/Warehouse/types";
 import { useAction } from "craftable-pro/hooks/useAction";
 import debounce from "lodash/debounce";
 import { useListingFilters } from "craftable-pro/hooks/useListingFilters";
+import { computed, ref } from "vue";
+import ModalDateAdd from "@/craftable-pro/Components/Product/ModalDateAdd.vue";
+import ModalDateMove from "@/craftable-pro/Components/Product/ModalDateMove.vue";
 
 
 
@@ -289,7 +321,7 @@ const props = defineProps<Props>();
 const { filtersForm, resetFilters, activeFiltersCount } = useListingFilters(
     props.baseUrl,
     {
-        days: (usePage().props as PageProps)?.filter?.group ?? 7,
+        days: (usePage().props as PageProps)?.filter?.group ?? 6,
     }
 );
 const downloadFile = () => {
@@ -301,12 +333,37 @@ const downloadFile = () => {
     }
 }
 
+function dateSubmit(form) {
+    const date = form.date
+    mergeDates.value.push({
+        warehouse_id: form.warehouse.id,
+        income_date: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+    });
+}
+
+const mergeDates = ref([]);
+
+const warehousesWithDates = computed(() => {
+    return Object.values(props.warehouses).map(warehouse => {
+        const futureIncomesDates = Array.from(new Set([
+            ...warehouse.futureIncomesDates,
+            ...mergeDates.value.filter(d => d.warehouse_id === warehouse.id).map(d => d.income_date)
+        ]))
+            .sort((a, b) => new Date(a) - new Date(b));
+
+        return {
+            ...warehouse,
+            futureIncomesDates
+        }
+    });
+});
+
 const { action } = useAction();
 
-const updateProductIncome = debounce((product: Product, warehouse: Warehouse, value: string) => {
+const updateProductIncome = debounce((product: Product, warehouse: Warehouse, date: string, value: string) => {
     action('patch',
         route('craftable-pro.products.update-income', {product: product.id, warehouse: warehouse.id }),
-        { income_quantity: value }
+        { income_quantity: value, income_date: date }
     )
 }, 1000);
 
@@ -315,10 +372,14 @@ const getPivotValue = (product: Product, warehouse: Warehouse, key) => {
     return wh?.pivot?.[key] ?? 0; // Возвращаем 0 по умолчанию, если данных нет
 };
 
-function stockClass(product: Product, warehouse: Warehouse, includeIncome: boolean = false) {
+const getIncomeByDateAndWarehouse = (product: Product, warehouse: Warehouse, date: string) => {
+    return product.incomes?.find(income => income.income_date === date && income.warehouse_id === warehouse.id)?.quantity ?? 0; // Возвращаем 0 по умолчанию, если данных нет
+};
+
+function stockClass(product: Product, warehouse: Warehouse, income: number = 0) {
     let consumption = product?.stock_changes?.total_consumption?.[warehouse.ysell_name]
     const stock = product?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.stock_quantity
-    const income = includeIncome ? product?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.income_quantity : 0;
+    // const income = includeIncome ? product?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.income_quantity : 0;
     if (consumption !== undefined && stock !== undefined) {
         consumption = (stock + (income ?? 0)) / (consumption / filtersForm.days)
         for (const range of warehouse?.settings?.ranges) {
@@ -333,6 +394,17 @@ function stockClass(product: Product, warehouse: Warehouse, includeIncome: boole
     }
 
     return '';
+}
+
+function getNextDay(dateString) {
+    const date = new Date(dateString);
+    date.setDate(date.getDate() + 1); // Додаємо один день
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Місяці в JavaScript починаються з 0
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
 }
 
 </script>

@@ -14,6 +14,7 @@ export type Warehouse = {
     updated_at: string;
     country_id: varchar
     settings: WarehouseSettings
+    futureIncomesDates: Array<string>
 };
 
 export type WarehouseForm = {

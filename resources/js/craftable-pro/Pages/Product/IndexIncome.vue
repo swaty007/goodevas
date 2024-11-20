@@ -16,6 +16,7 @@
     >
       {{ $t("global", "Export") }}
     </Button>
+      <ProductIncomeImport />
   </PageHeader>
 
   <PageContent>
@@ -43,18 +44,20 @@ import { PaginatedCollection } from "craftable-pro/types/pagination";
 import type { Product } from "./types";
 import { Warehouse } from "@/craftable-pro/Pages/Warehouse/types";
 import ProductTable from "@/craftable-pro/Components/Product/ProductTable.vue";
+import ProductIncomeImport from "@/craftable-pro/Components/Product/ProductIncomeImport.vue";
 
 interface Props {
   products: PaginatedCollection<Product>;
   warehouses: Object<string, Warehouse>;
+  futureIncomeDates?: Object<string, string>;
 }
 defineProps<Props>();
 const downloadFile = () => {
     const url = window.location.href.split("?");
     if(url.length > 1) {
-      window.location = route('craftable-pro.products.export', url.pop()).slice(0, -1);
+      window.location = route('craftable-pro.products.export-income', url.pop()).slice(0, -1);
     } else {
-      window.location = route('craftable-pro.products.export');
+      window.location = route('craftable-pro.products.export-income');
     }
 }
 </script>

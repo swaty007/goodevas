@@ -4,8 +4,9 @@ namespace App\Http\Requests\CraftablePro\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rules\File;
 
-class IndexProductRequest extends FormRequest
+class ImportProductIncomeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,7 +15,7 @@ class IndexProductRequest extends FormRequest
      */
     public function authorize()
     {
-        return Gate::allows('global.product.index');
+        return Gate::allows('global.product.edit-income');
     }
 
     /**
@@ -25,10 +26,7 @@ class IndexProductRequest extends FormRequest
     public function rules()
     {
         return [
-            'format' => ['sometimes', 'string', 'in:xls,xlsx,csv'],
-            'search' => ['sometimes', 'string'],
-            'per_page' => ['sometimes', 'integer'],
-            'bulk_select_all' => ['sometimes', 'boolean'],
+            'file' => ['required', File::types(['csv', 'xls', 'xlsx'])],
         ];
     }
 }

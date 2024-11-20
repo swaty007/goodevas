@@ -26,6 +26,8 @@ return new class extends Migration
             $table->integer('stock_quantity')->default(0);
             $table->integer('income_quantity')->default(0);
             $table->timestamps();
+
+            $table->unique(['product_id', 'warehouse_id']);
         });
     }
 

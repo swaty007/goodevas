@@ -58,10 +58,21 @@ class Warehouse extends Model
         return collect(json_decode($value, true) ?: $this->defaultSettings());
     }
 
-
-    public function products()
+    public function products(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Product::class)->withPivot(['stock_quantity', 'income_quantity'])->withTimestamps();
+    }
+
+    public function incomes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ProductIncome::class, 'warehouse_id');
+    }
+
+    public function futureIncomesDates(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->incomes()
+            ->where('income_date', '>', now()->subDay()->format('Y-m-d'))
+            ->orderBy('income_date', 'asc');
     }
 
     public function getActivitylogOptions(): LogOptions

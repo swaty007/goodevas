@@ -9,13 +9,15 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class ProductsExport implements FromCollection, WithHeadings, WithMapping
+class ProductsIncomeExport implements FromCollection, WithHeadings, WithMapping
 {
     protected mixed $request;
 
     protected ProductService $productService;
 
     protected Collection $warehouses;
+
+    public const separator = ':'; // separator for warehouse id and date
 
     public function __construct($request)
     {
@@ -38,11 +40,15 @@ class ProductsExport implements FromCollection, WithHeadings, WithMapping
             $row->ext_id,
             $row->ean,
             $row->type->name,
-            $row->additional_data,
+            // $row->additional_data,
         ];
         $this->warehouses->each(function (Warehouse $warehouse) use (&$data, $row) {
             if (! $warehouse->virtual) {
-                $data[] = $row->warehouses->where('id', $warehouse->id)->first()?->pivot->stock_quantity;
+                foreach ($warehouse->futureIncomesDates as $date) {
+                    $data[] = $row->incomes->where('warehouse_id', $warehouse->id)->where('income_date', $date)
+//                        ->first()?->quantity;
+                        ->sum('quantity');
+                }
             }
         });
 
@@ -55,11 +61,13 @@ class ProductsExport implements FromCollection, WithHeadings, WithMapping
             'ext_id',
             'ean',
             'type',
-            'additional_data',
+            // 'additional_data',
         ];
         $this->warehouses->each(function (Warehouse $warehouse) use (&$headings) {
             if (! $warehouse->virtual) {
-                $headings[] = $warehouse->name;
+                foreach ($warehouse->futureIncomesDates as $date) {
+                    $headings[] = $warehouse->id.self::separator.$warehouse->name.self::separator.' '.$date;
+                }
             }
         });
 

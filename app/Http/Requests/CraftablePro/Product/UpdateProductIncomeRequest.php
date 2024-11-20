@@ -26,6 +26,7 @@ class UpdateProductIncomeRequest extends FormRequest
     {
         return [
             'income_quantity' => ['required', 'numeric', 'integer', 'min:0'],
+            'income_date' => ['required', 'date'],
         ];
     }
 }

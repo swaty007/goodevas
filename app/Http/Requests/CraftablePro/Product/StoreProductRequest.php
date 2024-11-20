@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\CraftablePro\Product;
 
+use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class StoreProductRequest extends FormRequest
 {
@@ -25,7 +27,7 @@ class StoreProductRequest extends FormRequest
     public function rules()
     {
         return [
-            'ext_id' => ['required'],
+            'ext_id' => ['required', Rule::unique(Product::class)],
             'ean' => ['nullable'],
             //            'additional_data' => ['nullable'],
             'product_type_id' => ['required'],

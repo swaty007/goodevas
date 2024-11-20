@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stock_snapshots', function (Blueprint $table) {
+        Schema::create('product_incomes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->foreignId('warehouse_id')->constrained('warehouses')->onDelete('cascade');
-            $table->date('snapshot_date')->index();
-            $table->json('warehouse_stock'); // Хранит данные о количестве по каждому складу в формате JSON
+            $table->date('income_date')->index();
+            $table->integer('quantity');
             $table->timestamps();
+
+            $table->unique(['product_id', 'warehouse_id', 'income_date']);
         });
     }
 
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stock_snapshots');
+        Schema::dropIfExists('product_incomes');
     }
 };

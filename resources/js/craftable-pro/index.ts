@@ -15,7 +15,7 @@ import { can } from "craftable-pro/plugins/can";
 import { PageProps } from "craftable-pro/types/page";
 import VueLazyLoad from "vue3-lazyload"
 
-const appName = "Goodevas PRO";
+const appName = "Stock PRO";
 
 const lang = document.documentElement.lang
   ? document.documentElement.lang.replace("-", "_")

@@ -7,6 +7,16 @@ export type StockChange = {
     };
 };
 
+export type ProductIncome = {
+    id: string | number;
+    product_id: string | number;
+    warehouse_id: string | number;
+    quantity: number;
+    income_date: string;
+    created_at: string;
+    updated_at: string;
+}
+
 export type Product = {
     id: string | number;
     ext_id: string;
@@ -16,6 +26,7 @@ export type Product = {
     created_at: string;
     updated_at: string
     stock_changes: StockChange
+    income: ProductIncome[]
 };
 
 export type ProductForm = {

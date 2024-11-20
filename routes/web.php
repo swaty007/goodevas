@@ -29,9 +29,12 @@ Route::middleware('craftable-pro-middlewares')->prefix('admin')->name('craftable
     Route::get('products/create', [App\Http\Controllers\CraftablePro\ProductController::class, 'create'])->name('products.create');
     Route::post('products', [App\Http\Controllers\CraftablePro\ProductController::class, 'store'])->name('products.store');
     Route::get('products/export', [App\Http\Controllers\CraftablePro\ProductController::class, 'export'])->name('products.export');
+    Route::get('products/export/income', [App\Http\Controllers\CraftablePro\ProductController::class, 'exportIncome'])->name('products.export-income');
+    Route::post('products/import/income', [App\Http\Controllers\CraftablePro\ProductController::class, 'importIncome'])->name('products.import-income');
     Route::get('products/edit/{product}', [App\Http\Controllers\CraftablePro\ProductController::class, 'edit'])->name('products.edit');
     Route::match(['put', 'patch'], 'products/{product}', [App\Http\Controllers\CraftablePro\ProductController::class, 'update'])->name('products.update');
     Route::match(['put', 'patch'], 'products-income/{product}/{warehouse}', [App\Http\Controllers\CraftablePro\ProductController::class, 'updateIncome'])->name('products.update-income');
+    Route::post('products/move-incomes/{warehouse}', [App\Http\Controllers\CraftablePro\ProductController::class, 'moveIncomes'])->name('products.move-income');
     Route::delete('products/{product}', [App\Http\Controllers\CraftablePro\ProductController::class, 'destroy'])->name('products.destroy');
     Route::post('products/bulk-destroy', [App\Http\Controllers\CraftablePro\ProductController::class, 'bulkDestroy'])->name('products.bulk-destroy');
 
