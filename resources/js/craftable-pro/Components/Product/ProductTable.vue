@@ -5,6 +5,44 @@
         dataKey="products"
     >
         <template #actions>
+            <div class="flex flex-wrap gap-1">
+                <Tag
+                    color="danger"
+                    rounded
+                    size="sm"
+                >
+                    {{ $t('global', 'Critical') }}
+                </Tag>
+                <Tag
+                    color="warning"
+                    rounded
+                    size="sm"
+                >
+                    {{ $t('global', 'Shortage') }}
+                </Tag>
+                <Tag
+                    color="success"
+                    rounded
+                    size="sm"
+                >
+                    {{ $t('global', 'Normal') }}
+                </Tag>
+                <Tag
+                    color="info"
+                    rounded
+                    size="sm"
+                >
+                    {{ $t('global', 'Stocked') }}
+                </Tag>
+                <Tag
+                    color="purple"
+                    rounded
+                    size="sm"
+                >
+                    {{ $t('global', 'Surplus') }}
+                </Tag>
+            </div>
+
             <FiltersDropdown
                 :activeFiltersCount="activeFiltersCount"
                 :resetFilters="resetFilters"
@@ -294,7 +332,7 @@ import {
     IconButton,
     FiltersDropdown,
     Publish,
-    TextInput,
+    TextInput, Tag,
 } from "craftable-pro/Components";
 import { PaginatedCollection } from "craftable-pro/types/pagination";
 import type { Product } from "@/craftable-pro/Pages/Product/types";

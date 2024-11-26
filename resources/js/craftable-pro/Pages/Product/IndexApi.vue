@@ -48,27 +48,38 @@
         </template>
       <template #tableHead>
 
-        <ListingHeaderCell v-for="(field, key) in productsApi?.data[0]" :sort-by="key">
-            {{ key }}
-        </ListingHeaderCell>
+          <template v-for="(field, key) in productsApi?.data[0]" :key="key">
+              <ListingHeaderCell v-if="tableColumns.includes(key)" :sort-by="key">
+                  {{ key }}
+              </ListingHeaderCell>
+          </template>
+          <ListingHeaderCell v-for="warehouse in warehouses" class="max-w-[70px]" :key="warehouse.id">
+              {{ warehouse.name }}
+          </ListingHeaderCell>
         <ListingHeaderCell>
           <span class="sr-only">{{ $t("global", "Actions") }}</span>
         </ListingHeaderCell>
       </template>
       <template #tableRow="{ item, action }: any">
-        <ListingDataCell v-for="(field, key) in productsApi?.data[0]">
-            <Avatar
-                v-if="key === 'image'"
-                :src="field"
-                name="Logo"
-            />
-             <pre v-else-if="key === 'warehouseStock'">
-                 {{ field }}
-             </pre>
-            <template v-else>
-                {{ field }}
-            </template>
-        </ListingDataCell>
+          <template v-for="(field, key) in productsApi?.data[0]" :key="key">
+              <ListingDataCell v-if="tableColumns.includes(key)" :sort-by="key">
+                  <Avatar
+                      v-if="key === 'image'"
+                      :src="item[key]"
+                      size="sm"
+                      name="Logo"
+                  />
+                  <pre v-else-if="key === 'warehouseStock'">
+                      {{ item[key] }}
+                  </pre>
+                  <template v-else>
+                      {{ item[key] }}
+                  </template>
+              </ListingDataCell>
+          </template>
+          <ListingHeaderCell v-for="warehouse in warehouses" class="max-w-[70px]" :key="warehouse.id">
+              {{ item?.warehouseStock.find((stock: any) => stock.warehouse.name === warehouse.ysell_name)?.qty ?? 0 }}
+          </ListingHeaderCell>
       </template>
     </Listing>
   </PageContent>
@@ -113,6 +124,14 @@ interface Props {
   productsOptions: Object<string, string[]>;
 }
 defineProps<Props>();
+
+const tableColumns: string[] = [
+    // "id",
+    "ext_id",
+    "title",
+    "condition",
+    "image",
+];
 const downloadFile = () => {
     const url = window.location.href.split("?");
     if(url.length > 1) {

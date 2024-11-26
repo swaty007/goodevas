@@ -81,6 +81,7 @@ class ProductController extends Controller
     public function indexApiProducts(IndexProductRequest $request): Response|JsonResponse
     {
         $productsApiData = YsellApiFacade::getProductAllByAllYsellKeys();
+        $productsApiData = collect($productsApiData)->filter(fn ($item) => $item['condition'] !== 'New');
         $productsApi = Paginate::defaultSort('isOpen')->paginate(
             $productsApiData,
             $request->get('per_page', 100),
@@ -95,6 +96,7 @@ class ProductController extends Controller
             'productsOptions' => [
                 'condition' => collect($productsApiData)->pluck('condition')->unique()->values(),
             ],
+            'warehouses' => $this->productService->getWarehouses(),
         ]);
     }
 
