@@ -159,8 +159,9 @@ class ProductController extends Controller
         //            ],
         //        ]);
         $data = $request->validated();
-        $product->incomes()->updateOrCreate([
-            'warehouse_id' => $warehouse->id,
+        ProductIncome::updateOrCreate([
+            'product_id' => $product->id,
+            'warehouse_id' => (int) $warehouse->id,
             'income_date' => $data['income_date'],
         ], [
             'quantity' => $data['income_quantity'],

@@ -214,10 +214,10 @@
                                     :model-value="getIncomeByDateAndWarehouse(item, warehouse, date)"
                                     name="income_quantity"
                                     class="income__input"
-                                    :inputClass="stockClass(item, warehouse, getIncomeByDateAndWarehouse(item, warehouse, date))"
+                                    :inputClass="stockClass(item, warehouse, getIncomeByWarehouse(item, warehouse, date))"
                                     @update:model-value="updateProductIncome(item, warehouse, date, $event)"
                                 />
-                                <span :class="stockClass(item, warehouse, getIncomeByDateAndWarehouse(item, warehouse, date))">
+                                <span :class="stockClass(item, warehouse, getIncomeByWarehouse(item, warehouse, date))">
                                     {{ getIncomeByDateAndWarehouse(item, warehouse, date) }}
                                 </span>
                             </div>
@@ -414,6 +414,10 @@ const getIncomeByDateAndWarehouse = (product: Product, warehouse: Warehouse, dat
     return product.incomes?.find(income => income.income_date === date && income.warehouse_id === warehouse.id)?.quantity ?? 0; // Возвращаем 0 по умолчанию, если данных нет
 };
 
+const getIncomeByWarehouse = (product: Product, warehouse: Warehouse) => {
+    return product.incomes?.filter(income => income.warehouse_id === warehouse.id).reduce((acc, income) => acc + income.quantity, 0) ?? 0; // Возвращаем 0 по умолчанию, если данных нет
+};
+
 function stockClass(product: Product, warehouse: Warehouse, income: number = 0) {
     let consumption = product?.stock_changes?.total_consumption?.[warehouse.ysell_name]
     const stock = product?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.stock_quantity
@@ -448,6 +452,11 @@ function getNextDay(dateString) {
 </script>
 
 <style lang="scss" scoped>
+.income__input :deep(input) {
+    background: transparent!important;
+    border:none!important;
+    box-shadow: none!important;
+}
 .income__input + * {
     display: none;
 }
