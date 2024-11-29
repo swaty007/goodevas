@@ -25,6 +25,7 @@ Route::craftablePro('admin');
 Route::middleware('craftable-pro-middlewares')->prefix('admin')->name('craftable-pro.')->group(function () {
     Route::get('products', [App\Http\Controllers\CraftablePro\ProductController::class, 'index'])->name('products.index');
     Route::get('income-products', [App\Http\Controllers\CraftablePro\ProductController::class, 'indexIncome'])->name('products.index-income');
+    Route::get('income-forecast', [App\Http\Controllers\CraftablePro\ProductController::class, 'indexForecast'])->name('products.index-forecast');
     Route::get('api-products', [App\Http\Controllers\CraftablePro\ProductController::class, 'indexApiProducts'])->name('products.index-api');
     Route::get('products/create', [App\Http\Controllers\CraftablePro\ProductController::class, 'create'])->name('products.create');
     Route::post('products', [App\Http\Controllers\CraftablePro\ProductController::class, 'store'])->name('products.store');

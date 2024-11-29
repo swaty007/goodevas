@@ -158,6 +158,13 @@
                     </ListingHeaderCell>
                 </template>
             </template>
+            <template v-else-if="forecast">
+                <template v-for="warehouse in warehouses">
+                    <ListingHeaderCell v-if="!warehouse?.virtual" class="">
+                        {{ warehouse.name }}
+                    </ListingHeaderCell>
+                </template>
+            </template>
             <template v-else>
                 <template v-for="warehouse in warehouses">
                     <ListingHeaderCell v-if="!warehouse?.virtual" class="max-w-[70px]">
@@ -227,6 +234,32 @@
                     <ListingDataCell v-else class="max-w-[70px]">
                         <div class="flex gap-2 items-center">
                             {{ getPivotValue(item, warehouse, 'stock_quantity') }}
+                        </div>
+                    </ListingDataCell>
+                </template>
+            </template>
+            <template v-else-if="forecast">
+                <template v-for="warehouse in warehouses">
+                    <ListingDataCell v-if="!warehouse?.virtual" class="">
+                        <div class="flex gap-2 items-center relative tooltip">
+                            <div :class="stockClass(item, warehouse, getIncomeByWarehouse(item, warehouse, date))">
+                                {{ ((getConsumption(item, warehouse)  / filtersForm.days)  *
+                                getMinMaxRange(warehouse, 'success').min) -
+                                     (getPivotValue(item, warehouse, 'stock_quantity') + getIncomeByDateAndWarehouse(item, warehouse, date)) }}
+                                /
+                                {{ (((getConsumption(item, warehouse)  / filtersForm.days))  *
+                                getMinMaxRange(warehouse, 'success').max) -
+                            (getPivotValue(item, warehouse, 'stock_quantity') + getIncomeByDateAndWarehouse(item, warehouse, date)) }}
+
+                            </div>
+                            <span class="tooltip__text bg-gray-800 dark:bg-gray-100 text-gray-100 dark:text-gray-700">
+                                {{ $t("global", "Income") }}: {{ getIncomeByDateAndWarehouse(item, warehouse, date) }} <br>
+                                {{ $t("global", "Stock") }}: {{ getPivotValue(item, warehouse, 'stock_quantity') }} <br>
+                                {{ $t("global", "Consumption") }}: {{ getConsumption(item, warehouse) }} / {{ (getConsumption(item, warehouse)  / filtersForm.days).toFixed(2) }} - per day <br>
+                                {{ $t("global", "Min") }}: {{ getMinMaxRange(warehouse, 'success').min }} <br>
+                                {{ $t("global", "Max") }}: {{ getMinMaxRange(warehouse, 'success').max }} <br>
+                                ({{ $t("global", "Consumption") }} * {{ $t("global", "Min") }}/{{ $t("global", "Max") }}) - ({{ $t("global", "Stock") }} + {{ $t("global", "Income") }}) <br>
+                            </span>
                         </div>
                     </ListingDataCell>
                 </template>
@@ -352,7 +385,8 @@ interface Props {
     baseUrl: string;
     products: PaginatedCollection<Product>;
     warehouses: Object<string, Warehouse>;
-    income: boolean
+    income?: boolean
+    forecast?: boolean
 }
 const props = defineProps<Props>();
 
@@ -418,9 +452,17 @@ const getIncomeByWarehouse = (product: Product, warehouse: Warehouse) => {
     return product.incomes?.filter(income => income.warehouse_id === warehouse.id).reduce((acc, income) => acc + income.quantity, 0) ?? 0; // Возвращаем 0 по умолчанию, если данных нет
 };
 
+const getConsumption = (product: Product, warehouse: Warehouse) => {
+    return product?.stock_changes?.total_consumption?.[warehouse.ysell_name] ?? 0;
+};
+
+const getMinMaxRange = (warehouse: Warehouse, color) => {
+    return warehouse?.settings?.ranges.find(r => r.color === color) ?? {};
+};
+
 function stockClass(product: Product, warehouse: Warehouse, income: number = 0) {
-    let consumption = product?.stock_changes?.total_consumption?.[warehouse.ysell_name]
-    const stock = product?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.stock_quantity
+    let consumption = product?.stock_changes?.total_consumption?.[warehouse.ysell_name] ?? 0;
+    const stock = getPivotValue(product, warehouse, 'stock_quantity');
     // const income = includeIncome ? product?.warehouses?.find(wh => wh.id === warehouse.id)?.pivot?.income_quantity : 0;
     if (consumption !== undefined && stock !== undefined) {
         consumption = (stock + (income ?? 0)) / (consumption / filtersForm.days)
@@ -459,5 +501,36 @@ function getNextDay(dateString) {
 }
 .income__input + * {
     display: none;
+}
+
+.tooltip {
+    &:hover .tooltip__text {
+        visibility: visible;
+    }
+    &__text {
+        visibility: hidden;
+        width: 100%;
+        min-width: 220px;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 6px;
+
+        /* Position the tooltip text - see examples below! */
+        position: absolute;
+        z-index: 420;
+        bottom: 50%;
+        transform: translate(0px, 50%);
+        left: 100%;
+        &::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: black transparent transparent transparent;
+        }
+    }
 }
 </style>

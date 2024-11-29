@@ -69,9 +69,28 @@ class ProductController extends Controller
 
         $products = $this->productService->getProductsFromQuery($productsQuery, $request->get('per_page') ?? 100);
 
-        Session::put('products_url', $request->fullUrl());
+        Session::put('products_url_income', $request->fullUrl());
 
         return Inertia::render('Product/IndexIncome', [
+            'products' => $products,
+            'warehouses' => $this->productService->getWarehouses(),
+            // 'futureIncomeDates' => $this->productService->getFutureIncomeDatesByWarehouse(),
+        ]);
+    }
+
+    public function indexForecast(IndexProductRequest $request): Response|JsonResponse
+    {
+        $productsQuery = $this->productService->getProductionQuery();
+
+        if ($request->wantsJson() && $request->get('bulk_select_all')) {
+            return response()->json($productsQuery->select(['id'])->pluck('id'));
+        }
+
+        $products = $this->productService->getProductsFromQuery($productsQuery, $request->get('per_page') ?? 100);
+
+        Session::put('products_url_income', $request->fullUrl());
+
+        return Inertia::render('Product/IndexForecast', [
             'products' => $products,
             'warehouses' => $this->productService->getWarehouses(),
             // 'futureIncomeDates' => $this->productService->getFutureIncomeDatesByWarehouse(),

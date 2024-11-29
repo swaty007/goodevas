@@ -31,6 +31,13 @@
           >
               {{ $t("global", "Products Api") }}
           </SidebarItem>
+          <SidebarItem
+              :href="route('craftable-pro.products.index-forecast')"
+              :icon="CubeTransparentIcon"
+              v-can="'global.product.index'"
+          >
+              {{ $t("global", "Forecast") }}
+          </SidebarItem>
                     <SidebarItem
                         :href="route('craftable-pro.product-types.index')"
                         :icon="CubeTransparentIcon"

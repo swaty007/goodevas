@@ -103,7 +103,7 @@
             </CardHeader>
         </template>
 
-        <div class="overflow-x-auto">
+        <div :class="{'overflow-x-auto': overflow, 'overflow-x-auto-disable': !overflow}">
             <div class="inline-block min-w-full align-middle">
                 <div class="relative overflow-hidden md:overflow-visible">
                     <EmptyListing v-if="!collection?.length" />
@@ -221,6 +221,7 @@ interface Props {
     withBulkSelect?: boolean;
     filters?: object;
     withPagination?: boolean;
+    overflow?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -228,6 +229,7 @@ const props = withDefaults(defineProps<Props>(), {
     baseUrl: route(route().current(), route().params),
     dataKey: "data",
     withPagination: true,
+    overflow: true,
 });
 
 provide("listingBaseUrl", props.baseUrl);
