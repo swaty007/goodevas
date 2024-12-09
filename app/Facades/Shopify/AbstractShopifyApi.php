@@ -11,7 +11,6 @@ use RuntimeException;
 
 abstract class AbstractShopifyApi extends AbstractApiRequest
 {
-
     protected function getClient(): PendingRequest
     {
         if (! $this->authKey) {

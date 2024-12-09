@@ -9,7 +9,7 @@ use Inertia\Response;
 
 class EtsyController extends Controller
 {
-    public function oAuth(Request $request): Response | RedirectResponse
+    public function oAuth(Request $request): Response|RedirectResponse
     {
         $client = new \Etsy\OAuth\Client('jzae6zlwpzxaany52klvyr33');
 
@@ -30,6 +30,7 @@ class EtsyController extends Controller
             $code_challenge,
             $nonce
         );
+
         return redirect($url);
     }
 

@@ -67,6 +67,15 @@ Route::middleware('craftable-pro-middlewares')->prefix('admin')->name('craftable
     Route::match(['put', 'patch'], 'warehouses/{warehouse}', [App\Http\Controllers\CraftablePro\WarehouseController::class, 'update'])->name('warehouses.update');
     Route::delete('warehouses/{warehouse}', [App\Http\Controllers\CraftablePro\WarehouseController::class, 'destroy'])->name('warehouses.destroy');
     Route::post('warehouses/bulk-destroy', [App\Http\Controllers\CraftablePro\WarehouseController::class, 'bulkDestroy'])->name('warehouses.bulk-destroy');
+
+    Route::get('api-keys', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'index'])->name('api-keys.index');
+    Route::get('api-keys/create', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'create'])->name('api-keys.create');
+    Route::post('api-keys', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'store'])->name('api-keys.store');
+    Route::get('api-keys/export', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'export'])->name('api-keys.export');
+    Route::get('api-keys/edit/{apiKey}', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'edit'])->name('api-keys.edit');
+    Route::match(['put', 'patch'], 'api-keys/{apiKey}', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'update'])->name('api-keys.update');
+    Route::delete('api-keys/{apiKey}', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'destroy'])->name('api-keys.destroy');
+    Route::post('api-keys/bulk-destroy', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'bulkDestroy'])->name('api-keys.bulk-destroy');
 });
 
 Route::get('etsy/oauth', [App\Http\Controllers\EtsyController::class, 'oAuth'])->name('etsy.oauth');

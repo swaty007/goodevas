@@ -6,27 +6,21 @@
         size="md"
         @click="toggleDarkMode"
     >
-        <SunIcon
-            v-if="!isDarkMode"
-            class="h-5 w-5"
-        />
-        <MoonIcon
-            v-if="isDarkMode"
-            class="h-5 w-5"
-        />
+        <SunIcon v-if="!isDarkMode" class="h-5 w-5" />
+        <MoonIcon v-if="isDarkMode" class="h-5 w-5" />
     </Button>
 </template>
 
 <script setup lang="ts">
-import { SunIcon, MoonIcon } from "@heroicons/vue/24/solid";
-import { Button } from "craftable-pro/Components";
-import { onMounted, ref } from "vue";
+import { MoonIcon, SunIcon } from '@heroicons/vue/24/solid';
+import { Button } from 'craftable-pro/Components';
+import { onMounted, ref } from 'vue';
 
 const isDarkMode = ref(false);
 
 const toggleDarkMode = () => {
-    isDarkMode.value = !isDarkMode.value
-    setDarkMode(isDarkMode.value)
+    isDarkMode.value = !isDarkMode.value;
+    setDarkMode(isDarkMode.value);
 };
 
 const setDarkMode = (darkMode: boolean) => {
@@ -38,18 +32,19 @@ const setDarkMode = (darkMode: boolean) => {
         document.documentElement.classList.remove('dark');
         localStorage.theme = 'light';
     }
-}
+};
 
 onMounted(() => {
     if (
         localStorage.theme === 'dark' ||
-        (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        setDarkMode(true)
+        (!('theme' in localStorage) &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+        setDarkMode(true);
     } else {
-        setDarkMode(false)
+        setDarkMode(false);
     }
 });
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

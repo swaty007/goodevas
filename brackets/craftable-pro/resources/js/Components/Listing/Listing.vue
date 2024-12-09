@@ -126,7 +126,7 @@
                                         :column="column"
                                         :index="index"
                                     >
-                                        <ListingHeaderCell v-width-dragging
+                                        <ListingHeaderCell
                                             v-width-dragging
                                             :sort-by="column"
                                         >

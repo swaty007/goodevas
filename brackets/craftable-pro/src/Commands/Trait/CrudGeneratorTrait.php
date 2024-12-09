@@ -513,7 +513,7 @@ trait CrudGeneratorTrait
     protected function appendLinkInSidebar()
     {
         $this->components->task('Sidebar', function () {
-            $permission = 'craftable-pro.'.Str::kebab($this->className).'.index';
+            $permission = 'global.'.Str::kebab($this->className).'.index';
             $link = Str::kebab(Str::plural($this->className));
             $linkName = Str::headline(Str::plural($this->className));
 

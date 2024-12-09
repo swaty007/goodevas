@@ -7,11 +7,13 @@ export default {
         const startX = ref(0);
         const initialWidth = ref(0);
 
-        el.classList.add('resizable')
+        el.classList.add('resizable');
 
         const storageKey = `resizable-elements-${window.location.pathname}`;
         if (!resizableDataStore[storageKey]) {
-            resizableDataStore[storageKey] = JSON.parse(localStorage.getItem(storageKey) || '{}');
+            resizableDataStore[storageKey] = JSON.parse(
+                localStorage.getItem(storageKey) || '{}',
+            );
         }
         const savedData = resizableDataStore[storageKey]; // link to the storage
         const elementKey = el.innerText.replace(/\s+/g, '').toLowerCase();
@@ -20,7 +22,10 @@ export default {
             el.style.minWidth = `${savedData[elementKey]}px`;
         }
         const startDragging = (event) => {
-            if (event.offsetX >= el.clientWidth - Math.max((el.clientWidth / 10), 10)) {
+            if (
+                event.offsetX >=
+                el.clientWidth - Math.max(el.clientWidth / 10, 10)
+            ) {
                 isDragging.value = true;
                 startX.value = event.clientX;
                 initialWidth.value = el.clientWidth;
@@ -59,5 +64,5 @@ export default {
         if (el._cleanup) {
             el._cleanup();
         }
-    }
+    },
 };

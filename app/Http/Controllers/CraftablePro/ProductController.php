@@ -243,6 +243,7 @@ class ProductController extends Controller
         if ($request->get('format')) {
             $format = $request->get('format');
         }
+
         return Excel::download(new ProductsExport($request->all()), 'Products-'.now()->format('dmYHi').".$format");
     }
 
@@ -252,6 +253,7 @@ class ProductController extends Controller
         if ($request->get('format')) {
             $format = $request->get('format');
         }
+
         return Excel::download(new ProductsIncomeExport($request->all()), 'Products-income-'.now()->format('dmYHi').".$format");
     }
 

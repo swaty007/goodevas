@@ -3,8 +3,8 @@ export type WarehouseSettings = {
         min: number;
         max: number;
         color: string;
-    }>
-}
+    }>;
+};
 
 export type Warehouse = {
     id: string | number;
@@ -12,14 +12,14 @@ export type Warehouse = {
     ysell_name: string;
     created_at: string;
     updated_at: string;
-    country_id: varchar
-    settings: WarehouseSettings
-    futureIncomesDates: Array<string>
+    country_id: varchar;
+    settings: WarehouseSettings;
+    futureIncomesDates: Array<string>;
 };
 
 export type WarehouseForm = {
     name: string;
-    country_id: string
-    hidden: string
-    settings: WarehouseSettings
+    country_id: string;
+    hidden: string;
+    settings: WarehouseSettings;
 };

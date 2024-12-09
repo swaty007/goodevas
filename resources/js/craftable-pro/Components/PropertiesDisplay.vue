@@ -1,14 +1,11 @@
 <template>
-    <div class="flex flex-wrap gap-4 properties__wrap">
-        <div
-            v-for="(item, index) in formatProperties(properties)"
-            :key="index"
-        >
+    <div class="properties__wrap flex flex-wrap gap-4">
+        <div v-for="(item, index) in formatProperties(properties)" :key="index">
             <strong class="capitalize">{{ item.key }}:</strong>
             <div
                 v-for="(el, key) in JSON.parse(item.value)"
                 :key="key"
-                class="flex gap-2 properties__item"
+                class="properties__item flex gap-2"
             >
                 <strong class="capitalize">{{ key }}:</strong>
                 <pre class="whitespace-pre-wrap">{{ el }}</pre>
@@ -18,7 +15,6 @@
 </template>
 
 <script setup lang="ts">
-
 interface Props {
     properties: object;
 }
@@ -39,10 +35,8 @@ function formatProperties(properties) {
 <style scoped lang="scss">
 .properties {
     &__wrap {
-
     }
     &__item {
-
     }
 }
 </style>

@@ -1,6 +1,5 @@
 <template>
-    <PageHeader :title="$t('global', 'Activities')">
-    </PageHeader>
+    <PageHeader :title="$t('global', 'Activities')"> </PageHeader>
 
     <PageContent>
         <ActivityTable
@@ -12,10 +11,10 @@
 </template>
 
 <script setup lang="ts">
-import { PageContent, PageHeader, } from "craftable-pro/Components";
-import { PaginatedCollection } from "craftable-pro/types/pagination";
-import type { Activities } from "./types";
-import ActivityTable from "@/craftable-pro/Pages/Activity/ActivityTable.vue";
+import ActivityTable from '@/craftable-pro/Pages/Activity/ActivityTable.vue';
+import { PageContent, PageHeader } from 'craftable-pro/Components';
+import { PaginatedCollection } from 'craftable-pro/types/pagination';
+import type { Activities } from './types';
 
 interface Props {
     activities: PaginatedCollection<Activities>;

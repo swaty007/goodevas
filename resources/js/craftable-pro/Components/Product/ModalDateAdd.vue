@@ -1,6 +1,5 @@
 <template>
-    <Modal type="success"
-           size="md">
+    <Modal type="success" size="md">
         <template #title>
             {{ $t('global', 'Add Date') }}
         </template>
@@ -25,10 +24,12 @@
         <template #buttons="{ setIsOpen }">
             <Button
                 :left-icon="ArrowDownTrayIcon"
-                @click="() => {
-                    setIsOpen()
-                    emit('submit', form)
-                }"
+                @click="
+                    () => {
+                        setIsOpen();
+                        emit('submit', form);
+                    }
+                "
             >
                 {{ $t('global', 'Add') }}
             </Button>
@@ -44,22 +45,26 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowDownTrayIcon, PlusIcon, TrashIcon } from "@heroicons/vue/24/outline";
-import { Button, DatePicker, Modal, IconButton } from "craftable-pro/Components";
-import { defineEmits, ref } from "vue";
-import { Warehouse } from "@/craftable-pro/Pages/Warehouse/types";
-
+import { Warehouse } from '@/craftable-pro/Pages/Warehouse/types';
+import { ArrowDownTrayIcon, PlusIcon } from '@heroicons/vue/24/outline';
+import {
+    Button,
+    DatePicker,
+    IconButton,
+    Modal,
+} from 'craftable-pro/Components';
+import { defineEmits, ref } from 'vue';
 
 interface Props {
-    warehouse: Warehouse
+    warehouse: Warehouse;
 }
 
 const props = defineProps<Props>();
 
-const emit = defineEmits(["submit", "delete"]);
+const emit = defineEmits(['submit', 'delete']);
 
 const form = ref({
     date: new Date(),
-    warehouse: props.warehouse
+    warehouse: props.warehouse,
 });
 </script>

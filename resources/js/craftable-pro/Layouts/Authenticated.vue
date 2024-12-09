@@ -15,7 +15,9 @@
                     leave-from="opacity-100"
                     leave-to="opacity-0"
                 >
-                    <DialogOverlay class="fixed inset-0 bg-gray-600 bg-opacity-75" />
+                    <DialogOverlay
+                        class="fixed inset-0 bg-gray-600 bg-opacity-75"
+                    />
                 </TransitionChild>
                 <TransitionChild
                     as="div"
@@ -42,28 +44,35 @@
         >
             <Sidebar class="min-h-0" />
         </div>
-        <div class="flex flex-1 flex-col" :class="sidebarMiniMode ? 'md:pl-24' : 'md:pl-64'">
+        <div
+            class="flex flex-1 flex-col"
+            :class="sidebarMiniMode ? 'md:pl-24' : 'md:pl-64'"
+        >
             <div
-                class="sticky top-0 z-40 bg-gray-100 dark:bg-gray-800 px-1 pt-1 md:px-3 flex items-center justify-between"
+                class="sticky top-0 z-40 flex items-center justify-between bg-gray-100 px-1 pt-1 md:px-3 dark:bg-gray-800"
             >
                 <button
                     type="button"
-                    class="md:hidden -ml-0.5 -mt-0.5 inline-flex h-12 w-12 items-center justify-center rounded-md text-gray-500 dark:text-gray-300 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+                    class="focus:ring-primary-500 -ml-0.5 -mt-0.5 inline-flex h-12 w-12 items-center justify-center rounded-md text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-inset md:hidden dark:text-gray-300"
                     @click="sidebarOpen = true"
                 >
-                    <span class="sr-only">{{ $t("craftable-pro", "Open sidebar") }}</span>
+                    <span class="sr-only">{{
+                        $t('craftable-pro', 'Open sidebar')
+                    }}</span>
                     <Bars3Icon class="h-6 w-6" aria-hidden="true" />
                 </button>
 
                 <button
                     type="button"
-                    class="hidden md:inline-flex -ml-0.5 -mt-0.5 h-12 w-12 items-center justify-center rounded-md text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none"
+                    class="-ml-0.5 -mt-0.5 hidden h-12 w-12 items-center justify-center rounded-md text-gray-500 hover:text-gray-700 focus:outline-none md:inline-flex dark:text-gray-300 dark:hover:text-gray-200"
                     @click="sidebarMiniMode = !sidebarMiniMode"
                 >
-                    <span class="sr-only">{{ $t("craftable-pro", "Open sidebar") }}</span>
+                    <span class="sr-only">{{
+                        $t('craftable-pro', 'Open sidebar')
+                    }}</span>
                     <Bars3Icon class="h-6 w-6" aria-hidden="true" />
                 </button>
-                <div class="flex align-center">
+                <div class="align-center flex">
                     <DarkMode />
                 </div>
             </div>
@@ -74,13 +83,23 @@
                     enter-to-class="translate-y-0 opacity-100"
                     leave-active-class="transition duration-150 ease-in"
                     leave-from-class="translate-y-0 opacity-100"
-                    leave-to-class="translate-y-1 opacity-0">
+                    leave-to-class="translate-y-1 opacity-0"
+                >
                     <div v-if="contentMounted">
                         <slot>
-                            <div class="mx-auto max-w-screen-2xl px-4 sm:px-6 md:px-8">
-                                <div class="flex h-96 items-center justify-center rounded-lg border-4 border-dashed border-gray-200 dark:border-gray-600 p-4">
+                            <div
+                                class="mx-auto max-w-screen-2xl px-4 sm:px-6 md:px-8"
+                            >
+                                <div
+                                    class="flex h-96 items-center justify-center rounded-lg border-4 border-dashed border-gray-200 p-4 dark:border-gray-600"
+                                >
                                     <span class="text-xl italic text-gray-300">
-                                        {{ $t("craftable-pro", "Your content goes here...") }}
+                                        {{
+                                            $t(
+                                                'craftable-pro',
+                                                'Your content goes here...',
+                                            )
+                                        }}
                                     </span>
                                 </div>
                             </div>
@@ -93,26 +112,33 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide, ref, watch } from "vue";
-import { Dialog, DialogOverlay, TransitionChild, TransitionRoot, } from "@headlessui/vue";
-import { Bars3Icon } from "@heroicons/vue/24/outline";
-import { Sidebar } from "craftable-pro/Components";
-import { handleFlashErrors } from "@/craftable-pro/hooks/handleFlashErrors";
-import DarkMode from "@/craftable-pro/Components/DarkMode.vue";
+import DarkMode from '@/craftable-pro/Components/DarkMode.vue';
+import { handleFlashErrors } from '@/craftable-pro/hooks/handleFlashErrors';
+import {
+    Dialog,
+    DialogOverlay,
+    TransitionChild,
+    TransitionRoot,
+} from '@headlessui/vue';
+import { Bars3Icon } from '@heroicons/vue/24/outline';
+import { Sidebar } from 'craftable-pro/Components';
+import { onMounted, provide, ref, watch } from 'vue';
 
 const sidebarOpen = ref(false);
-const sidebarMiniMode = ref(JSON.parse(localStorage.getItem('sidebarMiniMode') || 'false'));
+const sidebarMiniMode = ref(
+    JSON.parse(localStorage.getItem('sidebarMiniMode') || 'false'),
+);
 provide('mini', sidebarMiniMode);
 
 watch(sidebarMiniMode, (val) => {
     localStorage.setItem('sidebarMiniMode', JSON.stringify(val));
 });
 
-handleFlashErrors()
+handleFlashErrors();
 
-const contentMounted = ref(false)
+const contentMounted = ref(false);
 
 onMounted(() => {
-    contentMounted.value = true
-})
+    contentMounted.value = true;
+});
 </script>

@@ -1,6 +1,6 @@
-import { computed, watch } from "vue";
-import { useToast } from "@brackets/vue-toastification";
-import { usePage } from "@inertiajs/vue3";
+import { useToast } from '@brackets/vue-toastification';
+import { usePage } from '@inertiajs/vue3';
+import { computed, watch } from 'vue';
 const toast = useToast();
 
 export const handleFlashErrors = () => {
@@ -19,4 +19,4 @@ export const handleFlashErrors = () => {
             }
         }
     });
-}
+};

@@ -5,11 +5,7 @@ declare(strict_types=1);
 namespace App\Facades\Amazon;
 
 use App\Exceptions\InternalExchangeResponseException;
-use App\Facades\Ysell\AbstractYsellApi;
-use App\Facades\YsellApiFacade;
-use App\Models\Ysell;
 use GuzzleHttp\Exception\TransferException;
-use Illuminate\Support\Facades\Cache;
 use RuntimeException;
 
 /**
@@ -50,5 +46,4 @@ class AmazonApiMethods extends AbstractAmazonApi
 
         return $response;
     }
-
 }

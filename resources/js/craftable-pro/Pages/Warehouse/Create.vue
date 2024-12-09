@@ -6,38 +6,37 @@
             :loading="form.processing"
             v-can="'global.warehouse.create'"
         >
-            {{ $t("global", "Save") }}
+            {{ $t('global', 'Save') }}
         </Button>
     </PageHeader>
 
-    <Form :form="form" :submit="submit" :defaultSettings="defaultSettings"/>
+    <Form :form="form" :submit="submit" :defaultSettings="defaultSettings" />
 </template>
 
 <script setup lang="ts">
-import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
-import { Button, PageHeader } from "craftable-pro/Components";
-import { useForm } from "craftable-pro/hooks/useForm";
-import Form from "./Form.vue";
-import { WarehouseForm, WarehouseSettings } from "./types";
-
+import { ArrowDownTrayIcon } from '@heroicons/vue/24/outline';
+import { Button, PageHeader } from 'craftable-pro/Components';
+import { useForm } from 'craftable-pro/hooks/useForm';
+import Form from './Form.vue';
+import { WarehouseForm, WarehouseSettings } from './types';
 
 interface Props {
-    defaultSettings: WarehouseSettings
+    defaultSettings: WarehouseSettings;
 }
 
 const props = defineProps<Props>();
 
-const {form, submit} = useForm<WarehouseForm>(
+const { form, submit } = useForm<WarehouseForm>(
     {
-        name: "",
-        country_id: "",
+        name: '',
+        country_id: '',
         virtual: false,
-        ysell_name: "",
+        ysell_name: '',
         settings: {
-            ranges: props.defaultSettings.ranges
+            ranges: props.defaultSettings.ranges,
         },
     },
-    route("craftable-pro.warehouses.store"),
-    "post"
+    route('craftable-pro.warehouses.store'),
+    'post',
 );
 </script>

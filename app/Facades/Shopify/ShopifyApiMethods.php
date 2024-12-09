@@ -41,5 +41,4 @@ class ShopifyApiMethods extends AbstractAmazonApi
 
         return $response;
     }
-
 }
