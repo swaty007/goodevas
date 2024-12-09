@@ -15,6 +15,7 @@ use App\Models\ApiKey;
 use Brackets\CraftablePro\Queries\Filters\FuzzyFilter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
@@ -47,6 +48,12 @@ class ApiKeyController extends Controller
         $apiKeys = $apiKeysQuery
             ->select('id', 'name', 'type', 'key', 'additional_data')
             ->paginate($request->get('per_page'))->withQueryString();
+
+        $apiKeys->getCollection()->each(function (ApiKey $apiKey) {
+            if ($apiKey->type === 'etsy') {
+                $clientEtsy = new \Etsy\OAuth\Client($apiKey->key->get('client_id'));
+            }
+        });
 
         Session::put('apiKeys_url', $request->fullUrl());
 
@@ -140,5 +147,59 @@ class ApiKeyController extends Controller
     public function export(IndexApiKeyRequest $request): BinaryFileResponse
     {
         return Excel::download(new ApiKeysExport($request->all()), 'ApiKeys-'.now()->format('dmYHi').'.xlsx');
+    }
+
+    public function oAuth(CreateApiKeyRequest $request, ApiKey $apiKey): Response|RedirectResponse
+    {
+        if ($apiKey->type !== 'etsy') {
+            abort(404);
+        }
+        $client = new \Etsy\OAuth\Client($apiKey->key->get('client_id'));
+
+        [$verifier, $code_challenge] = $client->generateChallengeCode();
+        Cache::put('etsy_verifier:'.$apiKey->id, $verifier, 360);
+        Cache::put('etsy_verifier_id', $apiKey->id, 360);
+        $nonce = $client->createNonce();
+        $url = $client->getAuthorizationUrl(
+            route('craftable-pro.etsy.auth-callback'),
+            \Etsy\Utils\PermissionScopes::ALL_SCOPES,
+            //             ['transactions_r', 'transactions_w',],
+            $code_challenge,
+            $nonce
+        );
+
+        return redirect($url);
+    }
+
+    public function authCallback(CreateApiKeyRequest $request): Response|RedirectResponse
+    {
+        try {
+            $data = $request->all();
+            $code = $data['code'];
+            dump($data, $code);
+            //$state = $data['state'];
+            $apiKey = ApiKey::find(Cache::get('etsy_verifier_id'));
+            $client = new \Etsy\OAuth\Client($apiKey->key->get('client_id'));
+            $verifier = Cache::get('etsy_verifier:'.$apiKey->id);
+
+            dump($verifier);
+            $result = $client->requestAccessToken(
+                route('craftable-pro.etsy.auth-callback'),
+                $code,
+                $verifier
+            );
+            $accessToken = $result['access_token'];
+            $refreshToken = $result['refresh_token'];
+            $apiKey->additional_data = [
+                'access_token' => $accessToken,
+                'refresh_token' => $refreshToken,
+            ];
+            $apiKey->save();
+            dump($accessToken, $refreshToken);
+        } catch (\Exception $e) {
+            dd($e);
+        }
+
+        return redirect()->route('craftable-pro.api-keys.index')->with(['message' => ___('craftable-pro', 'Operation successful')]);
     }
 }

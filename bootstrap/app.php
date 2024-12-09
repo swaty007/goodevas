@@ -29,6 +29,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command(\App\Console\Commands\ProductsSnapshotCommand::class)
             ->hourly()
             ->withoutOverlapping(5);
+        $schedule->command(\App\Console\Commands\EtsyUpdateRefreshTokens::class)
+            ->everyThirtyMinutes();
     })
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
@@ -38,6 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->validateCsrfTokens(except: [
             'etsy/auth-callback',
+            'admin/webhooks/*',
         ]);
 
         $middleware->web(append: [

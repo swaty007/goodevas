@@ -76,7 +76,13 @@ Route::middleware('craftable-pro-middlewares')->prefix('admin')->name('craftable
     Route::match(['put', 'patch'], 'api-keys/{apiKey}', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'update'])->name('api-keys.update');
     Route::delete('api-keys/{apiKey}', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'destroy'])->name('api-keys.destroy');
     Route::post('api-keys/bulk-destroy', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'bulkDestroy'])->name('api-keys.bulk-destroy');
+    Route::get('api-keys/etsy/oauth/{apiKey}', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'oAuth'])->name('etsy.oauth');
+
+    Route::group(['prefix' => 'webhooks'], function () {
+        Route::get('etsy/auth-callback', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'authCallback'])->name('etsy.auth-callback');
+    });
 });
 
-Route::get('etsy/oauth', [App\Http\Controllers\EtsyController::class, 'oAuth'])->name('etsy.oauth');
+Route::get('etsy/oauth/{apiKey}', [App\Http\Controllers\EtsyController::class, 'oAuth'])->name('etsy.oauth');
 Route::get('etsy/auth-callback', [App\Http\Controllers\EtsyController::class, 'authCallback'])->name('etsy.auth-callback');
+Route::get('etsy/RKbTDAJbyuK5PvBOZ5hEURBIlGssw3ragPMIJ', [App\Http\Controllers\EtsyController::class, 'getEtsyKeys']);

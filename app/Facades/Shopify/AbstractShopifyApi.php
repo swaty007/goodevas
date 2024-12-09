@@ -11,6 +11,11 @@ use RuntimeException;
 
 abstract class AbstractShopifyApi extends AbstractApiRequest
 {
+    protected string $domain;
+    public function setClientData(string $domain): void
+    {
+        $this->domain = $domain;
+    }
     protected function getClient(): PendingRequest
     {
         if (! $this->authKey) {
@@ -30,7 +35,7 @@ abstract class AbstractShopifyApi extends AbstractApiRequest
 
     protected function getTradeServerLink(): string
     {
-        return (string) 'https://goodevas.myshopify.com/';
+        return (string) "https://$this->domain.myshopify.com/";
     }
 }
 

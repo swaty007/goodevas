@@ -82,6 +82,9 @@
                 </Modal>
             </template>
             <template #tableHead>
+                <ListingHeaderCell v-width-dragging>
+                    <span class="sr-only">{{ $t('global', 'Actions') }}</span>
+                </ListingHeaderCell>
                 <ListingHeaderCell v-width-dragging sortBy="id">
                     {{ $t('global', 'Id') }}
                 </ListingHeaderCell>
@@ -102,6 +105,19 @@
                 </ListingHeaderCell>
             </template>
             <template #tableRow="{ item, action }: any">
+                <ListingDataCell>
+                    <Button
+                        v-if="item.type === 'etsy' && !item.additional_data"
+                        :as="'a'"
+                        :href="route('craftable-pro.etsy.oauth', item)"
+                        color="warning"
+                        size="xs"
+                        v-can="'global.api-key.destroy'"
+                        target="_blank"
+                    >
+                        {{ $t('global', 'Give Access') }}
+                    </Button>
+                </ListingDataCell>
                 <ListingDataCell>
                     {{ item.id }}
                 </ListingDataCell>
