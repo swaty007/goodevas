@@ -46,6 +46,8 @@ class CraftableProUser extends Authenticatable implements HasMedia, MustVerifyEm
      */
     protected $guard = 'craftable-pro';
 
+    public const ADMIN_ROLE = 'Administrator';
+
     /**
      * The attributes that are mass assignable.
      *
