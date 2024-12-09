@@ -22,9 +22,9 @@
                     <span
                         class="flex-none rounded"
                         :class="{
-                            'text-gray-400 group-hover:bg-gray-200 group-hover:text-gray-700':
+                            'text-gray-400 dark:text-gray-600 group-hover:bg-gray-200 group-hover:text-gray-700 dark:group-hover:bg-gray-500':
                                 !sortByIsActive,
-                            'bg-gray-200 text-gray-900 dark:text-white group-hover:bg-gray-300':
+                            'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white group-hover:bg-gray-300 dark:group-hover:bg-gray-600':
                                 sortByIsActive,
                         }"
                     >

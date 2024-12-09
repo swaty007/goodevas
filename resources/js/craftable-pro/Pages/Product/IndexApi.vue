@@ -49,14 +49,14 @@
       <template #tableHead>
 
           <template v-for="(field, key) in productsApi?.data[0]" :key="key">
-              <ListingHeaderCell v-if="tableColumns.includes(key)" :sort-by="key">
+              <ListingHeaderCell v-width-dragging v-if="tableColumns.includes(key)" :sort-by="key">
                   {{ key }}
               </ListingHeaderCell>
           </template>
-          <ListingHeaderCell v-for="warehouse in warehouses" class="max-w-[70px]" :key="warehouse.id">
+          <ListingHeaderCell v-width-dragging v-for="warehouse in warehouses" class="max-w-[70px]" :key="warehouse.id">
               {{ warehouse.name }}
           </ListingHeaderCell>
-        <ListingHeaderCell>
+        <ListingHeaderCell v-width-dragging>
           <span class="sr-only">{{ $t("global", "Actions") }}</span>
         </ListingHeaderCell>
       </template>
@@ -77,7 +77,7 @@
                   </template>
               </ListingDataCell>
           </template>
-          <ListingHeaderCell v-for="warehouse in warehouses" class="max-w-[70px]" :key="warehouse.id">
+          <ListingHeaderCell v-width-dragging v-for="warehouse in warehouses" class="max-w-[70px]" :key="warehouse.id">
               {{ item?.warehouseStock.find((stock: any) => stock.warehouse.name === warehouse.ysell_name)?.qty ?? 0 }}
           </ListingHeaderCell>
       </template>

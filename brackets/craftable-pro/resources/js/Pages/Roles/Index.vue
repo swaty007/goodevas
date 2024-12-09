@@ -13,13 +13,13 @@
       :withBulkSelect="false"
     >
       <template #tableHead>
-        <ListingHeaderCell sortBy="id" class="w-14">
+        <ListingHeaderCell v-width-dragging sortBy="id" class="w-14">
           {{ $t("craftable-pro", "ID") }}
         </ListingHeaderCell>
-        <ListingHeaderCell sortBy="name">
+        <ListingHeaderCell v-width-dragging sortBy="name">
           {{ $t("craftable-pro", "Name") }}
         </ListingHeaderCell>
-        <ListingHeaderCell>
+        <ListingHeaderCell v-width-dragging>
           {{ $t("craftable-pro", "Users") }}
         </ListingHeaderCell>
       </template>

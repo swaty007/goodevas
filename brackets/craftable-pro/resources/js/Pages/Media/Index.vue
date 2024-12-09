@@ -165,15 +165,15 @@
               class="inline-block min-w-full align-middle"
             >
               <template #tableHead>
-                <ListingHeaderCell>
+                <ListingHeaderCell v-width-dragging>
                   {{ $t("craftable-pro", "Preview") }}
                 </ListingHeaderCell>
 
-                <ListingHeaderCell sort-by="title">
+                <ListingHeaderCell v-width-dragging sort-by="title">
                   {{ $t("craftable-pro", "Title") }}
                 </ListingHeaderCell>
 
-                <ListingHeaderCell sort-by="size">
+                <ListingHeaderCell v-width-dragging sort-by="size">
                   {{ $t("craftable-pro", "Size") }}
                 </ListingHeaderCell>
               </template>

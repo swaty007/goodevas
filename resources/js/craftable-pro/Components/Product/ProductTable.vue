@@ -114,34 +114,34 @@
         </template>
         <template #tableHead>
 
-            <!--        <ListingHeaderCell sortBy="id">-->
+            <!--        <ListingHeaderCell v-width-dragging sortBy="id">-->
             <!--            {{ $t("global", "Id") }}-->
             <!--        </ListingHeaderCell>-->
-            <ListingHeaderCell sortBy="ext_id">
+            <ListingHeaderCell v-width-dragging sortBy="ext_id">
                 {{ $t("global", "Ext Id") }}
             </ListingHeaderCell>
-            <ListingHeaderCell sortBy="ean">
+            <ListingHeaderCell v-width-dragging sortBy="ean">
                 {{ $t("global", "Ean") }}
             </ListingHeaderCell>
-            <ListingHeaderCell sortBy="product_type_id">
+            <ListingHeaderCell v-width-dragging sortBy="product_type_id">
                 {{ $t("global", "Product Type") }}
             </ListingHeaderCell>
-            <ListingHeaderCell>
+            <ListingHeaderCell v-width-dragging>
                 {{ $t("global", "Image") }}
             </ListingHeaderCell>
-            <ListingHeaderCell>
+            <ListingHeaderCell v-width-dragging>
                 {{ $t("global", "Title") }}
             </ListingHeaderCell>
-            <!--          <ListingHeaderCell>-->
+            <!--          <ListingHeaderCell v-width-dragging>-->
             <!--              {{ $t("global", "Price") }}-->
             <!--          </ListingHeaderCell>-->
-            <ListingHeaderCell>
+            <ListingHeaderCell v-width-dragging>
                 {{ $t("global", "Stock") }}
             </ListingHeaderCell>
             <template v-if="income">
                 <template v-for="warehouse in warehousesWithDates">
                     <template v-if="!warehouse?.virtual">
-                        <ListingHeaderCell v-for="(date, index) of warehouse.futureIncomesDates" class="max-w-[70px] min-w-[70px]">
+                        <ListingHeaderCell v-width-dragging v-for="(date, index) of warehouse.futureIncomesDates" class="max-w-[70px] min-w-[70px]">
                             {{ warehouse.name }}<br>
                             <span class="text-[9px]">{{ date }}</span>
                             <div class="flex gap-1">
@@ -153,30 +153,30 @@
                             </div>
                         </ListingHeaderCell>
                     </template>
-                    <ListingHeaderCell v-else class="max-w-[70px]">
+                    <ListingHeaderCell v-width-dragging v-else class="max-w-[70px]">
                         {{ warehouse.name }}
                     </ListingHeaderCell>
                 </template>
             </template>
             <template v-else-if="forecast">
                 <template v-for="warehouse in warehouses">
-                    <ListingHeaderCell v-if="!warehouse?.virtual" class="">
+                    <ListingHeaderCell v-width-dragging v-if="!warehouse?.virtual" class="">
                         {{ warehouse.name }}
                     </ListingHeaderCell>
                 </template>
             </template>
             <template v-else>
                 <template v-for="warehouse in warehouses">
-                    <ListingHeaderCell v-if="!warehouse?.virtual" class="max-w-[70px]">
+                    <ListingHeaderCell v-width-dragging v-if="!warehouse?.virtual" class="max-w-[70px]">
                         {{ warehouse.name }}
                     </ListingHeaderCell>
                 </template>
             </template>
 
-            <!--          <ListingHeaderCell sortBy="additional_data">-->
+            <!--          <ListingHeaderCell v-width-dragging sortBy="additional_data">-->
             <!--              {{ $t("global", "Additional Data") }}-->
             <!--          </ListingHeaderCell>-->
-            <ListingHeaderCell>
+            <ListingHeaderCell v-width-dragging>
                 <span class="sr-only">{{ $t("global", "Actions") }}</span>
             </ListingHeaderCell>
         </template>

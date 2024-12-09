@@ -70,7 +70,7 @@
       </template>
       <template #tableHead>
         [[listingHeaderCell]]
-        <ListingHeaderCell>
+        <ListingHeaderCell v-width-dragging>
           <span class="sr-only">{{ $t("global", "Actions") }}</span>
         </ListingHeaderCell>
       </template>

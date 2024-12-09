@@ -14,6 +14,8 @@ import {
 import { can } from "craftable-pro/plugins/can";
 import { PageProps } from "craftable-pro/types/page";
 import VueLazyLoad from "vue3-lazyload"
+import elementWidthDraggingDirective from "@/craftable-pro/hooks/elementWidthDraggingDirective";
+
 
 const appName = "Stock PRO";
 
@@ -70,6 +72,7 @@ createInertiaApp({
           .use(VueLazyLoad)
           .component("Link", Link)
           .directive("can", can)
+          .directive("width-dragging", elementWidthDraggingDirective)
           .mount(el);
       }
     );

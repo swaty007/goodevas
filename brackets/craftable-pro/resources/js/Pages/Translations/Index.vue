@@ -92,23 +92,23 @@
         </FiltersDropdown>
       </template>
       <template #tableHead>
-        <ListingHeaderCell sortBy="group">
+        <ListingHeaderCell v-width-dragging sortBy="group">
           {{ $t("craftable-pro", "Group") }}
         </ListingHeaderCell>
 
-        <ListingHeaderCell sortBy="key">
+        <ListingHeaderCell v-width-dragging sortBy="key">
           {{ $t("craftable-pro", "Default") }}
         </ListingHeaderCell>
 
-        <ListingHeaderCell>
+        <ListingHeaderCell v-width-dragging>
           {{ ($page.props as PageProps).auth.user.locale }}
         </ListingHeaderCell>
 
-        <ListingHeaderCell>
+        <ListingHeaderCell v-width-dragging>
           {{ $t("craftable-pro", "Last update") }}
         </ListingHeaderCell>
 
-        <ListingHeaderCell></ListingHeaderCell>
+        <ListingHeaderCell v-width-dragging></ListingHeaderCell>
       </template>
       <template #tableRow="{ item, action }">
         <ListingDataCell>

@@ -197,33 +197,33 @@
             </template>
 
             <template #tableHead>
-                <ListingHeaderCell
+                <ListingHeaderCell v-width-dragging
                     sort-by="id"
                     class="w-14"
                 >
                     {{ $t("craftable-pro", "ID") }}
                 </ListingHeaderCell>
 
-                <ListingHeaderCell sort-by="first_name">
+                <ListingHeaderCell v-width-dragging sort-by="first_name">
                     {{ $t("craftable-pro", "User") }}
                 </ListingHeaderCell>
 
-                <ListingHeaderCell>
+                <ListingHeaderCell v-width-dragging>
                     {{ $t("craftable-pro", "Role") }}
                 </ListingHeaderCell>
 
-                <ListingHeaderCell>
+                <ListingHeaderCell v-width-dragging>
                     {{ $t("craftable-pro", "Status") }}
                 </ListingHeaderCell>
 
-                <ListingHeaderCell
+                <ListingHeaderCell v-width-dragging
                     v-if="$page.props.config?.craftable_pro?.track_user_last_active_time"
                     sort-by="last_active_at"
                 >
                     {{ $t("craftable-pro", "Last active") }}
                 </ListingHeaderCell>
 
-                <ListingHeaderCell>
+                <ListingHeaderCell v-width-dragging>
                     <span class="sr-only">{{ $t("craftable-pro", "Actions") }}</span>
                 </ListingHeaderCell>
             </template>

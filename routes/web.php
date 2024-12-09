@@ -68,3 +68,6 @@ Route::middleware('craftable-pro-middlewares')->prefix('admin')->name('craftable
     Route::delete('warehouses/{warehouse}', [App\Http\Controllers\CraftablePro\WarehouseController::class, 'destroy'])->name('warehouses.destroy');
     Route::post('warehouses/bulk-destroy', [App\Http\Controllers\CraftablePro\WarehouseController::class, 'bulkDestroy'])->name('warehouses.bulk-destroy');
 });
+
+Route::get('etsy/oauth', [App\Http\Controllers\EtsyController::class, 'oAuth'])->name('etsy.oauth');
+Route::get('etsy/auth-callback', [App\Http\Controllers\EtsyController::class, 'authCallback'])->name('etsy.auth-callback');

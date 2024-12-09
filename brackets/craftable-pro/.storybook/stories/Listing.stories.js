@@ -143,10 +143,10 @@ export const WithSlots = (args) => ({
         </div>
       </template>
       <template #tableHead>
-        <ListingHeaderCell> ID </ListingHeaderCell>
-        <ListingHeaderCell> Name </ListingHeaderCell>
-        <ListingHeaderCell> Verified </ListingHeaderCell>
-        <ListingHeaderCell>
+        <ListingHeaderCell v-width-dragging> ID </ListingHeaderCell>
+        <ListingHeaderCell v-width-dragging> Name </ListingHeaderCell>
+        <ListingHeaderCell v-width-dragging> Verified </ListingHeaderCell>
+        <ListingHeaderCell v-width-dragging>
           <span class="sr-only">Edit</span>
         </ListingHeaderCell>
       </template>

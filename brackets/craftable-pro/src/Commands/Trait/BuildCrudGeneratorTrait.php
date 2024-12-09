@@ -301,7 +301,7 @@ trait BuildCrudGeneratorTrait
             $columnName = $relation ? Str::headline($relation['model']) : Str::headline($column['name']);
 
             return '
-        <ListingHeaderCell'.$sortable.'>
+        <ListingHeaderCell v-width-dragging'.$sortable.'>
             {{ $t("global", "'.$columnName.'") }}
         </ListingHeaderCell>';
         })->implode(' ');

@@ -17,7 +17,7 @@
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
               <thead class="bg-gray-50">
                 <tr>
-                  <ListingHeaderCell class="bg-white dark:bg-gray-700">
+                  <ListingHeaderCell v-width-dragging class="bg-white dark:bg-gray-700">
                     <div class="text-xs font-medium text-slate-500">
                       {{ $t("craftable-pro", "User") }}
                     </div>
@@ -26,7 +26,7 @@
                     </div>
                   </ListingHeaderCell>
 
-                  <ListingHeaderCell
+                  <ListingHeaderCell v-width-dragging
                     v-for="role in roles"
                     :key="role.name"
                     class="w-60 border-l bg-white dark:bg-gray-700"

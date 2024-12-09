@@ -77,25 +77,25 @@
       </template>
       <template #tableHead>
 
-        <ListingHeaderCell sortBy="id">
+        <ListingHeaderCell v-width-dragging sortBy="id">
             {{ $t("global", "Id") }}
         </ListingHeaderCell>
-        <ListingHeaderCell sortBy="name">
+        <ListingHeaderCell v-width-dragging sortBy="name">
             {{ $t("global", "Name") }}
         </ListingHeaderCell>
-        <ListingHeaderCell sortBy="country_id">
+        <ListingHeaderCell v-width-dragging sortBy="country_id">
             {{ $t("global", "Country Id") }}
         </ListingHeaderCell>
-          <ListingHeaderCell sortBy="virtual">
+          <ListingHeaderCell v-width-dragging sortBy="virtual">
               {{ $t("global", "Virtual") }}
           </ListingHeaderCell>
-          <ListingHeaderCell sortBy="ysell_name">
+          <ListingHeaderCell v-width-dragging sortBy="ysell_name">
               {{ $t("global", "Ysell Name") }}
           </ListingHeaderCell>
-          <ListingHeaderCell>
+          <ListingHeaderCell v-width-dragging>
               {{ $t("global", "Settings") }}
           </ListingHeaderCell>
-        <ListingHeaderCell>
+        <ListingHeaderCell v-width-dragging>
           <span class="sr-only">{{ $t("global", "Actions") }}</span>
         </ListingHeaderCell>
       </template>

@@ -43,7 +43,7 @@
                                     )
                                 }}
                             </span>
-                            &nbsp;
+              &nbsp;
                             <span v-if="!allItemsSelected">
                                 <Button
                                     :disabled="loadingAllItems"
@@ -77,7 +77,7 @@
                     </div>
                     <div
                         v-else
-                        class="flex w-full items-center justify-between gap-3 flex-col sm:flex-row"
+                        class="flex w-full items-center justify-between gap-3"
                         :class="{ 'pl-6': withBulkSelect }"
                     >
                         <slot
@@ -103,7 +103,7 @@
             </CardHeader>
         </template>
 
-        <div :class="{'overflow-x-auto': overflow, 'overflow-x-auto-disable': !overflow}">
+        <div class="overflow-x-auto">
             <div class="inline-block min-w-full align-middle">
                 <div class="relative overflow-hidden md:overflow-visible">
                     <EmptyListing v-if="!collection?.length" />
@@ -112,68 +112,89 @@
                         class="min-w-full divide-y divide-gray-200 dark:divide-gray-600"
                     >
                         <thead class="bg-gray-50 dark:bg-gray-800">
-                        <tr>
-                            <ListingHeaderCell
-                                v-if="withBulkSelect"
-                                class="w-8 sm:w-14"
-                            />
-                            <slot name="tableHead">
-                                <ListingHeaderCell
-                                    v-for="column in columns"
-                                    :sort-by="column"
-                                >
-                                    <!-- TODO: get translation for col -->
-                                    {{ column }}
-                                </ListingHeaderCell>
-                                <ListingHeaderCell>
+                            <tr>
+                                <ListingHeaderCell v-width-dragging
+                                    v-if="withBulkSelect"
+                                    class="w-8 sm:w-14"
+                                />
+                                <slot name="tableHead">
+                                    <slot
+                                        v-for="(column, index) in columns"
+                                        :key="column"
+                                        :name="`tableHeading-${column}`"
+                                        :item="item"
+                                        :column="column"
+                                        :index="index"
+                                    >
+                                        <ListingHeaderCell v-width-dragging
+                                            v-width-dragging
+                                            :sort-by="column"
+                                        >
+                                            <!-- TODO: get translation for col -->
+                                            {{ compColumnValue(column) }}
+                                        </ListingHeaderCell>
+                                    </slot>
+                                    <ListingHeaderCell v-width-dragging v-if="editResource">
                                         <span class="sr-only">{{
-                                                $t("craftable-pro", "Edit")
-                                            }}</span>
-                                </ListingHeaderCell>
-                            </slot>
-                        </tr>
+                                            $t("craftable-pro", "Edit")
+                                        }}</span>
+                                    </ListingHeaderCell>
+                                </slot>
+                            </tr>
                         </thead>
 
                         <tbody class="divide-y divide-gray-200 dark:divide-gray-600 bg-white dark:bg-gray-700">
-                        <tr
-                            v-for="item in collection"
-                            :key="item.id"
-                            :class="{
+                            <tr
+                                v-for="item in collection"
+                                :key="item.id"
+                                :class="{
                                     'bg-gray-200 dark:bg-gray-600': selectedItems.includes(item.id),
                                 }"
-                        >
-                            <ListingDataCell
-                                v-if="withBulkSelect"
-                                v-auto-animate="{ duration: 150 }"
-                                class="relative w-8 sm:w-14"
+                                @click="toggleSelectedItem(item.id)"
                             >
-                                <div
-                                    v-if="selectedItems.includes(item.id)"
-                                    class="absolute inset-y-0 left-0 w-0.5 bg-primary-600"
-                                />
-                                <Checkbox
-                                    v-model="selectedItems"
-                                    :input-value="item.id"
-                                />
-                            </ListingDataCell>
-                            <slot
-                                name="tableRow"
-                                :item="item"
-                                :action="action"
-                            >
-                                <ListingDataCell v-for="column in columns">
-                                    {{ item[column] }}
+                                <ListingDataCell
+                                    v-if="withBulkSelect"
+                                    v-auto-animate="{ duration: 150 }"
+                                    class="relative w-8 sm:w-14"
+                                >
+                                    <div
+                                        v-if="selectedItems.includes(item.id)"
+                                        class="absolute inset-y-0 left-0 w-0.5 bg-primary-600"
+                                    />
+                                    <Checkbox
+                                        v-model="selectedItems"
+                                        :input-value="item.id"
+                                    />
                                 </ListingDataCell>
-                                <ListingDataCell>
-                                    <Link
-                                        :href="item.resource_url"
-                                        class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
+                                <slot
+                                    name="tableRow"
+                                    :item="item"
+                                    :action="action"
+                                    :unselect-all-items="unselectAllItems"
+                                >
+                                    <slot
+                                        v-for="column in columns"
+                                        :key="column"
+                                        :name="`tableColumn-${column}`"
+                                        :item="item"
+                                        :action="action"
+                                        :unselect-all-items="unselectAllItems"
                                     >
-                                        <ChevronRightIcon class="ml-auto h-5 w-5" />
-                                    </Link>
-                                </ListingDataCell>
-                            </slot>
-                        </tr>
+                                        <!--v-bind="column"-->
+                                        <ListingDataCell>
+                                            {{ compColumnValue(item[column]) }}
+                                        </ListingDataCell>
+                                    </slot>
+                                    <ListingDataCell v-if="editResource">
+                                        <Link
+                                            :href="item.resource_url"
+                                            class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
+                                        >
+                                            <ChevronRightIcon class="ml-auto h-5 w-5" />
+                                        </Link>
+                                    </ListingDataCell>
+                                </slot>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -189,29 +210,17 @@
 </template>
 <script setup lang="ts">
 import { computed, defineEmits, provide, useSlots, watch } from "vue";
-import {
-    ChevronRightIcon,
-    MagnifyingGlassIcon,
-    CheckIcon,
-} from "@heroicons/vue/24/outline";
-import { TrashIcon, PencilIcon } from "@heroicons/vue/24/solid";
-import {
-    Button,
-    Checkbox,
-    TextInput,
-    Dropdown,
-    Pagination,
-    Card,
-    CardFooter,
-    CardHeader,
-} from "craftable-pro/Components";
-import { EmptyListing, ListingHeaderCell, ListingDataCell } from "./index";
+import { ChevronRightIcon, MagnifyingGlassIcon, } from "@heroicons/vue/24/outline";
+import { TrashIcon } from "@heroicons/vue/24/solid";
+import { Button, Card, CardFooter, CardHeader, Checkbox, Pagination, TextInput, } from "craftable-pro/Components";
+import { EmptyListing, ListingDataCell, ListingHeaderCell } from "craftable-pro/Components/Listing/index";
 import { PaginatedCollection } from "craftable-pro/types/pagination";
 import { Model } from "craftable-pro/types/models";
 import { useBulkSelect } from "craftable-pro/hooks/useBulkSelect";
 import { useBulkAction } from "craftable-pro/hooks/useBulkAction";
 import { useAction } from "craftable-pro/hooks/useAction";
 import { useListingSearch } from "craftable-pro/hooks/useListingSearch";
+import { route } from "ziggy-js";
 
 interface Props {
     data: PaginatedCollection<Model>;
@@ -221,7 +230,7 @@ interface Props {
     withBulkSelect?: boolean;
     filters?: object;
     withPagination?: boolean;
-    overflow?: boolean;
+    editResource?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -229,7 +238,7 @@ const props = withDefaults(defineProps<Props>(), {
     baseUrl: route(route().current(), route().params),
     dataKey: "data",
     withPagination: true,
-    overflow: true,
+    editResource: false,
 });
 
 provide("listingBaseUrl", props.baseUrl);
@@ -260,6 +269,21 @@ const { bulkAction, bulkActionForm } = useBulkAction(selectedItems);
 const { action } = useAction();
 
 const { searchForm, resetSearch } = useListingSearch(props.baseUrl);
+
+const toggleSelectedItem = (id: number) => {
+    if (selectedItems && selectedItems.value.length) {
+        if (selectedItems.value.includes(id)) {
+            selectedItems.value = selectedItems.value.filter(i => i !== id)
+        } else {
+            selectedItems.value.push(id)
+        }
+    }
+}
+
+const compColumnValue = (col: string | object) => {
+    if (col instanceof Object) return col.value
+    return col
+}
 
 watch(selectedItems, (val: number[]) => {
     bulkActionForm.ids = val

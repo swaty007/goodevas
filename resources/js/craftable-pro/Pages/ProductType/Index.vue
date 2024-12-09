@@ -76,22 +76,22 @@
         </Modal>
       </template>
       <template #tableHead>
-        
-        <ListingHeaderCell sortBy="id">
+
+        <ListingHeaderCell v-width-dragging sortBy="id">
             {{ $t("global", "Id") }}
-        </ListingHeaderCell> 
-        <ListingHeaderCell sortBy="name">
+        </ListingHeaderCell>
+        <ListingHeaderCell v-width-dragging sortBy="name">
             {{ $t("global", "Name") }}
         </ListingHeaderCell>
-        <ListingHeaderCell>
+        <ListingHeaderCell v-width-dragging>
           <span class="sr-only">{{ $t("global", "Actions") }}</span>
         </ListingHeaderCell>
       </template>
       <template #tableRow="{ item, action }: any">
-        
+
         <ListingDataCell>
              {{ item.id }}
-        </ListingDataCell> 
+        </ListingDataCell>
         <ListingDataCell>
              {{ item.name }}
         </ListingDataCell>

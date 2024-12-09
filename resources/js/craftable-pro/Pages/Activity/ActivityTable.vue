@@ -39,34 +39,34 @@
         </template>
         <template #bulkActions="{ bulkAction, bulkActionForm }" />
         <template #tableHead>
-            <ListingHeaderCell sort-by="id">
+            <ListingHeaderCell v-width-dragging sort-by="id">
                 {{ $t("global", "Id") }}
             </ListingHeaderCell>
-            <ListingHeaderCell>
+            <ListingHeaderCell v-width-dragging>
                 {{ $t("global", "Actions") }}
             </ListingHeaderCell>
-            <ListingHeaderCell sort-by="properties">
+            <ListingHeaderCell v-width-dragging sort-by="properties">
                 {{ $t("global", "Properties") }}
             </ListingHeaderCell>
-            <ListingHeaderCell sort-by="subject_type">
+            <ListingHeaderCell v-width-dragging sort-by="subject_type">
                 {{ $t("global", "Subject Type") }}
             </ListingHeaderCell>
-            <ListingHeaderCell>
+            <ListingHeaderCell v-width-dragging>
                 {{ $t("global", "Subject") }}
             </ListingHeaderCell>
-            <ListingHeaderCell sort-by="causer_type">
+            <ListingHeaderCell v-width-dragging sort-by="causer_type">
                 {{ $t("global", "Causer Type") }}
             </ListingHeaderCell>
-            <ListingHeaderCell>
+            <ListingHeaderCell v-width-dragging>
                 {{ $t("global", "Causer") }}
             </ListingHeaderCell>
-            <ListingHeaderCell sort-by="event">
+            <ListingHeaderCell v-width-dragging sort-by="event">
                 {{ $t("global", "Event") }}
             </ListingHeaderCell>
-            <ListingHeaderCell sort-by="description">
+            <ListingHeaderCell v-width-dragging sort-by="description">
                 {{ $t("global", "Description") }}
             </ListingHeaderCell>
-            <ListingHeaderCell sort-by="created_at">
+            <ListingHeaderCell v-width-dragging sort-by="created_at">
                 {{ $t("global", "Created At") }}
             </ListingHeaderCell>
         </template>
