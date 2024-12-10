@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Facades\Etsy;
+namespace App\Integrations\APIs\Ysell;
 
-use App\Facades\AbstractApiRequest;
+use App\Integrations\APIs\AbstractApiRequest;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
-abstract class AbstractEtsyApi extends AbstractApiRequest
+abstract class AbstractYsellApi extends AbstractApiRequest
 {
     protected function getClient(): PendingRequest
     {
@@ -20,7 +20,7 @@ abstract class AbstractEtsyApi extends AbstractApiRequest
         return Http::withOptions([
             'headers' => [
                 'Content-type' => 'application/json',
-                'x-api-key' => $this->authKey, // jzae6zlwpzxaany52klvyr33
+                'Authorization' => 'Bearer '.$this->authKey,
             ],
             'base_uri' => $this->getTradeServerLink(),
             'timeout' => $this->timeout, // Response timeout
@@ -30,6 +30,6 @@ abstract class AbstractEtsyApi extends AbstractApiRequest
 
     protected function getTradeServerLink(): string
     {
-        return (string) 'https://api.etsy.com/v3/application/';
+        return (string) 'https://daansamol.ysell.pro/api/v1/';
     }
 }

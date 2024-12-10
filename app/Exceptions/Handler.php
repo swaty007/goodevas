@@ -3,14 +3,11 @@
 namespace App\Exceptions;
 
 use App\Traits\TelegramSystemLogTrait;
-use Illuminate\Auth\AuthenticationException;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Http\Exceptions\ThrottleRequestsException;
-use Illuminate\Session\TokenMismatchException;
-use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Lottery;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -18,7 +15,25 @@ class Handler extends ExceptionHandler
     use TelegramSystemLogTrait;
 
     /**
-     * The list of the inputs that are never flashed to the session on validation exceptions.
+     * A list of exception types with their corresponding custom log levels.
+     *
+     * @var array<class-string<Throwable>, \Psr\Log\LogLevel::*>
+     */
+    protected $levels = [
+        //
+    ];
+
+    /**
+     * A list of the exception types that are not reported.
+     *
+     * @var array<int, class-string<Throwable>>
+     */
+    protected $dontReport = [
+        //
+    ];
+
+    /**
+     * A list of the inputs that are never flashed to the session on validation exceptions.
      *
      * @var array<int, string>
      */
@@ -38,22 +53,32 @@ class Handler extends ExceptionHandler
         });
     }
 
+    /**
+     * Throttle the given exception.
+     *
+     * @return Lottery|Limit|null
+     */
+    public function throttle(Throwable $e)
+    {
+        if ($e instanceof InternalExchangeResponseException) {
+            return Limit::perMinute(30);
+        }
+    }
+
+    /**
+     * Render an exception into an HTTP response.
+     *
+     * @param  Request  $request
+     * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     *
+     * @throws Throwable
+     */
     public function render($request, Throwable $e)
     {
         $prepareException = $this->prepareException($e);
+
         if (
-            ! $this->shouldReport($e)
-            || ! $this->shouldReport($prepareException)
-            || $e instanceof ThrottleRequestsException
-            || $prepareException instanceof ThrottleRequestsException
-            // TODO: maybe shouldReport do all of this
-            || $prepareException instanceof HttpResponseException
-            || $prepareException instanceof AuthenticationException
-            || $prepareException instanceof ValidationException
-            || $prepareException instanceof NotFoundHttpException
-            || $prepareException instanceof TokenMismatchException
-            || $e instanceof TokenMismatchException
-            || $prepareException instanceof MethodNotAllowedHttpException
+            ! $this->shouldReport($prepareException)
         ) {
             return parent::render($request, $e);
         }

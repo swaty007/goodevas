@@ -16,7 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Console\Commands\TelegramHandlerCommand::class,
     ])
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
-        $schedule->command('telescope:prune')->cron('0 0 * * *');
+        // $schedule->command('telescope:prune')->cron('0 0 * * *');
         $schedule->command('activitylog:clean')->cron('10 0 * * *');
         $schedule->command('model:prune')->cron('20 0 * * *');
         $schedule->command('auth:clear-resets')->everyFifteenMinutes();

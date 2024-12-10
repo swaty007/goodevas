@@ -10,7 +10,7 @@
         </Button>
     </PageHeader>
 
-    <Form :form="form" :submit="submit" />
+    <Form :form="form" :submit="submit" :types="types" />
 </template>
 
 <script setup lang="ts">
@@ -20,7 +20,9 @@ import { useForm } from 'craftable-pro/hooks/useForm';
 import Form from './Form.vue';
 import type { ApiKeyForm } from './types';
 
-interface Props {}
+interface Props {
+    types: string[];
+}
 
 const props = defineProps<Props>();
 

@@ -21,6 +21,18 @@ class ApiKey extends Model
         'additional_data',
     ];
 
+    public const TYPE_AMAZON = 'amazon';
+
+    public const TYPE_SHOPIFY = 'shopify';
+
+    public const TYPE_ETSY = 'etsy';
+
+    public const TYPES = [
+        self::TYPE_AMAZON,
+        self::TYPE_SHOPIFY,
+        self::TYPE_ETSY,
+    ];
+
     protected $casts = [
         'key' => 'collection',
         'additional_data' => 'collection',

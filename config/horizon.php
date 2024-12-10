@@ -71,8 +71,8 @@ return [
     */
 
     'middleware' => [
-        // 'web',
-        'craftable-pro',
+        'web',
+        // 'craftable-pro',
     ],
 
     /*

@@ -39,14 +39,20 @@ class EtsyUpdateRefreshTokens extends Command
         $client = new \Etsy\OAuth\Client($apiKey->key->get('client_id'));
         $refresh_token = $apiKey->additional_data->get('refresh_token');
         if ($refresh_token) {
-            $result = $client->refreshAccessToken($refresh_token);
-            $accessToken = $result['access_token'];
-            $refreshToken = $result['refresh_token'];
-            $apiKey->additional_data = [
-                'access_token' => $accessToken,
-                'refresh_token' => $refreshToken,
-            ];
-            $apiKey->save();
+            try {
+                $result = $client->refreshAccessToken($refresh_token);
+                $accessToken = $result['access_token'];
+                $refreshToken = $result['refresh_token'];
+                $apiKey->additional_data = [
+                    'access_token' => $accessToken,
+                    'refresh_token' => $refreshToken,
+                ];
+                $apiKey->save();
+            } catch (\Exception $e) {
+                $apiKey->additional_data = [];
+                $apiKey->save();
+                Log::error('Error updating refresh token for key: '.$apiKey->id);
+            }
         } else {
             Log::error('No refresh token for key: '.$apiKey->id);
         }

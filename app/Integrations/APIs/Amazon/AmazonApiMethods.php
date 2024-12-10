@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Facades\Amazon;
+namespace App\Integrations\APIs\Amazon;
 
 use App\Exceptions\InternalExchangeResponseException;
+use App\Integrations\APIs\IntegrationApiInterface;
 use GuzzleHttp\Exception\TransferException;
 use RuntimeException;
 
@@ -20,7 +21,7 @@ use RuntimeException;
  * @throws InternalExchangeResponseException: if there is an error on external server side (Example: balance not enough)
  * @throws RuntimeException: if there is an error with processing response or given data
  */
-class AmazonApiMethods extends AbstractAmazonApi
+class AmazonApiMethods extends AbstractAmazonApi implements IntegrationApiInterface
 {
     public function getOrdersList(int $page = 1, int $perPage = 100): array
     {

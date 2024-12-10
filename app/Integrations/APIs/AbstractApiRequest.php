@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Facades;
+namespace App\Integrations\APIs;
 
 use App\Exceptions\InternalExchangeResponseException;
 use App\Traits\TelegramSystemLogTrait;

@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Facades\Ysell\YsellApiService;
+use App\Integrations\APIs\Ysell\YsellApiService;
 use App\Models\PersonalAccessToken;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        if ($this->app->environment('local')) {
+        if ($this->app->isLocal()) {
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
         }

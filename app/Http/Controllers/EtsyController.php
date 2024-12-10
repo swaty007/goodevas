@@ -17,11 +17,11 @@ class EtsyController extends Controller
         }
         $client = new \Etsy\OAuth\Client('jzae6zlwpzxaany52klvyr33');
 
-//        $etsy = new \Etsy\Etsy('jzae6zlwpzxaany52klvyr33', '336302751.VVU4NVlhW-gKfVCTDlLyBXPO4Yu2LYjTWtWOgm6F7HquDovtOuVzG0aN_PhsBLADWqVWtjzI2tTgPoIh_kj_lhjXVa');
-//        $user = \Etsy\Resources\Receipt::all(24163865);
-//        $user2 = \Etsy\Resources\Receipt::get(24163865, 3511659439);
+        //        $etsy = new \Etsy\Etsy('jzae6zlwpzxaany52klvyr33', '336302751.VVU4NVlhW-gKfVCTDlLyBXPO4Yu2LYjTWtWOgm6F7HquDovtOuVzG0aN_PhsBLADWqVWtjzI2tTgPoIh_kj_lhjXVa');
+        //        $user = \Etsy\Resources\Receipt::all(24163865);
+        //        $user2 = \Etsy\Resources\Receipt::get(24163865, 3511659439);
 
-//        dd($user->data[0], $user2);
+        //        dd($user->data[0], $user2);
 
         [$verifier, $code_challenge] = $client->generateChallengeCode();
         Cache::put('etsy_verifier', $verifier, 120);
@@ -64,6 +64,7 @@ class EtsyController extends Controller
     public function getEtsyKeys(): \Illuminate\Http\JsonResponse
     {
         $keys = ApiKey::find(1);
+
         return response()->json($keys);
     }
 }

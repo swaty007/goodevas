@@ -12,7 +12,7 @@
                     <Multiselect
                         v-model="form.type"
                         name="type"
-                        :options="['etsy', 'shopify', 'amazon']"
+                        :options="types"
                         mode="single"
                         :label="$t('global', 'Type')"
                     />
@@ -22,6 +22,12 @@
                             v-model="form.key.client_id"
                             name="key.client_id"
                             :label="$t('global', 'Client ID')"
+                        />
+
+                        <TextInput
+                            v-model="form.key.shop_id"
+                            name="key.shop_id"
+                            :label="$t('global', 'Shop ID')"
                         />
                     </div>
 
@@ -183,6 +189,7 @@ import type { ApiKeyForm } from './types';
 interface Props {
     form: InertiaForm<ApiKeyForm>;
     submit: void;
+    types: string[];
 }
 
 const props = defineProps<Props>();

@@ -68,7 +68,7 @@ class ApiKeyController extends Controller
     public function create(CreateApiKeyRequest $request): Response
     {
         return Inertia::render('ApiKey/Create', [
-
+            'types' => ApiKey::TYPES,
         ]);
     }
 
@@ -89,7 +89,7 @@ class ApiKeyController extends Controller
     {
         return Inertia::render('ApiKey/Edit', [
             'apiKey' => $apiKey,
-
+            'types' => ApiKey::TYPES,
         ]);
     }
 
@@ -176,13 +176,11 @@ class ApiKeyController extends Controller
         try {
             $data = $request->all();
             $code = $data['code'];
-            dump($data, $code);
             //$state = $data['state'];
             $apiKey = ApiKey::find(Cache::get('etsy_verifier_id'));
             $client = new \Etsy\OAuth\Client($apiKey->key->get('client_id'));
             $verifier = Cache::get('etsy_verifier:'.$apiKey->id);
 
-            dump($verifier);
             $result = $client->requestAccessToken(
                 route('craftable-pro.etsy.auth-callback'),
                 $code,
@@ -195,7 +193,6 @@ class ApiKeyController extends Controller
                 'refresh_token' => $refreshToken,
             ];
             $apiKey->save();
-            dump($accessToken, $refreshToken);
         } catch (\Exception $e) {
             dd($e);
         }

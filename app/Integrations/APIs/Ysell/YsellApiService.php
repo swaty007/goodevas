@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Facades\Ysell;
+namespace App\Integrations\APIs\Ysell;
 
 class YsellApiService extends YsellApiMethods
 {

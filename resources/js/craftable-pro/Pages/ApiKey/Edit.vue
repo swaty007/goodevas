@@ -16,7 +16,7 @@
         </Button>
     </PageHeader>
 
-    <Form :form="form" :submit="submit" />
+    <Form :form="form" :submit="submit" :types="types" />
 </template>
 
 <script setup lang="ts">
@@ -29,6 +29,7 @@ import type { ApiKey, ApiKeyForm } from './types';
 
 interface Props {
     apiKey: ApiKey;
+    types: string[];
 }
 
 const props = defineProps<Props>();

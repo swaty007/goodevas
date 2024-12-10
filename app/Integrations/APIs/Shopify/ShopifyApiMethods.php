@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Facades\Shopify;
+namespace App\Integrations\APIs\Shopify;
 
 use App\Exceptions\InternalExchangeResponseException;
-use App\Facades\Amazon\AbstractAmazonApi;
+use App\Integrations\APIs\Amazon\AbstractAmazonApi;
+use App\Integrations\APIs\IntegrationApiInterface;
 use GuzzleHttp\Exception\TransferException;
 use RuntimeException;
 
@@ -21,7 +22,7 @@ use RuntimeException;
  * @throws InternalExchangeResponseException: if there is an error on external server side (Example: balance not enough)
  * @throws RuntimeException: if there is an error with processing response or given data
  */
-class ShopifyApiMethods extends AbstractAmazonApi
+class ShopifyApiMethods extends AbstractAmazonApi implements IntegrationApiInterface
 {
     public function getOrdersList(int $page = 1, int $perPage = 100): array
     {

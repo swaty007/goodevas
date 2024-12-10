@@ -2,44 +2,30 @@
 
 declare(strict_types=1);
 
-namespace App\Facades\Amazon;
+namespace App\Integrations\APIs\Amazon;
 
-use App\Facades\AbstractApiRequest;
+use App\Integrations\APIs\AbstractApiRequest;
+use App\Integrations\Traits\HasApiKey;
+use App\Integrations\Traits\InteractsWithApiKey;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
-abstract class AbstractAmazonApi extends AbstractApiRequest
+abstract class AbstractAmazonApi extends AbstractApiRequest implements HasApiKey
 {
-    protected string $clientId;
-
-    protected string $clientSecret;
-
-    protected string $refreshToken;
-
-    protected string $region = 'eu';
-
-    public function setClientData(string $clientId, string $clientSecret, string $refreshToken): void
-    {
-        $this->clientId = $clientId;
-        $this->clientSecret = $clientSecret;
-        $this->refreshToken = $refreshToken;
-    }
-
-    public function setRegion(string $region): void
-    {
-        $this->region = $region;
-    }
+    use InteractsWithApiKey;
 
     protected function getClient(): PendingRequest
     {
-        if (! $this->authKey) {
-            throw new RuntimeException('Auth key is not set');
+        if (! $this->apiKey) {
+            throw new RuntimeException('Api key is not set');
         }
+        $clientId = $this->apiKey->key->get('client_id');
+        $clientSecret = $this->apiKey->key->get('client_secret');
 
-        $this->authKey = Cache::remember('amazon_api_token:'."$this->clientId-$this->clientSecret", 3500, function () {
-            return Http::withOptions([
+        $authKey = Cache::remember('amazon_api_token:'."$clientId-$clientSecret", 3500, function () use ($clientId, $clientSecret) {
+            $json = Http::withOptions([
                 'headers' => [
                     'Content-type' => 'application/json',
                 ],
@@ -48,18 +34,23 @@ abstract class AbstractAmazonApi extends AbstractApiRequest
             ])
                 ->post('https://api.amazon.com/auth/o2/token', [
                     'grant_type' => 'refresh_token',
-                    'refresh_token' => $this->refreshToken,
-                    'client_id' => $this->clientId,
-                    'client_secret' => $this->clientSecret,
+                    'refresh_token' => $this->apiKey->key->get('refresh_token'),
+                    'client_id' => $clientId,
+                    'client_secret' => $clientSecret,
                 ])
                 ->throw()
-                ->json()['access_token'];
+                ->json();
+
+            $this->apiKey->additional_data = $json;
+            $this->apiKey->save();
+
+            return $json['access_token'];
         });
 
         return Http::withOptions([
             'headers' => [
                 'Content-type' => 'application/json',
-                'x-amz-access-token' => $this->authKey,
+                'x-amz-access-token' => $authKey,
             ],
             'base_uri' => $this->getTradeServerLink(),
             'timeout' => $this->timeout, // Response timeout
@@ -69,7 +60,9 @@ abstract class AbstractAmazonApi extends AbstractApiRequest
 
     protected function getTradeServerLink(): string
     {
-        return (string) "https://sellingpartnerapi-$this->region.amazon.com/";
+        $region = $this->apiKey->key->get('region') ?? 'eu';
+
+        return (string) "https://sellingpartnerapi-$region.amazon.com/";
     }
 }
 
