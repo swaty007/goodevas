@@ -7,6 +7,7 @@ namespace App\Integrations\APIs\Amazon;
 use App\Exceptions\InternalExchangeResponseException;
 use App\Integrations\APIs\IntegrationApiInterface;
 use GuzzleHttp\Exception\TransferException;
+use Illuminate\Support\Carbon;
 use RuntimeException;
 
 /**
@@ -23,16 +24,17 @@ use RuntimeException;
  */
 class AmazonApiMethods extends AbstractAmazonApi implements IntegrationApiInterface
 {
-    public function getOrdersList(int $page = 1, int $perPage = 100): array
+    public function getOrdersList(Carbon $createdMin, ?Carbon $createdMax = null, int $page = 1, int $perPage = 100): array
     {
         if ($perPage > 100) {
-            throw new RuntimeException('Per page limit is 50');
+            throw new RuntimeException('Per page limit is 100');
         }
         $data = [
             'page' => $page,
             'per-page' => $perPage,
-            'MarketplaceIds' => 'A1RKKUPIHCS9HS', // https://developer-docs.amazon.com/sp-api/docs/marketplace-ids
-            'CreatedAfter' => now()->subDays(7)->toIso8601String(),
+            'MarketplaceIds' => implode(',', $this->apiKey->key->get('marketplace_ids')), // https://developer-docs.amazon.com/sp-api/docs/marketplace-ids
+            'CreatedAfter' => $createdMin->toISOString(),
+            'CreatedBefore' => $createdMax?->toISOString(),
         ];
         $uri = '/orders/v0/orders';
         $response = $this->sendRequest('GET', $uri, $data);

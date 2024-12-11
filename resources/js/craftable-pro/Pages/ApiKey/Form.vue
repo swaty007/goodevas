@@ -38,6 +38,16 @@
                             :label="$t('global', 'Domain')"
                         />
                         <TextInput
+                            v-model="form.key.api_key"
+                            name="key.api_key"
+                            :label="$t('global', 'Api Key')"
+                        />
+                        <TextInput
+                            v-model="form.key.api_secret_key"
+                            name="key.api_secret_key"
+                            :label="$t('global', 'Secret Key')"
+                        />
+                        <TextInput
                             v-model="form.key.access_token"
                             name="key.access_token"
                             :label="$t('global', 'Access Token')"
@@ -93,6 +103,10 @@
                                     label: 'Brazil (BR)',
                                 },
                                 // Europe
+                                {
+                                    value: 'A28R8C7NBKEWEA',
+                                    label: 'Ireland (IE)',
+                                },
                                 {
                                     value: 'A1RKKUPIHCS9HS',
                                     label: 'Spain (ES)',

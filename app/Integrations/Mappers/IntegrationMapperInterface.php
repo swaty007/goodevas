@@ -6,6 +6,7 @@ namespace App\Integrations\Mappers;
 
 use App\Data\OrderData;
 
-interface IntegrationMapperInterface {
+interface IntegrationMapperInterface
+{
     public function map(array $data): OrderData;
 }

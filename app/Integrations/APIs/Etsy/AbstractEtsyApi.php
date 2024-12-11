@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace App\Integrations\APIs\Etsy;
 
-use App\Integrations\APIs\AbstractApiRequest;
 use App\Integrations\Traits\HasApiKey;
 use App\Integrations\Traits\InteractsWithApiKey;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
 abstract class AbstractEtsyApi implements HasApiKey

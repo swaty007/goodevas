@@ -5,16 +5,23 @@ declare(strict_types=1);
 namespace App\Integrations\Adapters\Shopify;
 
 use App\Integrations\Adapters\IntegrationAdapterInterface;
-use App\Integrations\APIs\Amazon\AmazonApiMethods;
-use App\Integrations\Traits\HasApiKey;
+use App\Integrations\APIs\Shopify\ShopifyApiMethods;
 use App\Models\ApiKey;
 
-class ShopifyAdapter extends AmazonApiMethods implements HasApiKey, IntegrationAdapterInterface
+class ShopifyAdapter extends ShopifyApiMethods implements IntegrationAdapterInterface
 {
     public function __construct(ApiKey $apiKey)
     {
         $this->setApiKey($apiKey);
     }
 
-    public function fetchOrders(): array {}
+    public function fetchOrders(): array
+    {
+        $createdMin = now()->subDays(30);
+        $data = $this->getOrdersList(createdMin: $createdMin);
+        dd($data['pageInfo'], $data['body']['orders']);
+        if ($data['pageInfo']) {
+            $this->getOrdersList(createdMin: $createdMin, pageInfo: $data['pageInfo']);
+        }
+    }
 }
