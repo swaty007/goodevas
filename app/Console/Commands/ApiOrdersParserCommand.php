@@ -31,12 +31,14 @@ class ApiOrdersParserCommand extends Command
         $keys = ApiKey::all();
 
         foreach ($keys as $apiKey) {
-            if ($apiKey->type === 'amazon') {
+            if ($apiKey->type === 'etsy') {
                 $factory = IntegrationFactory::make($apiKey);
 
                 $adapter = $factory->createAdapter($apiKey);
-                $adapter->fetchOrders();
+                $orders = $adapter->fetchOrders();
                 $mapper = $factory->createMapper();
+                $ordersMapped = $mapper->map($orders);
+                dd($ordersMapped);
             }
 
         }

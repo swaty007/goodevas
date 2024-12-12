@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Integrations;
 
 use App\Integrations\Adapters\Etsy\EtsyAdapter;
+use App\Integrations\Mappers\Etsy\EtsyMapper;
 use App\Integrations\Mappers\IntegrationMapperInterface;
 use App\Models\ApiKey;
 

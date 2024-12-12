@@ -19,6 +19,6 @@ class EtsyAdapter extends EtsyApiMethods implements IntegrationAdapterInterface
     {
         $createdMin = now()->subDays(30);
         $data = $this->getOrdersList(createdMin: $createdMin);
-        dd($data['body'][0]);
+        return $data['body'];
     }
 }

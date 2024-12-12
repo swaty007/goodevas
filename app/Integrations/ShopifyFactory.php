@@ -6,6 +6,7 @@ namespace App\Integrations;
 
 use App\Integrations\Adapters\Shopify\ShopifyAdapter;
 use App\Integrations\Mappers\IntegrationMapperInterface;
+use App\Integrations\Mappers\Shopify\ShopifyMapper;
 use App\Models\ApiKey;
 
 class ShopifyFactory implements IntegrationFactoryInterface

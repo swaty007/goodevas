@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Integrations;
 
 use App\Integrations\Adapters\Amazon\AmazonAdapter;
+use App\Integrations\Mappers\Amazon\AmazonMapper;
 use App\Integrations\Mappers\IntegrationMapperInterface;
 use App\Models\ApiKey;
 
