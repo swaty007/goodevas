@@ -38,8 +38,10 @@ class ShopifyApiMethods extends AbstractShopifyApi implements IntegrationApiInte
             $response = $client->get(path: 'orders', query: [
                 'limit' => $perPage,
                 'status' => 'any',
-                'created_at_min' => $createdMin->toISOString(),
-                'created_at_max' => $createdMax?->toISOString(),
+                // 'created_at_min' => $createdMin->toISOString(),
+                // 'created_at_max' => $createdMax?->toISOString(),
+                'processed_at_min' => $createdMin->toISOString(),
+                'processed_at_max' => $createdMax?->toISOString(),
             ]);
         }
 

@@ -33,8 +33,10 @@ class AmazonApiMethods extends AbstractAmazonApi implements IntegrationApiInterf
             'page' => $page,
             'per-page' => $perPage,
             'MarketplaceIds' => implode(',', $this->apiKey->key->get('marketplace_ids')), // https://developer-docs.amazon.com/sp-api/docs/marketplace-ids
-            'CreatedAfter' => $createdMin->toISOString(),
-            'CreatedBefore' => $createdMax?->toISOString(),
+            // 'CreatedAfter' => $createdMin->toISOString(),
+            // 'CreatedBefore' => $createdMax?->toISOString(),
+            'LastUpdatedAfter' => $createdMin->toISOString(),
+            'LastUpdatedBefore' => $createdMax?->toISOString(),
         ];
         $uri = '/orders/v0/orders';
         $response = $this->sendRequest('GET', $uri, $data);

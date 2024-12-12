@@ -19,8 +19,10 @@ class EtsyApiMethods extends AbstractEtsyApi implements IntegrationApiInterface
         $receipts = \Etsy\Resources\Receipt::all((int) $this->apiKey->key->get('shop_id'), [
             'limit' => $perPage,
             'offset' => ($page - 1) * $perPage,
-            'min_created' => $createdMin->getTimestamp(),
-            'max_created' => $createdMax?->getTimestamp(),
+            // 'min_created' => $createdMin->getTimestamp(),
+            // 'max_created' => $createdMax?->getTimestamp(),
+            'min_last_modified' => $createdMin->getTimestamp(),
+            'max_last_modified' => $createdMax?->getTimestamp(),
         ]);
 
         return [
