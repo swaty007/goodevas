@@ -4,6 +4,7 @@
 
 namespace App\Models;
 
+use App\Casts\JsonEncrypted;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -34,7 +35,7 @@ class ApiKey extends Model
     ];
 
     protected $casts = [
-        'key' => 'collection',
+        'key' => JsonEncrypted::class,
         'additional_data' => 'collection',
     ];
 
