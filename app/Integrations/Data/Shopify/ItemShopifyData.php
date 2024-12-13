@@ -2,34 +2,33 @@
 
 namespace App\Integrations\Data\Shopify;
 
-use App\Integrations\Data\TransactionDataInterface;
-use App\Integrations\Data\TransactionUnifiedData;
+use App\Integrations\Data\ItemDataInterface;
+use App\Integrations\Data\ItemUnifiedData;
 use Spatie\LaravelData\Data;
 
-class TransactionShopifyData extends Data implements TransactionDataInterface
+class ItemShopifyData extends Data implements ItemDataInterface
 {
     public function __construct(
         public $id,
         public $title,
         public $quantity,
         public $sku,
-        public $product_id
+        public ?string $order_id,
     ) {}
 
-    public static function convertToUnified(?TransactionShopifyData $data = null): TransactionUnifiedData
+    public static function convertToUnified(?ItemShopifyData $data = null): ItemUnifiedData
     {
-        if (! $data instanceof TransactionShopifyData) {
+        if (! $data instanceof ItemShopifyData) {
             throw new \InvalidArgumentException('Ожидался объект типа TransactionShopifyData');
         }
 
-        return new TransactionUnifiedData(
-            id: (string) $data->id,
+        return new ItemUnifiedData(
+            order_item_id: (string) $data->id,
             title: $data->title,
             quantity: $data->quantity,
             sku: $data->sku,
-            product_id: $data->product_id,
+            api_order_id: $data->order_id,
             quantity_ordered: $data->quantity,
-            order_item_id: (string) $data->id
         );
     }
 }

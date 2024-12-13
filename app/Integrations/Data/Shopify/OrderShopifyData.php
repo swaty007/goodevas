@@ -19,7 +19,7 @@ class OrderShopifyData extends Data implements OrderDataInterface
         public array $payment_gateway_names,
         public ?array $customer,
         public ?array $shipping_address,
-        /** @var TransactionShopifyData[] */
+        /** @var ItemShopifyData[] */
         public array $line_items,
         public array $refunds,
         public mixed $originalObject = null,
@@ -69,7 +69,7 @@ class OrderShopifyData extends Data implements OrderDataInterface
             expected_ship_date: null,
 
             is_shipped: $is_shipped,
-            transactions: $transactions,
+            items: $transactions,
             refunds: $data->refunds,
             originalObject: $data->originalObject,
         );

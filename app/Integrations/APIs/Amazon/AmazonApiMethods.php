@@ -44,9 +44,9 @@ class AmazonApiMethods extends AbstractAmazonApi implements IntegrationApiInterf
         $orders = $response['payload']['Orders'];
         if ($withItems) {
             foreach ($orders as &$order) {
-                $order['transactions'] = $this->getOrderDetails($order['AmazonOrderId']);
+                $order['items'] = $this->getOrderDetails($order['AmazonOrderId']);
                 sleep(2);
-//                usleep(500000); // 0.5 sec
+                //                usleep(500000); // 0.5 sec
             }
         }
 
@@ -60,6 +60,10 @@ class AmazonApiMethods extends AbstractAmazonApi implements IntegrationApiInterf
     {
         $uri = "orders/v0/orders/$order_id/orderItems";
         $response = $this->sendRequest('GET', $uri);
+        $data = $response['payload']['OrderItems'];
+        foreach ($data as &$item) {
+            $item['AmazonOrderId'] = $order_id;
+        }
 
         return $response['payload']['OrderItems'];
     }

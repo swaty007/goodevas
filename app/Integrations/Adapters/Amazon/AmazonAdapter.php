@@ -19,6 +19,7 @@ class AmazonAdapter extends AmazonApiMethods implements IntegrationAdapterInterf
     {
         $createdMin = now()->subDays(30);
         $data = $this->getOrdersList(createdMin: $createdMin);
+
         return $data['orders'];
     }
 }

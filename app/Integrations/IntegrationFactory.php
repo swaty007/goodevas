@@ -8,10 +8,8 @@ use App\Models\ApiKey;
 
 class IntegrationFactory
 {
-    public static function make(ApiKey $apiKey): IntegrationFactoryInterface
+    public static function make(string $type): IntegrationFactoryInterface
     {
-        $type = $apiKey->type;
-
         return match ($type) {
             ApiKey::TYPE_AMAZON => new AmazonFactory,
             ApiKey::TYPE_SHOPIFY => new ShopifyFactory,

@@ -32,7 +32,7 @@ class ApiOrdersParserCommand extends Command
 
         foreach ($keys as $apiKey) {
             if ($apiKey->type === 'shopify') {
-                $factory = IntegrationFactory::make($apiKey);
+                $factory = IntegrationFactory::make($apiKey->type);
 
                 $adapter = $factory->createAdapter($apiKey);
                 $orders = $adapter->fetchOrders();

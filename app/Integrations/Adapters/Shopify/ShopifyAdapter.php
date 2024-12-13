@@ -22,7 +22,8 @@ class ShopifyAdapter extends ShopifyApiMethods implements IntegrationAdapterInte
         if ($data['pageInfo']) {
             // $this->getOrdersList(createdMin: $createdMin, pageInfo: $data['pageInfo']);
         }
-//        dd($data['pageInfo'], $data['body']['orders']);
+
+        //        dd($data['pageInfo'], $data['body']['orders']);
         return $data['body']['orders'];
     }
 }

@@ -2,37 +2,36 @@
 
 namespace App\Integrations\Data\Amazon;
 
-use App\Integrations\Data\TransactionDataInterface;
-use App\Integrations\Data\TransactionUnifiedData;
+use App\Integrations\Data\ItemDataInterface;
+use App\Integrations\Data\ItemUnifiedData;
 use Spatie\LaravelData\Data;
 
-class TransactionAmazonData extends Data implements TransactionDataInterface
+class ItemAmazonData extends Data implements ItemDataInterface
 {
     public function __construct(
-        public string $Title, // NumberOfItems
-        public $ProductInfo, // NumberOfItems
-        public string $OrderItemId, // NumberOfItems
+        public string $Title,
+        public $ProductInfo,
+        public string $OrderItemId,
+        public ?string $AmazonOrderId,
         public string $ASIN,
         public ?string $SellerSKU,
         public int $QuantityOrdered,
     ) {}
 
-    public static function convertToUnified(?TransactionAmazonData $data = null): TransactionUnifiedData
+    public static function convertToUnified(?ItemAmazonData $data = null): ItemUnifiedData
     {
-        if (! $data instanceof TransactionAmazonData) {
+        if (! $data instanceof ItemAmazonData) {
             throw new \InvalidArgumentException('Ожидался объект типа TransactionAmazonData');
         }
 
-        return new TransactionUnifiedData(
-            id: null, // Amazon не предоставляет transaction_id напрямую
+        return new ItemUnifiedData(
+            order_item_id: $data->OrderItemId,
             title: $data->Title,
             quantity: $data->QuantityOrdered,
             sku: $data->SellerSKU,
-            product_id: null,
+            api_order_id: $data->AmazonOrderId,
             asin: $data->ASIN,
-            seller_sku: $data->SellerSKU,
             quantity_ordered: $data->QuantityOrdered,
-            order_item_id: $data->OrderItemId,
             shipping_method: [],
         );
     }

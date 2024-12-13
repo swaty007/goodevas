@@ -25,7 +25,7 @@ class OrderEtsyData extends Data implements OrderDataInterface
         public $created_timestamp,
         public $updated_timestamp,
         public array $grandtotal, // amount divisor currency
-        /** @var TransactionEtsyData[] */
+        /** @var ItemEtsyData[] */
         public array $transactions,
         public array $refunds,
         public mixed $originalObject = null,
@@ -98,7 +98,7 @@ class OrderEtsyData extends Data implements OrderDataInterface
             expected_ship_date: $expectedShip,
 
             is_shipped: (bool) $data->is_shipped,
-            transactions: $transactions,
+            items: $transactions,
             refunds: $data->refunds,
             originalObject: $data->originalObject,
         );

@@ -31,8 +31,8 @@ class OrderUnifiedData extends Data
         public ?string $expected_ship_date = null,
 
         public bool $is_shipped = false,
-        /** @var TransactionUnifiedData[] */
-        public array $transactions = [],
+        /** @var ItemUnifiedData[] */
+        public array $items = [],
         public array $refunds = [],
         public mixed $originalObject = null,
     ) {}

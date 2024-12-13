@@ -19,8 +19,8 @@ class OrderAmazonData extends Data implements OrderDataInterface
         public ?string $LatestShipDate,
         public ?string $PaymentMethod,
         public ?array $ShippingAddress, // StateOrRegion PostalCode City CountryCode
-        /** @var TransactionAmazonData[] */
-        public ?array $transactions,
+        /** @var ItemAmazonData[] */
+        public ?array $items,
         public mixed $originalObject = null,
     ) {}
 
@@ -30,7 +30,7 @@ class OrderAmazonData extends Data implements OrderDataInterface
             throw new \InvalidArgumentException('Ожидался объект типа OrderAmazonData');
         }
         // Конвертируем транзакции (если есть)
-        $transactions = array_map(fn ($t) => $t::convertToUnified($t), $data->transactions);
+        $transactions = array_map(fn ($t) => $t::convertToUnified($t), $data->items);
 
         return new OrderUnifiedData(
             order_id: $data->AmazonOrderId,
@@ -59,7 +59,7 @@ class OrderAmazonData extends Data implements OrderDataInterface
             expected_ship_date: null,
 
             is_shipped: ($data->OrderStatus === 'Shipped'),
-            transactions: $transactions,
+            items: $transactions,
             refunds: [], // Amazon Orders API не даёт рефанды напрямую
             originalObject: $data->originalObject,
         );
