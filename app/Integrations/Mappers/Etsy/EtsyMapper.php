@@ -1,21 +1,40 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Integrations\Mappers\Etsy;
 
-use App\Data\OrderUnifiedData;
 use App\Integrations\Data\Etsy\OrderEtsyData;
 use App\Integrations\Mappers\IntegrationMapperInterface;
+use Etsy\Resources\Receipt;
 
 class EtsyMapper implements IntegrationMapperInterface
 {
-    public function map(array $data): OrderUnifiedData
+    public function transformOne($data): OrderEtsyData
     {
-        $result = array_map(function ($item) {
-            dump($item);
-            dd(OrderEtsyData::from($item->toJson()));
-            return OrderEtsyData::from($item->toJson());
+        $parsedData = json_decode($data->toJson(), true);
+        $order = OrderEtsyData::from($parsedData);
+        $order->originalObject = $parsedData;
+
+        return $order;
+    }
+
+    public function transform(array $data): array
+    {
+        $result = array_map(function (Receipt $item) {
+            return $this->transformOne($item);
         }, $data);
-        dd($result);
+
+        return $result;
+    }
+
+    public function transformToUnified(array $data): array
+    {
+        $result = array_map(function (Receipt $item) {
+            return $this->transformOne($item);
+        }, $data);
+        $result = array_map(fn ($i) => $i::convertToUnified($i), $result);
+
+        return $result;
     }
 }

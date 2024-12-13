@@ -37,7 +37,7 @@ class ApiOrdersParserCommand extends Command
                 $adapter = $factory->createAdapter($apiKey);
                 $orders = $adapter->fetchOrders();
                 $mapper = $factory->createMapper();
-                $ordersMapped = $mapper->map($orders);
+                $ordersMapped = $mapper->transformToUnified($orders);
                 dd($ordersMapped);
             }
 

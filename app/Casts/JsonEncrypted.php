@@ -26,6 +26,7 @@ class JsonEncrypted implements CastsAttributes
         } catch (DecryptException $e) {
 
         }
+
         return collect(json_decode($value));
     }
 
@@ -48,6 +49,7 @@ class JsonEncrypted implements CastsAttributes
                 throw JsonEncodingException::forAttribute($this, $key, json_last_error_msg());
             }
         }
+
         return json_encode(Crypt::encrypt($value));
     }
 }
