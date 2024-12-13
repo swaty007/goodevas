@@ -30,9 +30,7 @@ class EtsyMapper implements IntegrationMapperInterface
 
     public function transformToUnified(array $data): array
     {
-        $result = array_map(function (Receipt $item) {
-            return $this->transformOne($item);
-        }, $data);
+        $result = $this->transform($data);
         $result = array_map(fn ($i) => $i::convertToUnified($i), $result);
 
         return $result;

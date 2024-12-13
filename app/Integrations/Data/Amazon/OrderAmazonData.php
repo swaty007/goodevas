@@ -13,13 +13,14 @@ class OrderAmazonData extends Data implements OrderDataInterface
         public $PurchaseDate,
         public $LastUpdateDate,
         public $OrderStatus,
-        public $FulfillmentChannel, // AFN or MFN
-        public $SalesChannel,
-        public array $OrderTotal,
-        public $LatestShipDate,
-        public $PaymentMethod,
-        public array $ShippingAddress, // StateOrRegion PostalCode City CountryCode
-        public array $OrderItems, // StateOrRegion PostalCode City CountryCode
+        public ?string $FulfillmentChannel, // AFN or MFN
+        public ?string $SalesChannel,
+        public ?array $OrderTotal,
+        public ?string $LatestShipDate,
+        public ?string $PaymentMethod,
+        public ?array $ShippingAddress, // StateOrRegion PostalCode City CountryCode
+        /** @var TransactionAmazonData[] */
+        public ?array $transactions,
         public mixed $originalObject = null,
     ) {}
 

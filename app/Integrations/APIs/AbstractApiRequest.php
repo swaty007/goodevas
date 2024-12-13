@@ -67,7 +67,7 @@ abstract class AbstractApiRequest
         try {
             $result = $this->getClient();
             if ($method === 'GET') {
-                $result->retry(3, 500, function (Exception $exception, PendingRequest $request) {
+                $result->retry(3, 2000, function (Exception $exception, PendingRequest $request) {
                     return $exception instanceof ConnectionException;
                 });
             }
@@ -91,7 +91,7 @@ abstract class AbstractApiRequest
     private function log(Exception $exception, array $requestData): void
     {
         try {
-            $message = $exception->response->json()['message'];
+            $message = $exception->getMessage().' JSON: '.$exception->response->json()['message'];
         } catch (Exception $e) {
             $message = $exception->getMessage();
         }
@@ -107,6 +107,7 @@ abstract class AbstractApiRequest
 
         throw new InternalExchangeResponseException(json_encode([
             'message' => $message,
+            'exception' => $exception,
             'request_data' => $requestData,
             'code' => $code,
         ], JSON_UNESCAPED_UNICODE), (int) $code, $exception);

@@ -26,7 +26,7 @@ class EtsyApiMethods extends AbstractEtsyApi implements IntegrationApiInterface
         ]);
 
         return [
-            'body' => $receipts->data,
+            'orders' => $receipts->data,
             'count' => $receipts->count,
         ];
     }

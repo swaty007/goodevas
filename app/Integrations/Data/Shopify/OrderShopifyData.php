@@ -19,6 +19,7 @@ class OrderShopifyData extends Data implements OrderDataInterface
         public array $payment_gateway_names,
         public ?array $customer,
         public ?array $shipping_address,
+        /** @var TransactionShopifyData[] */
         public array $line_items,
         public array $refunds,
         public mixed $originalObject = null,
@@ -29,6 +30,8 @@ class OrderShopifyData extends Data implements OrderDataInterface
         if (! $data instanceof OrderShopifyData) {
             throw new \InvalidArgumentException('Ожидался объект типа OrderShopifyData');
         }
+        $transactions = array_map(fn ($t) => $t::convertToUnified($t), $data->line_items);
+
         $order_status = $data->fulfillment_status ?: $data->financial_status;
         $sales_channel = 'Shopify';
         $payment_method = $data->payment_gateway_names[0] ?? null;
@@ -66,7 +69,7 @@ class OrderShopifyData extends Data implements OrderDataInterface
             expected_ship_date: null,
 
             is_shipped: $is_shipped,
-            transactions: [],
+            transactions: $transactions,
             refunds: $data->refunds,
             originalObject: $data->originalObject,
         );

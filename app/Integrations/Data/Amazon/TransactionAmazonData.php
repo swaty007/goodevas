@@ -9,12 +9,12 @@ use Spatie\LaravelData\Data;
 class TransactionAmazonData extends Data implements TransactionDataInterface
 {
     public function __construct(
-        public $Title, // NumberOfItems
+        public string $Title, // NumberOfItems
         public $ProductInfo, // NumberOfItems
-        public $OrderItemId, // NumberOfItems
-        public $ASIN,
-        public $SellerSKU,
-        public $QuantityOrdered,
+        public string $OrderItemId, // NumberOfItems
+        public string $ASIN,
+        public ?string $SellerSKU,
+        public int $QuantityOrdered,
     ) {}
 
     public static function convertToUnified(?TransactionAmazonData $data = null): TransactionUnifiedData
