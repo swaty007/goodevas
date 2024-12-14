@@ -24,19 +24,19 @@ use RuntimeException;
  */
 class AmazonApiMethods extends AbstractAmazonApi implements IntegrationApiInterface
 {
-    public function getOrdersList(Carbon $createdMin, ?Carbon $createdMax = null, int $page = 1, int $perPage = 100, $withItems = true): array
+    public function getOrdersList(Carbon $createdMin, ?Carbon $createdMax = null, int $page = 1, int $perPage = 100, array $options = [], $withItems = true): array
     {
         if ($perPage > 100) {
             throw new RuntimeException('Per page limit is 100');
         }
         $data = [
-            'page' => $page,
-            'per-page' => $perPage,
+            'MaxResultsPerPage' => $perPage,
             'MarketplaceIds' => implode(',', $this->apiKey->key->get('marketplace_ids')), // https://developer-docs.amazon.com/sp-api/docs/marketplace-ids
             // 'CreatedAfter' => $createdMin->toISOString(),
             // 'CreatedBefore' => $createdMax?->toISOString(),
             'LastUpdatedAfter' => $createdMin->toISOString(),
             'LastUpdatedBefore' => $createdMax?->toISOString(),
+            'NextToken' => $options['NextToken'] ?? null,
         ];
         $uri = '/orders/v0/orders';
         $response = $this->sendRequest('GET', $uri, $data);

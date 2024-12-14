@@ -12,7 +12,6 @@ class ItemUnifiedData extends Data
         public ?int $quantity,
         public ?string $title,
         public ?string $sku,
-        public ?string $asin = null,
         public ?int $quantity_ordered = null,
         public ?array $shipping_method = [],
     ) {}

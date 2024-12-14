@@ -6,6 +6,7 @@ namespace App\Integrations\Data\Enums;
 
 enum UnifiedOrderStatus: string
 {
+    case DONE = 'done';
     case PENDING = 'pending';
     case PAID = 'paid';
     case PARTIALLY_PAID = 'partially_paid';
@@ -13,6 +14,5 @@ enum UnifiedOrderStatus: string
     case REFUNDED = 'refunded';
     case CANCELED = 'canceled';
     case PARTIALLY_SHIPPED = 'partially_shipped';
-    case SHIPPED = 'shipped';
     case ERROR_PARSE = 'error_parse';
 }

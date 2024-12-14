@@ -30,7 +30,6 @@ class ItemAmazonData extends Data implements ItemDataInterface
             quantity: $data->QuantityOrdered,
             title: $data->Title,
             sku: $data->SellerSKU,
-            asin: $data->ASIN,
             quantity_ordered: $data->QuantityOrdered,
             shipping_method: [],
         );

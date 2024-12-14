@@ -29,10 +29,10 @@ class OrderAmazonData extends Data implements OrderDataInterface
     public const array STATUS_MAP = [
         'PendingAvailability' => UnifiedOrderStatus::PENDING,
         'Pending' => UnifiedOrderStatus::PENDING,
-        'Unshipped' => UnifiedOrderStatus::PENDING,  // или создать отдельный статус "UNSHIPPED", но обычно сводят к PENDING
+        'Unshipped' => UnifiedOrderStatus::PAID,  // или создать отдельный статус "UNSHIPPED", но обычно сводят к PENDING
         'PartiallyShipped' => UnifiedOrderStatus::PARTIALLY_SHIPPED,
-        'Shipped' => UnifiedOrderStatus::SHIPPED,
-        'InvoiceUnconfirmed' => UnifiedOrderStatus::PAID,
+        'Shipped' => UnifiedOrderStatus::DONE,
+        'InvoiceUnconfirmed' => UnifiedOrderStatus::PENDING,
         'Canceled' => UnifiedOrderStatus::CANCELED,
         'Unfulfillable' => UnifiedOrderStatus::CANCELED,
     ];
@@ -75,8 +75,8 @@ class OrderAmazonData extends Data implements OrderDataInterface
             'country_code' => $data->ShippingAddress['CountryCode'] ?? null,
 
             // Для Amazon эти поля не актуальны
-            'min_processing_days' => null,
-            'max_processing_days' => null,
+//            'min_processing_days' => null,
+//            'max_processing_days' => null,
             'expected_ship_date' => $data->LatestShipDate,
 
             'is_shipped' => ($data->OrderStatus === 'Shipped'),

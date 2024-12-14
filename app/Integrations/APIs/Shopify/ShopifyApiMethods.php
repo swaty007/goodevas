@@ -26,13 +26,13 @@ use Shopify\Clients\PageInfo;
  */
 class ShopifyApiMethods extends AbstractShopifyApi implements IntegrationApiInterface
 {
-    public function getOrdersList(Carbon $createdMin, ?Carbon $createdMax = null, int $page = 1, int $perPage = 250, ?PageInfo $pageInfo = null): array
+    public function getOrdersList(Carbon $createdMin, ?Carbon $createdMax = null, int $page = 1, int $perPage = 250, array $options = []): array
     {
         if ($perPage > 250) {
             throw new RuntimeException('Per page limit is 250');
         }
         $client = $this->getClient();
-        if ($pageInfo) {
+        if ($pageInfo = $options['pageInfo']) {
             $response = $client->get(path: 'orders', query: $pageInfo->getNextPageQuery());
         } else {
             $response = $client->get(path: 'orders', query: [
@@ -40,8 +40,10 @@ class ShopifyApiMethods extends AbstractShopifyApi implements IntegrationApiInte
                 'status' => 'any',
                 // 'created_at_min' => $createdMin->toISOString(),
                 // 'created_at_max' => $createdMax?->toISOString(),
-                'processed_at_min' => $createdMin->toISOString(),
-                'processed_at_max' => $createdMax?->toISOString(),
+                // 'processed_at_min' => $createdMin->toISOString(),
+                // 'processed_at_max' => $createdMax?->toISOString(),
+                'updated_at_min' => $createdMin->toISOString(),
+                'updated_at_max' => $createdMax?->toISOString(),
             ]);
         }
 
@@ -50,28 +52,28 @@ class ShopifyApiMethods extends AbstractShopifyApi implements IntegrationApiInte
         //        $uri = '/admin/api/2024-10/orders.json?status=any';
         //        $response = $this->sendRequest('GET', $uri, ['limit' => $perPage]);
         return [
-            'body' => $response->getDecodedBody(),
+            'orders' => $response->getDecodedBody()['orders'],
             'pageInfo' => $pageInfoNext,
         ];
         $fieldsString = collect($this->getFieldList('Order'))->pluck('name')->implode("\n");
-        $query = <<<QUERY
-  query {
-    orders(first: 10, query: "updated_at:>2019-12-01") {
-      edges {
-        cursor
-        node {
-          $fieldsString
-        }
-      }
-        pageInfo {
-          endCursor
-          hasNextPage
-          hasPreviousPage
-          startCursor
-        }
-    }
-  }
-QUERY;
+//        $query = <<<QUERY
+//  query {
+//    orders(first: 10, query: "updated_at:>2019-12-01") {
+//      edges {
+//        cursor
+//        node {
+//          $fieldsString
+//        }
+//      }
+//        pageInfo {
+//          endCursor
+//          hasNextPage
+//          hasPreviousPage
+//          startCursor
+//        }
+//    }
+//  }
+//QUERY;
     }
 
     public function getOrdersCount(): array
@@ -80,15 +82,15 @@ QUERY;
         $response = $client->get(path: 'orders/count', query: ['status' => 'any']);
 
         return $response->getDecodedBody();
-        $query = <<<'QUERY'
-  query OrdersCount {
-    ordersCount(limit: 10000) {
-      count
-      precision
-    }
-
-  }
-QUERY;
+//        $query = <<<'QUERY'
+//  query OrdersCount {
+//    ordersCount(limit: 10000) {
+//      count
+//      precision
+//    }
+//
+//  }
+//QUERY;
     }
 
     public function getFieldList(string $type): array

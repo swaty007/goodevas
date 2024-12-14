@@ -6,6 +6,7 @@ use App\Integrations\Data\Enums\UnifiedOrderStatus;
 use App\Integrations\Data\OrderDataInterface;
 use App\Integrations\Data\OrderUnifiedData;
 use App\Models\ApiKey;
+use Illuminate\Support\Carbon;
 use Spatie\LaravelData\Data;
 
 class OrderShopifyData extends Data implements OrderDataInterface
@@ -14,8 +15,8 @@ class OrderShopifyData extends Data implements OrderDataInterface
         public $id,
         public $created_at,
         public $updated_at,
+        public ?string $fulfillment_status,
         public $financial_status,
-        public $fulfillment_status,
         public $total_price,
         public $currency,
         public array $payment_gateway_names,
@@ -28,6 +29,19 @@ class OrderShopifyData extends Data implements OrderDataInterface
     ) {}
 
     public const array STATUS_MAP = [
+        // $fulfillment_status
+        'fulfilled' => UnifiedOrderStatus::DONE,
+        'in_progress' => UnifiedOrderStatus::PENDING,
+        'on_hold' => UnifiedOrderStatus::PENDING,
+        'open' => UnifiedOrderStatus::PENDING,
+        'partially_fulfilled' => UnifiedOrderStatus::PARTIALLY_SHIPPED,
+        'pending_fulfillment' => UnifiedOrderStatus::PENDING,
+        'request_declined' => UnifiedOrderStatus::CANCELED,
+        'restocked' => UnifiedOrderStatus::REFUNDED,  // или другой статус, если есть "returned"
+        'scheduled' => UnifiedOrderStatus::PENDING,
+        'unfulfilled' => UnifiedOrderStatus::PENDING,
+
+        // $financial_status
         'authorized' => UnifiedOrderStatus::PENDING,
         'expired' => UnifiedOrderStatus::CANCELED,
         'paid' => UnifiedOrderStatus::PAID,
@@ -84,9 +98,9 @@ class OrderShopifyData extends Data implements OrderDataInterface
             'country_code' => $data->shipping_address['country_code'] ?? null,
 
             // Для Shopify отсутствуют эти параметры, оставим null
-            'min_processing_days' => null,
-            'max_processing_days' => null,
-            'expected_ship_date' => null,
+//            'min_processing_days' => null,
+//            'max_processing_days' => null,
+            'expected_ship_date' => Carbon::parse($data->created_at)->addDays(2)->toISOString(),
             'is_shipped' => $is_shipped,
             'items' => $transactions,
             'refunds' => $data->refunds,

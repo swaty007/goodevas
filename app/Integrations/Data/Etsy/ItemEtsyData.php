@@ -33,7 +33,6 @@ class ItemEtsyData extends Data implements ItemDataInterface
             quantity: $data->quantity,
             title: $data->title,
             sku: $data->sku,
-            asin: null,
             quantity_ordered: $data->quantity,
             shipping_method: $data->shipping_method,
         );

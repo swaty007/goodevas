@@ -35,13 +35,13 @@ class OrderEtsyData extends Data implements OrderDataInterface
     ) {}
 
     public const array STATUS_MAP = [
-        'paid' => UnifiedOrderStatus::PAID,
-        'completed' => UnifiedOrderStatus::PAID,
-        'open' => UnifiedOrderStatus::PENDING,
-        'payment processing' => UnifiedOrderStatus::PENDING,
-        'canceled' => UnifiedOrderStatus::CANCELED,
-        'fully refunded' => UnifiedOrderStatus::REFUNDED,
-        'partially refunded' => UnifiedOrderStatus::PARTIALLY_REFUND,
+        'Paid' => UnifiedOrderStatus::PAID,
+        'Completed' => UnifiedOrderStatus::DONE,
+        'Open' => UnifiedOrderStatus::PENDING,
+        'Payment Processing' => UnifiedOrderStatus::PENDING,
+        'Canceled' => UnifiedOrderStatus::CANCELED,
+        'Fully Refunded' => UnifiedOrderStatus::REFUNDED,
+        'Partially Refunded' => UnifiedOrderStatus::PARTIALLY_REFUND,
     ];
 
     public static function getStatusMap(): array
@@ -113,8 +113,8 @@ class OrderEtsyData extends Data implements OrderDataInterface
             'postal_code' => $data->zip,
             'country_code' => $data->country_iso,
 
-            'min_processing_days' => $minProcessing,
-            'max_processing_days' => $maxProcessing,
+//            'min_processing_days' => $minProcessing,
+//            'max_processing_days' => $maxProcessing,
             'expected_ship_date' => $expectedShip,
 
             'is_shipped' => (bool) $data->is_shipped,

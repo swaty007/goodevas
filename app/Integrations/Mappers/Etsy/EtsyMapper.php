@@ -13,8 +13,21 @@ class EtsyMapper implements IntegrationMapperInterface
     public function transformOne($data): OrderEtsyData
     {
         $parsedData = json_decode($data->toJson(), true);
+        $transactions = [];
+        foreach ($parsedData['transactions'] as $transaction) {
+            if (str_contains($transaction['sku'], '+')) {
+                foreach (explode('+', $transaction['sku']) as $sku) {
+                    $transaction['sku'] = $sku;
+                    $transactions[] = $transaction;
+                }
+            } else {
+                $transactions[] = $transaction;
+            }
+        }
+        $parsedData['transactions'] = $transactions;
+
         $order = OrderEtsyData::from($parsedData);
-        $order->originalObject = $parsedData;
+        $order->originalObject = json_decode($data->toJson(), true);
 
         return $order;
     }

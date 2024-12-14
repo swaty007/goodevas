@@ -41,6 +41,7 @@ abstract class AbstractAmazonApi extends AbstractApiRequest implements HasApiKey
                 ->throw()
                 ->json();
 
+            $this->apiKey->key->refresh_token = $json['refresh_token'];
             $this->apiKey->additional_data = $json;
             $this->apiKey->save();
 

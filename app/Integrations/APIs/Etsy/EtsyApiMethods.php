@@ -10,7 +10,7 @@ use RuntimeException;
 
 class EtsyApiMethods extends AbstractEtsyApi implements IntegrationApiInterface
 {
-    public function getOrdersList(Carbon $createdMin, ?Carbon $createdMax = null, int $page = 1, int $perPage = 100): array
+    public function getOrdersList(Carbon $createdMin, ?Carbon $createdMax = null, int $page = 1, int $perPage = 100, array $options = []): array
     {
         if ($perPage > 100) {
             throw new RuntimeException('Per page limit is 100');

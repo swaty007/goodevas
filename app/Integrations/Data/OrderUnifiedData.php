@@ -3,7 +3,9 @@
 namespace App\Integrations\Data;
 
 use App\Integrations\Data\Casts\UnifiedStatusCast;
+use DateTime;
 use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\DateTimeInterfaceCast;
 use Spatie\LaravelData\Data;
 
 class OrderUnifiedData extends Data
@@ -11,8 +13,10 @@ class OrderUnifiedData extends Data
     public function __construct(
         public string $type,
         public string $order_id,
-        public ?string $order_date,
-        public ?string $update_date,
+        #[WithCast(DateTimeInterfaceCast::class)]
+        public ?DateTime $order_date,
+        #[WithCast(DateTimeInterfaceCast::class)]
+        public ?DateTime $update_date,
         #[WithCast(UnifiedStatusCast::class)]
         public Enums\UnifiedOrderStatus $order_status,
         public ?string $fulfillment,
@@ -30,9 +34,10 @@ class OrderUnifiedData extends Data
         public ?string $country_code,
 
         // Показатели обработки и отгрузки (актуально для Etsy)
-        public ?int $min_processing_days = null,
-        public ?int $max_processing_days = null,
-        public ?string $expected_ship_date = null,
+//        public ?int $min_processing_days = null,
+//        public ?int $max_processing_days = null,
+        #[WithCast(DateTimeInterfaceCast::class)]
+        public ?DateTime $expected_ship_date = null,
 
         public bool $is_shipped = false,
         /** @var ItemUnifiedData[] */

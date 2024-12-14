@@ -20,10 +20,10 @@ class ShopifyAdapter extends ShopifyApiMethods implements IntegrationAdapterInte
         $createdMin = now()->subDays(30);
         $data = $this->getOrdersList(createdMin: $createdMin);
         if ($data['pageInfo']) {
-            // $this->getOrdersList(createdMin: $createdMin, pageInfo: $data['pageInfo']);
+//            $this->getOrdersList(createdMin: $createdMin, options: ['pageInfo' => $data['pageInfo']]);
         }
 
         //        dd($data['pageInfo'], $data['body']['orders']);
-        return $data['body']['orders'];
+        return $data['orders'];
     }
 }
