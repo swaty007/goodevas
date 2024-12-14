@@ -14,7 +14,7 @@ class ShopifyMapper implements IntegrationMapperInterface
         foreach ($data['line_items'] as &$value) {
             $value['order_id'] = $data['id'];
         }
-        $order = OrderShopifyData::from();
+        $order = OrderShopifyData::from($data);
         $order->originalObject = $data;
 
         return $order;

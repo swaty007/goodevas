@@ -24,10 +24,10 @@ class ItemShopifyData extends Data implements ItemDataInterface
 
         return new ItemUnifiedData(
             order_item_id: (string) $data->id,
-            title: $data->title,
-            quantity: $data->quantity,
-            sku: $data->sku,
             api_order_id: $data->order_id,
+            quantity: $data->quantity,
+            title: $data->title,
+            sku: $data->sku,
             quantity_ordered: $data->quantity,
         );
     }

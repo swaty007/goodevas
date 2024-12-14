@@ -2,8 +2,10 @@
 
 namespace App\Integrations\Data\Amazon;
 
+use App\Integrations\Data\Enums\UnifiedOrderStatus;
 use App\Integrations\Data\OrderDataInterface;
 use App\Integrations\Data\OrderUnifiedData;
+use App\Models\ApiKey;
 use Spatie\LaravelData\Data;
 
 class OrderAmazonData extends Data implements OrderDataInterface
@@ -24,6 +26,22 @@ class OrderAmazonData extends Data implements OrderDataInterface
         public mixed $originalObject = null,
     ) {}
 
+    public const array STATUS_MAP = [
+        'PendingAvailability' => UnifiedOrderStatus::PENDING,
+        'Pending' => UnifiedOrderStatus::PENDING,
+        'Unshipped' => UnifiedOrderStatus::PENDING,  // или создать отдельный статус "UNSHIPPED", но обычно сводят к PENDING
+        'PartiallyShipped' => UnifiedOrderStatus::PARTIALLY_SHIPPED,
+        'Shipped' => UnifiedOrderStatus::SHIPPED,
+        'InvoiceUnconfirmed' => UnifiedOrderStatus::PAID,
+        'Canceled' => UnifiedOrderStatus::CANCELED,
+        'Unfulfillable' => UnifiedOrderStatus::CANCELED,
+    ];
+
+    public static function getStatusMap(): array
+    {
+        return self::STATUS_MAP;
+    }
+
     public static function convertToUnified(?OrderAmazonData $data = null): OrderUnifiedData
     {
         if (! $data instanceof OrderAmazonData) {
@@ -32,37 +50,42 @@ class OrderAmazonData extends Data implements OrderDataInterface
         // Конвертируем транзакции (если есть)
         $transactions = array_map(fn ($t) => $t::convertToUnified($t), $data->items);
 
-        return new OrderUnifiedData(
-            order_id: $data->AmazonOrderId,
-            order_date: $data->PurchaseDate,
-            update_date: $data->LastUpdateDate,
-            order_status: $data->OrderStatus,
-            fulfillment: $data->FulfillmentChannel,
-            sales_channel: $data->SalesChannel,
-            total: [
+        return OrderUnifiedData::from([
+            'type' => ApiKey::TYPE_AMAZON,
+            'order_id' => $data->AmazonOrderId,
+            'order_date' => $data->PurchaseDate,
+            'update_date' => $data->LastUpdateDate,
+
+            'order_status' => $data->OrderStatus,
+            'fulfillment' => $data->FulfillmentChannel,
+            'sales_channel' => $data->SalesChannel,
+
+            'total' => [
                 'amount' => $data->OrderTotal['Amount'] ?? null,
                 'currency' => $data->OrderTotal['CurrencyCode'] ?? null,
             ],
-            payment_method: $data->PaymentMethod,
+            'payment_method' => $data->PaymentMethod,
 
-            buyer_name: null, // В Amazon Orders нет имени покупателя напрямую
-            address_line_1: $data->ShippingAddress['AddressLine1'] ?? null,
-            address_line_2: $data->ShippingAddress['AddressLine2'] ?? null,
-            city: $data->ShippingAddress['City'] ?? null,
-            state: $data->ShippingAddress['StateOrRegion'] ?? null,
-            postal_code: $data->ShippingAddress['PostalCode'] ?? null,
-            country_code: $data->ShippingAddress['CountryCode'] ?? null,
+            'buyer_name' => null, // В Amazon Orders нет имени покупателя напрямую
+            'address_line_1' => $data->ShippingAddress['AddressLine1'] ?? null,
+            'address_line_2' => $data->ShippingAddress['AddressLine2'] ?? null,
+            'city' => $data->ShippingAddress['City'] ?? null,
+            'state' => $data->ShippingAddress['StateOrRegion'] ?? null,
+            'postal_code' => $data->ShippingAddress['PostalCode'] ?? null,
+            'country_code' => $data->ShippingAddress['CountryCode'] ?? null,
 
             // Для Amazon эти поля не актуальны
-            min_processing_days: null,
-            max_processing_days: null,
-            expected_ship_date: null,
+            'min_processing_days' => null,
+            'max_processing_days' => null,
+            'expected_ship_date' => $data->LatestShipDate,
 
-            is_shipped: ($data->OrderStatus === 'Shipped'),
-            items: $transactions,
-            refunds: [], // Amazon Orders API не даёт рефанды напрямую
-            originalObject: $data->originalObject,
-        );
+            'is_shipped' => ($data->OrderStatus === 'Shipped'),
+            'items' => $transactions,
+            'refunds' => [], // Amazon Orders API не даёт рефанды напрямую
+
+            'originalObject' => $data->originalObject,
+        ]);
+
     }
 }
 

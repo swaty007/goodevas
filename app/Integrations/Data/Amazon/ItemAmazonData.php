@@ -26,10 +26,10 @@ class ItemAmazonData extends Data implements ItemDataInterface
 
         return new ItemUnifiedData(
             order_item_id: $data->OrderItemId,
-            title: $data->Title,
-            quantity: $data->QuantityOrdered,
-            sku: $data->SellerSKU,
             api_order_id: $data->AmazonOrderId,
+            quantity: $data->QuantityOrdered,
+            title: $data->Title,
+            sku: $data->SellerSKU,
             asin: $data->ASIN,
             quantity_ordered: $data->QuantityOrdered,
             shipping_method: [],

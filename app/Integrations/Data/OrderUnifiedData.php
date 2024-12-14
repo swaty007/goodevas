@@ -2,15 +2,19 @@
 
 namespace App\Integrations\Data;
 
+use App\Integrations\Data\Casts\UnifiedStatusCast;
+use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Data;
 
 class OrderUnifiedData extends Data
 {
     public function __construct(
+        public string $type,
         public string $order_id,
         public ?string $order_date,
         public ?string $update_date,
-        public string $order_status,
+        #[WithCast(UnifiedStatusCast::class)]
+        public Enums\UnifiedOrderStatus $order_status,
         public ?string $fulfillment,
         public ?string $sales_channel,
         public array $total,

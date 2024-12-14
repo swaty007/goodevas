@@ -29,10 +29,10 @@ class ItemEtsyData extends Data implements ItemDataInterface
 
         return new ItemUnifiedData(
             order_item_id: (string) $data->transaction_id,
-            title: $data->title,
-            quantity: $data->quantity,
-            sku: $data->sku,
             api_order_id: $data->receipt_id,
+            quantity: $data->quantity,
+            title: $data->title,
+            sku: $data->sku,
             asin: null,
             quantity_ordered: $data->quantity,
             shipping_method: $data->shipping_method,

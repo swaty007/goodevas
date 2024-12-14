@@ -2,8 +2,10 @@
 
 namespace App\Integrations\Data\Etsy;
 
+use App\Integrations\Data\Enums\UnifiedOrderStatus;
 use App\Integrations\Data\OrderDataInterface;
 use App\Integrations\Data\OrderUnifiedData;
+use App\Models\ApiKey;
 use Spatie\LaravelData\Data;
 
 class OrderEtsyData extends Data implements OrderDataInterface
@@ -31,6 +33,21 @@ class OrderEtsyData extends Data implements OrderDataInterface
         public mixed $originalObject = null,
 
     ) {}
+
+    public const array STATUS_MAP = [
+        'paid' => UnifiedOrderStatus::PAID,
+        'completed' => UnifiedOrderStatus::PAID,
+        'open' => UnifiedOrderStatus::PENDING,
+        'payment processing' => UnifiedOrderStatus::PENDING,
+        'canceled' => UnifiedOrderStatus::CANCELED,
+        'fully refunded' => UnifiedOrderStatus::REFUNDED,
+        'partially refunded' => UnifiedOrderStatus::PARTIALLY_REFUND,
+    ];
+
+    public static function getStatusMap(): array
+    {
+        return self::STATUS_MAP;
+    }
 
     public static function convertToUnified(?OrderEtsyData $data = null): OrderUnifiedData
     {
@@ -71,37 +88,42 @@ class OrderEtsyData extends Data implements OrderDataInterface
             $expectedShip = date('c', $earliest);
         }
 
-        return new OrderUnifiedData(
-            order_id: (string) $data->receipt_id,
-            order_date: $data->created_timestamp ? gmdate('c', $data->created_timestamp) : null,
-            update_date: $data->updated_timestamp ? gmdate('c', $data->updated_timestamp) : null,
-            order_status: $data->status,
-            fulfillment: null, // У Etsy нет аналога FulfillmentChannel
-            sales_channel: 'Etsy',
-            total: [
+        return OrderUnifiedData::from([
+            'type' => ApiKey::TYPE_ETSY,
+            'order_id' => (string) $data->receipt_id,
+            'order_date' => $data->created_timestamp ? gmdate('c', $data->created_timestamp) : null,
+            'update_date' => $data->updated_timestamp ? gmdate('c', $data->updated_timestamp) : null,
+
+            'order_status' => $data->status,
+            'fulfillment' => null, // У Etsy нет аналога FulfillmentChannel
+            'sales_channel' => 'Etsy',
+
+            'total' => [
                 'amount' => $data->grandtotal['amount'] ?? null,
                 'currency' => $data->grandtotal['currency'] ?? null,
                 'divisor' => $data->grandtotal['divisor'] ?? null,
             ],
-            payment_method: $data->payment_method,
+            'payment_method' => $data->payment_method,
 
-            buyer_name: $data->name,
-            address_line_1: $data->first_line,
-            address_line_2: $data->second_line,
-            city: $data->city,
-            state: $data->state,
-            postal_code: $data->zip,
-            country_code: $data->country_iso,
+            'buyer_name' => $data->name,
+            'address_line_1' => $data->first_line,
+            'address_line_2' => $data->second_line,
+            'city' => $data->city,
+            'state' => $data->state,
+            'postal_code' => $data->zip,
+            'country_code' => $data->country_iso,
 
-            min_processing_days: $minProcessing,
-            max_processing_days: $maxProcessing,
-            expected_ship_date: $expectedShip,
+            'min_processing_days' => $minProcessing,
+            'max_processing_days' => $maxProcessing,
+            'expected_ship_date' => $expectedShip,
 
-            is_shipped: (bool) $data->is_shipped,
-            items: $transactions,
-            refunds: $data->refunds,
-            originalObject: $data->originalObject,
-        );
+            'is_shipped' => (bool) $data->is_shipped,
+            'items' => $transactions,
+            'refunds' => $data->refunds,
+
+            'originalObject' => $data->originalObject,
+        ]);
+
     }
 }
 

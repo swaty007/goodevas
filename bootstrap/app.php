@@ -20,6 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('activitylog:clean')->cron('10 0 * * *');
         $schedule->command('model:prune')->cron('20 0 * * *');
         $schedule->command('auth:clear-resets')->everyFifteenMinutes();
+        $schedule->command('horizon:snapshot')->everyFifteenMinutes();
+        $schedule->command('queue:prune-failed --hours=168')->everyFifteenMinutes();
         $schedule->command(\App\Console\Commands\TelegramHandlerCommand::class)
             ->everyThirtySeconds()
             ->withoutOverlapping(1);

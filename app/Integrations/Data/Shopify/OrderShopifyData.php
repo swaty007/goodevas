@@ -2,8 +2,10 @@
 
 namespace App\Integrations\Data\Shopify;
 
+use App\Integrations\Data\Enums\UnifiedOrderStatus;
 use App\Integrations\Data\OrderDataInterface;
 use App\Integrations\Data\OrderUnifiedData;
+use App\Models\ApiKey;
 use Spatie\LaravelData\Data;
 
 class OrderShopifyData extends Data implements OrderDataInterface
@@ -25,6 +27,22 @@ class OrderShopifyData extends Data implements OrderDataInterface
         public mixed $originalObject = null,
     ) {}
 
+    public const array STATUS_MAP = [
+        'authorized' => UnifiedOrderStatus::PENDING,
+        'expired' => UnifiedOrderStatus::CANCELED,
+        'paid' => UnifiedOrderStatus::PAID,
+        'partially_paid' => UnifiedOrderStatus::PARTIALLY_PAID,
+        'partially_refunded' => UnifiedOrderStatus::PARTIALLY_REFUND,
+        'pending' => UnifiedOrderStatus::PENDING,
+        'refunded' => UnifiedOrderStatus::REFUNDED,
+        'voided' => UnifiedOrderStatus::CANCELED,
+    ];
+
+    public static function getStatusMap(): array
+    {
+        return self::STATUS_MAP;
+    }
+
     public static function convertToUnified(?OrderShopifyData $data = null): OrderUnifiedData
     {
         if (! $data instanceof OrderShopifyData) {
@@ -42,37 +60,38 @@ class OrderShopifyData extends Data implements OrderDataInterface
 
         $is_shipped = ($data->fulfillment_status === 'fulfilled');
 
-        return new OrderUnifiedData(
-            order_id: (string) $data->id,
-            order_date: $data->created_at,
-            update_date: $data->updated_at,
-            order_status: $order_status,
-            fulfillment: $data->fulfillment_status,
-            sales_channel: $sales_channel,
-            total: [
+        return OrderUnifiedData::from([
+            'type' => ApiKey::TYPE_SHOPIFY,
+            'order_id' => (string) $data->id,
+            'order_date' => $data->created_at,
+            'update_date' => $data->updated_at,
+
+            'order_status' => $order_status,
+            'fulfillment' => $data->fulfillment_status,
+            'sales_channel' => $sales_channel,
+            'total' => [
                 'amount' => $data->total_price,
                 'currency' => $data->currency,
             ],
-            payment_method: $payment_method,
+            'payment_method' => $payment_method,
+            'buyer_name' => $buyer_name,
 
-            buyer_name: $buyer_name,
-            address_line_1: $data->shipping_address['address1'] ?? null,
-            address_line_2: $data->shipping_address['address2'] ?? null,
-            city: $data->shipping_address['city'] ?? null,
-            state: $data->shipping_address['province'] ?? null,
-            postal_code: $data->shipping_address['zip'] ?? null,
-            country_code: $data->shipping_address['country_code'] ?? null,
+            'address_line_1' => $data->shipping_address['address1'] ?? null,
+            'address_line_2' => $data->shipping_address['address2'] ?? null,
+            'city' => $data->shipping_address['city'] ?? null,
+            'state' => $data->shipping_address['province'] ?? null,
+            'postal_code' => $data->shipping_address['zip'] ?? null,
+            'country_code' => $data->shipping_address['country_code'] ?? null,
 
             // Для Shopify отсутствуют эти параметры, оставим null
-            min_processing_days: null,
-            max_processing_days: null,
-            expected_ship_date: null,
-
-            is_shipped: $is_shipped,
-            items: $transactions,
-            refunds: $data->refunds,
-            originalObject: $data->originalObject,
-        );
+            'min_processing_days' => null,
+            'max_processing_days' => null,
+            'expected_ship_date' => null,
+            'is_shipped' => $is_shipped,
+            'items' => $transactions,
+            'refunds' => $data->refunds,
+            'originalObject' => $data->originalObject,
+        ]);
     }
 }
 
