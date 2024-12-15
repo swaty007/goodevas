@@ -75,8 +75,8 @@ class OrderAmazonData extends Data implements OrderDataInterface
             'country_code' => $data->ShippingAddress['CountryCode'] ?? null,
 
             // Для Amazon эти поля не актуальны
-//            'min_processing_days' => null,
-//            'max_processing_days' => null,
+            //            'min_processing_days' => null,
+            //            'max_processing_days' => null,
             'expected_ship_date' => $data->LatestShipDate,
 
             'is_shipped' => ($data->OrderStatus === 'Shipped'),

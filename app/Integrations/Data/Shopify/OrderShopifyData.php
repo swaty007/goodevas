@@ -30,6 +30,11 @@ class OrderShopifyData extends Data implements OrderDataInterface
 
     public const array STATUS_MAP = [
         // $fulfillment_status
+        'partial' => UnifiedOrderStatus::PARTIALLY_SHIPPED,
+        'shipped' => UnifiedOrderStatus::DONE,
+        'unshipped' => UnifiedOrderStatus::PAID,
+        'unfulfilled' => UnifiedOrderStatus::PAID,
+
         'fulfilled' => UnifiedOrderStatus::DONE,
         'in_progress' => UnifiedOrderStatus::PENDING,
         'on_hold' => UnifiedOrderStatus::PENDING,
@@ -39,7 +44,6 @@ class OrderShopifyData extends Data implements OrderDataInterface
         'request_declined' => UnifiedOrderStatus::CANCELED,
         'restocked' => UnifiedOrderStatus::REFUNDED,  // или другой статус, если есть "returned"
         'scheduled' => UnifiedOrderStatus::PENDING,
-        'unfulfilled' => UnifiedOrderStatus::PENDING,
 
         // $financial_status
         'authorized' => UnifiedOrderStatus::PENDING,
@@ -98,8 +102,8 @@ class OrderShopifyData extends Data implements OrderDataInterface
             'country_code' => $data->shipping_address['country_code'] ?? null,
 
             // Для Shopify отсутствуют эти параметры, оставим null
-//            'min_processing_days' => null,
-//            'max_processing_days' => null,
+            //            'min_processing_days' => null,
+            //            'max_processing_days' => null,
             'expected_ship_date' => Carbon::parse($data->created_at)->addDays(2)->toISOString(),
             'is_shipped' => $is_shipped,
             'items' => $transactions,

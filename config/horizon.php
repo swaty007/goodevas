@@ -89,6 +89,9 @@ return [
     'waits' => [
         'redis:critical' => 30,
         'redis:default' => 60,
+        'redis:amazon' => 60,
+        'redis:shopify' => 60,
+        'redis:etsy' => 60,
     ],
 
     /*
@@ -186,7 +189,12 @@ return [
     'defaults' => [
         'supervisor-default' => [
             'connection' => 'redis',
-            'queue' => ['default'],
+            'queue' => [
+                'default',
+                'amazon',
+                'shopify',
+                'etsy',
+            ],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
@@ -194,7 +202,7 @@ return [
             'maxJobs' => 0,
             'memory' => 512,
             'tries' => 2,
-            'timeout' => 180,
+            'timeout' => 360,
             'nice' => 0,
         ],
     ],
@@ -202,7 +210,7 @@ return [
     'environments' => [
         'production' => [
             'supervisor-default' => [
-                'minProcesses' => 1,
+                'minProcesses' => 2,
                 'maxProcesses' => 10,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 2,

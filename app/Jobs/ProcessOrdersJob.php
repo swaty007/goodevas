@@ -4,28 +4,106 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
-use Illuminate\Support\Facades\Storage;
+use App\Integrations\IntegrationFactory;
+use App\Models\ApiKey;
+use Illuminate\Bus\Batchable;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\SkipIfBatchCancelled;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
-class ProcessOrdersJob
+class ProcessOrdersJob implements ShouldBeUnique, ShouldQueue
 {
-    public function handle()
-    {
-        $files = [
-            'orders_ApiOneAdapter.json',
-            'orders_ApiTwoAdapter.json',
-        ];
+    use Batchable;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
-        $allOrders = [];
-        foreach ($files as $file) {
-            $data = json_decode(Storage::get($file), true);
-            foreach ($data as $order) {
-                // Преобразуем в DTO
-                $mapper = app(OrderDtoMapperInterface::class);
-                $allOrders[] = $mapper->map($order);
-            }
+    public int $tries = 3;
+
+    public function __construct(
+        public ApiKey $apiKey,
+        public ?\Carbon\Carbon $createdMin = null,
+        public ?\Carbon\Carbon $createdMax = null,
+        public ?array $options = [],
+    ) {
+        $this->createdMin = $this->createdMin ?? now()->subDays(7);
+        $this->createdMax = $this->createdMax ?? now();
+    }
+
+    public function uniqueId(): string
+    {
+        return (string) $this->apiKey->id;
+    }
+
+    public function displayName(): string
+    {
+        return self::class.' ['.$this->apiKey->type.']';
+    }
+
+    public function middleware(): array
+    {
+        return [new SkipIfBatchCancelled];
+    }
+
+    public function tags(): array
+    {
+        return ['orders', 'api:'.$this->apiKey->type, 'api_key:'.$this->apiKey->id];
+    }
+
+    public function handle(): void
+    {
+        // Проверим, что job запущена внутри batch:
+        if (! $this->batch()) {
+            // fallback — если вдруг job не в batch, можно либо
+            // return, либо выполнить логику всё равно
+            Log::error('Job is not in batch', [
+                'api_key_id' => $this->apiKey->id,
+                'type' => $this->apiKey->type,
+            ]);
         }
 
-        // Дальнейшая обработка заказов
-        dd($allOrders);
+        $factory = IntegrationFactory::make($this->apiKey->type);
+        $adapter = $factory->createAdapter($this->apiKey);
+        $mapper = $factory->createMapper();
+
+        $data = $adapter->fetchOrders(
+            createdMin: $this->createdMin,
+            createdMax: $this->createdMax,
+            options: $this->options,
+        );
+
+        $orders = $data['orders'] ?? [];
+        $ordersMapped = $mapper->transformToUnified($orders);
+
+        // Сохраняем/обрабатываем постранично
+        // Order::upsert($ordersMapped, ...);
+
+        $hasNextPage = $data['hasNextPage'] ?? null;
+        if ($hasNextPage) {
+            // Добавим новую job в ТОТ же batch, чтобы подгрузить следующую страницу
+            $this->batch()->add([
+                new ProcessOrdersJob(
+                    apiKey: $this->apiKey,
+                    createdMin: $this->createdMin,
+                    createdMax: $this->createdMax,
+                    options: array_merge($this->options, $data['options']),
+                ),
+            ]);
+        } else {
+            // Нет NextToken -> добавляем финальную джобу
+            Log::info('All orders processed', [
+                'api_key_id' => $this->apiKey->id,
+                'type' => $this->apiKey->type,
+            ]);
+            //            $this->batch()->add([
+            //                new ProcessAllOrdersJob($this->apiKey),
+            //            ]);
+        }
     }
 }

@@ -34,8 +34,8 @@ class OrderUnifiedData extends Data
         public ?string $country_code,
 
         // Показатели обработки и отгрузки (актуально для Etsy)
-//        public ?int $min_processing_days = null,
-//        public ?int $max_processing_days = null,
+        //        public ?int $min_processing_days = null,
+        //        public ?int $max_processing_days = null,
         #[WithCast(DateTimeInterfaceCast::class)]
         public ?DateTime $expected_ship_date = null,
 

@@ -7,6 +7,7 @@ namespace App\Integrations\Adapters\Etsy;
 use App\Integrations\Adapters\IntegrationAdapterInterface;
 use App\Integrations\APIs\Etsy\EtsyApiMethods;
 use App\Models\ApiKey;
+use Illuminate\Support\Carbon;
 
 class EtsyAdapter extends EtsyApiMethods implements IntegrationAdapterInterface
 {
@@ -15,11 +16,21 @@ class EtsyAdapter extends EtsyApiMethods implements IntegrationAdapterInterface
         $this->setApiKey($apiKey);
     }
 
-    public function fetchOrders(): array
+    public function fetchOrders(?Carbon $createdMin = null, ?Carbon $createdMax = null, array $options = []): array
     {
-        $createdMin = now()->subDays(30);
-        $data = $this->getOrdersList(createdMin: $createdMin);
+        $createdMin = $createdMin ?? now()->subDays(30);
 
-        return $data['orders'];
+        $perPage = 100;
+        $data = $this->getOrdersList(createdMin: $createdMin, createdMax: $createdMax, perPage: $perPage, options: $options);
+
+        $page = $options['page'] ?? 1;
+        $count = $data['count'];
+
+        $data['hasNextPage'] = $count > $perPage * $page;
+        $data['options'] = [
+            'page' => $page + 1,
+        ];
+
+        return $data;
     }
 }

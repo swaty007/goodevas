@@ -26,14 +26,14 @@ use Shopify\Clients\PageInfo;
  */
 class ShopifyApiMethods extends AbstractShopifyApi implements IntegrationApiInterface
 {
-    public function getOrdersList(Carbon $createdMin, ?Carbon $createdMax = null, int $page = 1, int $perPage = 250, array $options = []): array
+    public function getOrdersList(Carbon $createdMin, ?Carbon $createdMax = null, int $perPage = 250, array $options = []): array
     {
         if ($perPage > 250) {
             throw new RuntimeException('Per page limit is 250');
         }
         $client = $this->getClient();
-        if ($pageInfo = $options['pageInfo']) {
-            $response = $client->get(path: 'orders', query: $pageInfo->getNextPageQuery());
+        if (! empty($options['pageInfo'])) {
+            $response = $client->get(path: 'orders', query: $options['pageInfo']->getNextPageQuery());
         } else {
             $response = $client->get(path: 'orders', query: [
                 'limit' => $perPage,
@@ -54,26 +54,27 @@ class ShopifyApiMethods extends AbstractShopifyApi implements IntegrationApiInte
         return [
             'orders' => $response->getDecodedBody()['orders'],
             'pageInfo' => $pageInfoNext,
+            'hasNextPage' => $pageInfoNext->hasNextPage(),
         ];
         $fieldsString = collect($this->getFieldList('Order'))->pluck('name')->implode("\n");
-//        $query = <<<QUERY
-//  query {
-//    orders(first: 10, query: "updated_at:>2019-12-01") {
-//      edges {
-//        cursor
-//        node {
-//          $fieldsString
-//        }
-//      }
-//        pageInfo {
-//          endCursor
-//          hasNextPage
-//          hasPreviousPage
-//          startCursor
-//        }
-//    }
-//  }
-//QUERY;
+        //        $query = <<<QUERY
+        //  query {
+        //    orders(first: 10, query: "updated_at:>2019-12-01") {
+        //      edges {
+        //        cursor
+        //        node {
+        //          $fieldsString
+        //        }
+        //      }
+        //        pageInfo {
+        //          endCursor
+        //          hasNextPage
+        //          hasPreviousPage
+        //          startCursor
+        //        }
+        //    }
+        //  }
+        //QUERY;
     }
 
     public function getOrdersCount(): array
@@ -82,15 +83,15 @@ class ShopifyApiMethods extends AbstractShopifyApi implements IntegrationApiInte
         $response = $client->get(path: 'orders/count', query: ['status' => 'any']);
 
         return $response->getDecodedBody();
-//        $query = <<<'QUERY'
-//  query OrdersCount {
-//    ordersCount(limit: 10000) {
-//      count
-//      precision
-//    }
-//
-//  }
-//QUERY;
+        //        $query = <<<'QUERY'
+        //  query OrdersCount {
+        //    ordersCount(limit: 10000) {
+        //      count
+        //      precision
+        //    }
+        //
+        //  }
+        //QUERY;
     }
 
     public function getFieldList(string $type): array

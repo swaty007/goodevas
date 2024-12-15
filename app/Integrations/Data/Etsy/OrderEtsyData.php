@@ -113,8 +113,8 @@ class OrderEtsyData extends Data implements OrderDataInterface
             'postal_code' => $data->zip,
             'country_code' => $data->country_iso,
 
-//            'min_processing_days' => $minProcessing,
-//            'max_processing_days' => $maxProcessing,
+            //            'min_processing_days' => $minProcessing,
+            //            'max_processing_days' => $maxProcessing,
             'expected_ship_date' => $expectedShip,
 
             'is_shipped' => (bool) $data->is_shipped,

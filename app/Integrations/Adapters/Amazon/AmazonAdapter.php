@@ -7,6 +7,7 @@ namespace App\Integrations\Adapters\Amazon;
 use App\Integrations\Adapters\IntegrationAdapterInterface;
 use App\Integrations\APIs\Amazon\AmazonApiMethods;
 use App\Models\ApiKey;
+use Illuminate\Support\Carbon;
 
 class AmazonAdapter extends AmazonApiMethods implements IntegrationAdapterInterface
 {
@@ -15,11 +16,16 @@ class AmazonAdapter extends AmazonApiMethods implements IntegrationAdapterInterf
         $this->setApiKey($apiKey);
     }
 
-    public function fetchOrders(): array
+    public function fetchOrders(?Carbon $createdMin = null, ?Carbon $createdMax = null, array $options = []): array
     {
-        $createdMin = now()->subDays(30);
-        $data = $this->getOrdersList(createdMin: $createdMin);
+        $createdMin = $createdMin ?? now()->subDays(30);
+        $data = $this->getOrdersList(createdMin: $createdMin, createdMax: $createdMax, options: $options);
 
-        return $data['orders'];
+        $data['hasNextPage'] = (bool) $data['nextToken'];
+        $data['options'] = [
+            'NextToken' => $data['NextToken'],
+        ];
+
+        return $data;
     }
 }

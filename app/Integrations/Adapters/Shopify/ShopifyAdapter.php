@@ -7,6 +7,7 @@ namespace App\Integrations\Adapters\Shopify;
 use App\Integrations\Adapters\IntegrationAdapterInterface;
 use App\Integrations\APIs\Shopify\ShopifyApiMethods;
 use App\Models\ApiKey;
+use Illuminate\Support\Carbon;
 
 class ShopifyAdapter extends ShopifyApiMethods implements IntegrationAdapterInterface
 {
@@ -15,15 +16,16 @@ class ShopifyAdapter extends ShopifyApiMethods implements IntegrationAdapterInte
         $this->setApiKey($apiKey);
     }
 
-    public function fetchOrders(): array
+    public function fetchOrders(?Carbon $createdMin = null, ?Carbon $createdMax = null, array $options = []): array
     {
-        $createdMin = now()->subDays(30);
-        $data = $this->getOrdersList(createdMin: $createdMin);
-        if ($data['pageInfo']) {
-//            $this->getOrdersList(createdMin: $createdMin, options: ['pageInfo' => $data['pageInfo']]);
-        }
+        $createdMin = $createdMin ?? now()->subDays(30);
+        $data = $this->getOrdersList(createdMin: $createdMin, createdMax: $createdMax, options: $options);
+        $data['hasNextPage'] = (bool) $data['hasNextPage'];
+        $data['options'] = [
+            'pageInfo' => $data['pageInfo'],
+        ];
 
         //        dd($data['pageInfo'], $data['body']['orders']);
-        return $data['orders'];
+        return $data;
     }
 }
