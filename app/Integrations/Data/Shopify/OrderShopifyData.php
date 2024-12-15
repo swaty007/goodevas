@@ -87,10 +87,8 @@ class OrderShopifyData extends Data implements OrderDataInterface
             'order_status' => $order_status,
             'fulfillment' => $data->fulfillment_status,
             'sales_channel' => $sales_channel,
-            'total' => [
-                'amount' => $data->total_price,
-                'currency' => $data->currency,
-            ],
+            'total_amount' => $data->total_price,
+            'total_currency' => $data->currency,
             'payment_method' => $payment_method,
             'buyer_name' => $buyer_name,
 

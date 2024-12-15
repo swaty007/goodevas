@@ -22,14 +22,13 @@ class ItemShopifyData extends Data implements ItemDataInterface
             throw new \InvalidArgumentException('Ожидался объект типа TransactionShopifyData');
         }
 
-        return new ItemUnifiedData(
-            order_item_id: (string) $data->id,
-            api_order_id: $data->order_id,
-            quantity: $data->quantity,
-            title: $data->title,
-            sku: $data->sku,
-            quantity_ordered: $data->quantity,
-        );
+        return ItemUnifiedData::from([
+            'item_id' => (string) $data->id,
+            'api_order_id' => $data->order_id,
+            'quantity' => $data->quantity,
+            'title' => $data->title,
+            'sku' => $data->sku,
+        ]);
     }
 }
 

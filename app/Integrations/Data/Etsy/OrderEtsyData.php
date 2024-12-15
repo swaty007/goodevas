@@ -98,11 +98,8 @@ class OrderEtsyData extends Data implements OrderDataInterface
             'fulfillment' => null, // У Etsy нет аналога FulfillmentChannel
             'sales_channel' => 'Etsy',
 
-            'total' => [
-                'amount' => $data->grandtotal['amount'] ?? null,
-                'currency' => $data->grandtotal['currency'] ?? null,
-                'divisor' => $data->grandtotal['divisor'] ?? null,
-            ],
+            'total_amount' => bcdiv($data->grandtotal['amount'], $data->grandtotal['divisor'], 2),
+            'total_currency' => $data->grandtotal['currency_code'],
             'payment_method' => $data->payment_method,
 
             'buyer_name' => $data->name,

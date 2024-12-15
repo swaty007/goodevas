@@ -27,15 +27,13 @@ class ItemEtsyData extends Data implements ItemDataInterface
             throw new \InvalidArgumentException('Ожидался объект типа TransactionEtsyData');
         }
 
-        return new ItemUnifiedData(
-            order_item_id: (string) $data->transaction_id,
-            api_order_id: $data->receipt_id,
-            quantity: $data->quantity,
-            title: $data->title,
-            sku: $data->sku,
-            quantity_ordered: $data->quantity,
-            shipping_method: $data->shipping_method,
-        );
+        return ItemUnifiedData::from([
+            'item_id' => (string) $data->transaction_id,
+            'api_order_id' => $data->receipt_id,
+            'quantity' => $data->quantity,
+            'title' => $data->title,
+            'sku' => $data->sku,
+        ]);
     }
 }
 

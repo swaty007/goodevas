@@ -21,7 +21,8 @@ class OrderUnifiedData extends Data
         public Enums\UnifiedOrderStatus $order_status,
         public ?string $fulfillment,
         public ?string $sales_channel,
-        public array $total,
+        public string $total_amount,
+        public string $total_currency,
         public ?string $payment_method,
 
         // Адрес и данные покупателя

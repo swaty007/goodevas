@@ -24,15 +24,13 @@ class ItemAmazonData extends Data implements ItemDataInterface
             throw new \InvalidArgumentException('Ожидался объект типа TransactionAmazonData');
         }
 
-        return new ItemUnifiedData(
-            order_item_id: $data->OrderItemId,
-            api_order_id: $data->AmazonOrderId,
-            quantity: $data->QuantityOrdered,
-            title: $data->Title,
-            sku: $data->SellerSKU,
-            quantity_ordered: $data->QuantityOrdered,
-            shipping_method: [],
-        );
+        return ItemUnifiedData::from([
+            'item_id' => $data->OrderItemId,
+            'api_order_id' => $data->AmazonOrderId,
+            'quantity' => $data->QuantityOrdered,
+            'title' => $data->Title,
+            'sku' => $data->SellerSKU,
+        ]);
     }
 }
 

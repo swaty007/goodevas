@@ -1,11 +1,19 @@
 {
-    "name": "laravel/laravel",
+    "name": "infinitum/goodevas",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Platform for collecting products with API Shopify, Amazon, Etsy and managing orders and stocks",
+    "keywords": ["laravel", "framework","shopify", "amazon", "etsy", "API", "integration", "inertia"],
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Aleksei Lialiushko",
+            "email": "swaty0007@gmail.com",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "php": "^8.3",
+        "ext-bcmath": "*",
         "ext-curl": "*",
         "brackets/craftable-pro": "dev-main",
         "inertiajs/inertia-laravel": "^1.0",

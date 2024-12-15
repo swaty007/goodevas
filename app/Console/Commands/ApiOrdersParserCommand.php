@@ -36,26 +36,26 @@ class ApiOrdersParserCommand extends Command
 
         $keys = ApiKey::all();
         foreach ($keys as $apiKey) {
-            if ($apiKey->type === 'etsy') {
-                if (App::environment('production')) {
-                    $batch = Bus::batch([
-                        new ProcessOrdersJob($apiKey, createdMin: now()->subDays(30)),
-                    ])
-                        ->then(function (Batch $batch) {
-                            // Выполнится только если все задания внутри batch завершаются успехом
-                            Log::info('All jobs in the batch completed successfully!');
-                        })
-                        ->catch(function (Batch $batch, Throwable $e) {
-                            // Ошибка в одной из джоб
-                            Log::error('Some job in the batch failed: '.$e->getMessage());
-                        })
-                        ->finally(function (Batch $batch) {
-                            Log::info('Batch is finished (success or fail).');
-                        })
-                        ->onQueue($apiKey->type)
-                        ->dispatch();
-                    //$batch->add(new ProcessOrdersJob($apiKey, createdMin: now()->subDays(30)));
-                } else {
+            if (App::environment('production')) {
+                $batch = Bus::batch([
+                    new ProcessOrdersJob($apiKey, createdMin: now()->subDays(30)),
+                ])
+                    ->then(function (Batch $batch) {
+                        // Выполнится только если все задания внутри batch завершаются успехом
+                        Log::info('All jobs in the batch completed successfully!');
+                    })
+                    ->catch(function (Batch $batch, Throwable $e) {
+                        // Ошибка в одной из джоб
+                        Log::error('Some job in the batch failed: '.$e->getMessage());
+                    })
+                    ->finally(function (Batch $batch) {
+                        Log::info('Batch is finished (success or fail).');
+                    })
+                    ->onQueue($apiKey->type)
+                    ->dispatch();
+                //$batch->add(new ProcessOrdersJob($apiKey, createdMin: now()->subDays(30)));
+            } else {
+                if ($apiKey->type === 'amazon') {
                     $factory = IntegrationFactory::make($apiKey->type);
                     $adapter = $factory->createAdapter($apiKey);
                     $hasNextPage = true;
@@ -67,10 +67,10 @@ class ApiOrdersParserCommand extends Command
                         $options = $data['options'] ?? [];
                         $mapper = $factory->createMapper();
                         $ordersMapped = $mapper->transformToUnified($orders);
+                        dd($ordersMapped[0], count($ordersMapped));
                     } while ($hasNextPage);
                 }
             }
-
         }
     }
 }
