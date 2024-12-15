@@ -54,7 +54,7 @@ class ShopifyApiMethods extends AbstractShopifyApi implements IntegrationApiInte
         return [
             'orders' => $response->getDecodedBody()['orders'],
             'pageInfo' => $pageInfoNext,
-            'hasNextPage' => $pageInfoNext->hasNextPage(),
+            'hasNextPage' => $pageInfoNext?->hasNextPage() ?? false,
         ];
         $fieldsString = collect($this->getFieldList('Order'))->pluck('name')->implode("\n");
         //        $query = <<<QUERY

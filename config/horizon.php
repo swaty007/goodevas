@@ -89,7 +89,7 @@ return [
     'waits' => [
         'redis:critical' => 30,
         'redis:default' => 60,
-        'redis:amazon' => 60,
+        'redis:amazon' => 400,
         'redis:shopify' => 60,
         'redis:etsy' => 60,
     ],
@@ -142,8 +142,8 @@ return [
 
     'metrics' => [
         'trim_snapshots' => [
-            'job' => 24,
-            'queue' => 24,
+            'job' => (60 / 5) * 12,
+            'queue' => (60 / 5) * 12,
         ],
     ],
 
@@ -211,7 +211,7 @@ return [
         'production' => [
             'supervisor-default' => [
                 'minProcesses' => 2,
-                'maxProcesses' => 10,
+                'maxProcesses' => 4,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 2,
             ],
