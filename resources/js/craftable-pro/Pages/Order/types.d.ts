@@ -1,3 +1,5 @@
+import { ApiKey } from "@/craftable-pro/Pages/ApiKey/types";
+
 export type OrderItem = {
     id: string | number;
     order_id: string;
@@ -10,6 +12,7 @@ export type OrderItem = {
 
 export type Order = {
     id: string | number;
+    api_key_id: number;
     order_id: string;
     type: string;
     order_date: string;
@@ -33,6 +36,7 @@ export type Order = {
     created_at: string;
     updated_at: string;
     items: OrderItem[];
+    api_key: ApiKey;
 };
 
 export type OrderForm = {

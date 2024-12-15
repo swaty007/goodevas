@@ -13,6 +13,7 @@ class OrderShopifyData extends Data implements OrderDataInterface
 {
     public function __construct(
         public $id,
+        public $order_number,
         public $created_at,
         public $updated_at,
         public ?string $fulfillment_status,
@@ -80,7 +81,7 @@ class OrderShopifyData extends Data implements OrderDataInterface
 
         return OrderUnifiedData::from([
             'type' => ApiKey::TYPE_SHOPIFY,
-            'order_id' => (string) $data->id,
+            'order_id' => (string) $data->order_number,
             'order_date' => $data->created_at,
             'update_date' => $data->updated_at,
 

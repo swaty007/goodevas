@@ -17,6 +17,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -149,9 +151,9 @@ class ApiKeyController extends Controller
         return Excel::download(new ApiKeysExport($request->all()), 'ApiKeys-'.now()->format('dmYHi').'.xlsx');
     }
 
-    public function oAuth(CreateApiKeyRequest $request, ApiKey $apiKey): Response|RedirectResponse
+    public function oAuthEtsy(CreateApiKeyRequest $request, ApiKey $apiKey): Response|RedirectResponse
     {
-        if ($apiKey->type !== 'etsy') {
+        if ($apiKey->type !== ApiKey::TYPE_ETSY) {
             abort(404);
         }
         $client = new \Etsy\OAuth\Client($apiKey->key->get('client_id'));
@@ -171,7 +173,7 @@ class ApiKeyController extends Controller
         return redirect($url);
     }
 
-    public function authCallback(CreateApiKeyRequest $request): Response|RedirectResponse
+    public function authCallbackEtsy(CreateApiKeyRequest $request): Response|RedirectResponse
     {
         try {
             $data = $request->all();
@@ -193,6 +195,53 @@ class ApiKeyController extends Controller
                 'refresh_token' => $refreshToken,
             ];
             $apiKey->save();
+            Log::info('Etsy auth callback', $result);
+        } catch (\Exception $e) {
+            dd($e);
+        }
+
+        return redirect()->route('craftable-pro.api-keys.index')->with(['message' => ___('craftable-pro', 'Operation successful')]);
+    }
+
+    public function oAuthAmazon(CreateApiKeyRequest $request, ApiKey $apiKey): Response|RedirectResponse
+    {
+        if ($apiKey->type !== ApiKey::TYPE_AMAZON) {
+            abort(404);
+        }
+
+        $clientId = 'Ваш_client_id';
+        $redirectUri = route('craftable-pro.etsy.auth-callback'); // Ваш Redirect URI
+        $scope = 'sellingpartnerapi::orders'; // Укажите необходимые области доступа
+
+        $url = "https://www.amazon.com/ap/oa?client_id={$clientId}&scope={$scope}&response_type=code&redirect_uri={$redirectUri}";
+        Cache::put('amazon_verifier_id', $apiKey->id, 360);
+        dd($url);
+
+        return redirect($url);
+    }
+
+    public function authCallbackAmazon(CreateApiKeyRequest $request): Response|RedirectResponse
+    {
+        try {
+            $data = $request->all();
+            $code = $data['code'];
+            $apiKey = ApiKey::find(Cache::get('amazon_verifier_id'));
+
+
+            $response = Http::asForm()->post('https://api.amazon.com/auth/o2/token', [
+                'grant_type' => 'authorization_code',
+                'code' => $code,
+                'client_id' => $apiKey->key->get('client_id'),
+                'client_secret' => $apiKey->key->get('client_secret'),
+                'redirect_uri' => route('craftable-pro.amazon.auth-callback'),
+            ]);
+
+            $refreshToken = $response['refresh_token'];
+
+            $apiKey->key->refresh_token = $refreshToken;
+            $apiKey->additional_data = $response;
+            $apiKey->save();
+            Log::info('Amazon auth callback', $response);
         } catch (\Exception $e) {
             dd($e);
         }

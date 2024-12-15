@@ -5,6 +5,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -16,6 +17,7 @@ class Order extends Model
     protected $table = 'orders';
 
     protected $fillable = [
+        'api_key_id',
         'order_id',
         'type',
         'order_date',
@@ -38,9 +40,20 @@ class Order extends Model
         'original_object',
     ];
 
+    protected $casts = [
+        'order_date' => 'datetime',
+        'update_date' => 'datetime',
+        'expected_ship_date' => 'datetime',
+    ];
+
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function apiKey(): BelongsTo
+    {
+        return $this->belongsTo(ApiKey::class);
     }
 
     public function itemsByApiKey(): HasMany
@@ -52,6 +65,7 @@ class Order extends Model
     {
         return LogOptions::defaults()
             ->logOnly([
+                'api_key_id',
                 'order_id',
                 'type',
                 'order_date',

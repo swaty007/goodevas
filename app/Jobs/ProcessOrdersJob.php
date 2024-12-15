@@ -6,6 +6,7 @@ namespace App\Jobs;
 
 use App\Integrations\IntegrationFactory;
 use App\Models\ApiKey;
+use App\Models\Order;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -14,6 +15,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\SkipIfBatchCancelled;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ProcessOrdersJob implements ShouldBeUnique, ShouldQueue
@@ -35,7 +37,7 @@ class ProcessOrdersJob implements ShouldBeUnique, ShouldQueue
         public ?array $options = [],
     ) {
         $this->createdMin = $this->createdMin ?? now()->subDays(7);
-        $this->createdMax = $this->createdMax ?? now();
+        // $this->createdMax = $this->createdMax ?? now()->subMinutes(10);
     }
 
     public function uniqueId(): string
@@ -82,9 +84,27 @@ class ProcessOrdersJob implements ShouldBeUnique, ShouldQueue
 
         $orders = $data['orders'] ?? [];
         $ordersMapped = $mapper->transformToUnified($orders);
+        DB::transaction(function () use ($ordersMapped) {
+            foreach ($ordersMapped as $orderData) {
+                $orderAttributes = $orderData->toArray();
+                $itemsData = $orderData->items ?? [];
+                unset($orderAttributes['items']);
 
-        // Сохраняем/обрабатываем постранично
-        // Order::upsert($ordersMapped, ...);
+                /** @var Order $order */
+                $order = Order::updateOrCreate(['order_id' => $orderAttributes['order_id']], array_merge($orderAttributes, [
+                    'api_key_id' => $this->apiKey->id,
+                ]));
+                if (! empty($itemsData)) {
+                    foreach ($itemsData as $itemData) {
+                        $itemAttributes = $itemData->toArray();
+                        $order->items()->updateOrCreate(
+                            ['item_id' => $itemAttributes['item_id']], // Уникальное поле для поиска
+                            $itemAttributes
+                        );
+                    }
+                }
+            }
+        });
 
         $hasNextPage = $data['hasNextPage'] ?? null;
         if ($hasNextPage) {

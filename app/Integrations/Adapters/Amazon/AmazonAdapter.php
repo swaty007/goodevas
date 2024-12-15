@@ -21,7 +21,7 @@ class AmazonAdapter extends AmazonApiMethods implements IntegrationAdapterInterf
         $createdMin = $createdMin ?? now()->subDays(30);
         $data = $this->getOrdersList(createdMin: $createdMin, createdMax: $createdMax, options: $options);
 
-        $data['hasNextPage'] = (bool) $data['nextToken'];
+        $data['hasNextPage'] = (bool) $data['NextToken'];
         $data['options'] = [
             'NextToken' => $data['NextToken'],
         ];

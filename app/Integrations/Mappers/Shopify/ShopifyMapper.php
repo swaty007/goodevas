@@ -12,7 +12,7 @@ class ShopifyMapper implements IntegrationMapperInterface
     public function transformOne($data): OrderShopifyData
     {
         foreach ($data['line_items'] as &$value) {
-            $value['order_id'] = $data['id'];
+            $value['order_id'] = $data['order_number'];
         }
         $order = OrderShopifyData::from($data);
         $order->originalObject = $data;

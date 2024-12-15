@@ -27,7 +27,7 @@ class ItemShopifyData extends Data implements ItemDataInterface
             'api_order_id' => $data->order_id,
             'quantity' => $data->quantity,
             'title' => $data->title,
-            'sku' => $data->sku,
+            'sku' => $data->sku ?? 'null',
         ]);
     }
 }

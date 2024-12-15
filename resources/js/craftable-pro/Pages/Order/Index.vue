@@ -85,6 +85,9 @@
                 <ListingHeaderCell v-width-dragging sortBy="id">
                     {{ $t('global', 'Id') }}
                 </ListingHeaderCell>
+                <ListingHeaderCell v-width-dragging >
+                    {{ $t('global', 'Api Key') }}
+                </ListingHeaderCell>
                 <ListingHeaderCell v-width-dragging sortBy="order_id">
                     {{ $t('global', 'Order Item') }}
                 </ListingHeaderCell>
@@ -152,6 +155,9 @@
             <template #tableRow="{ item, action }: any">
                 <ListingDataCell>
                     {{ item.id }}
+                </ListingDataCell>
+                <ListingDataCell>
+                    {{ item?.api_key?.name }}
                 </ListingDataCell>
                 <ListingDataCell>
                     {{ item.order_id }}

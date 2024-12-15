@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('order_id')->unique();
             $table->string('type')->index();
+            $table->foreignId('api_key_id')->nullable()->constrained('api_keys')->nullOnDelete();
+
+            $table->string('order_id')->unique();
             $table->timestamp('order_date')->nullable();
             $table->timestamp('update_date')->nullable();
             $table->string('order_status')->index();

@@ -76,7 +76,8 @@ Route::middleware('craftable-pro-middlewares')->prefix('admin')->name('craftable
     Route::match(['put', 'patch'], 'api-keys/{apiKey}', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'update'])->name('api-keys.update');
     Route::delete('api-keys/{apiKey}', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'destroy'])->name('api-keys.destroy');
     Route::post('api-keys/bulk-destroy', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'bulkDestroy'])->name('api-keys.bulk-destroy');
-    Route::get('api-keys/etsy/oauth/{apiKey}', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'oAuth'])->name('etsy.oauth');
+    Route::get('api-keys/etsy/oauth/{apiKey}', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'oAuthEtsy'])->name('etsy.oauth');
+    Route::get('api-keys/amazon/oauth/{apiKey}', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'oAuthAmazon'])->name('amazon.oauth');
 
     Route::get('orders', [App\Http\Controllers\CraftablePro\OrderController::class, 'index'])->name('orders.index');
     Route::get('orders/create', [App\Http\Controllers\CraftablePro\OrderController::class, 'create'])->name('orders.create');
@@ -88,7 +89,8 @@ Route::middleware('craftable-pro-middlewares')->prefix('admin')->name('craftable
     Route::post('orders/bulk-destroy', [App\Http\Controllers\CraftablePro\OrderController::class, 'bulkDestroy'])->name('orders.bulk-destroy');
 
     Route::group(['prefix' => 'webhooks'], function () {
-        Route::get('etsy/auth-callback', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'authCallback'])->name('etsy.auth-callback');
+        Route::get('etsy/auth-callback', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'authCallbackEtsy'])->name('etsy.auth-callback');
+        Route::get('amazon/auth-callback', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'authCallbackAmazon'])->name('amazon.auth-callback');
     });
 });
 

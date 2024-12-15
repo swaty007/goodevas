@@ -65,9 +65,15 @@ class OrderController extends Controller
         }
 
         $orders = $ordersQuery
-            ->with('orderItems')
+            ->with([
+                'items',
+                'apiKey' => function ($query) {
+                    $query->select('id', 'name', 'type');
+                },
+            ])
             ->select(
                 'id',
+                'api_key_id',
                 'order_id',
                 'type',
                 'order_date',
@@ -112,6 +118,7 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request): RedirectResponse
     {
+        dd($request->validated());
         $order = Order::create($request->validated());
 
         if ($request->input('orderItems_ids')) {
@@ -126,7 +133,7 @@ class OrderController extends Controller
      */
     public function edit(EditOrderRequest $request, Order $order): Response
     {
-        $order->load('orderItems');
+        $order->load('items');
 
         return Inertia::render('Order/Edit', [
             'order' => $order,
@@ -158,7 +165,7 @@ class OrderController extends Controller
      */
     public function destroy(DestroyOrderRequest $request, Order $order): RedirectResponse
     {
-
+        dd('not now');
         $order->items()->detach();
 
         $order->delete();
@@ -171,6 +178,7 @@ class OrderController extends Controller
      */
     public function bulkDestroy(BulkDestroyOrderRequest $request): RedirectResponse
     {
+        dd('not now');
         // Mass delete of resource
         DB::transaction(function () use ($request) {
             collect($request->validated()['ids'])

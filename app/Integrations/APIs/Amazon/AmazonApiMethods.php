@@ -6,6 +6,7 @@ namespace App\Integrations\APIs\Amazon;
 
 use App\Exceptions\InternalExchangeResponseException;
 use App\Integrations\APIs\IntegrationApiInterface;
+use App\Models\ApiKey;
 use GuzzleHttp\Exception\TransferException;
 use Illuminate\Support\Carbon;
 use RuntimeException;
@@ -43,9 +44,10 @@ class AmazonApiMethods extends AbstractAmazonApi implements IntegrationApiInterf
 
         $orders = $response['payload']['Orders'];
         if ($withItems) {
+            $apiKeysCount = ApiKey::where('type', ApiKey::TYPE_AMAZON)->count();
             foreach ($orders as &$order) {
                 $order['items'] = $this->getOrderDetails($order['AmazonOrderId']);
-                sleep(2);
+                sleep(2 * $apiKeysCount);
                 //                usleep(500000); // 0.5 sec
             }
         }
@@ -65,6 +67,6 @@ class AmazonApiMethods extends AbstractAmazonApi implements IntegrationApiInterf
             $item['AmazonOrderId'] = $order_id;
         }
 
-        return $response['payload']['OrderItems'];
+        return $data;
     }
 }
