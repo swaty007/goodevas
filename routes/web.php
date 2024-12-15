@@ -78,6 +78,15 @@ Route::middleware('craftable-pro-middlewares')->prefix('admin')->name('craftable
     Route::post('api-keys/bulk-destroy', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'bulkDestroy'])->name('api-keys.bulk-destroy');
     Route::get('api-keys/etsy/oauth/{apiKey}', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'oAuth'])->name('etsy.oauth');
 
+    Route::get('orders', [App\Http\Controllers\CraftablePro\OrderController::class, 'index'])->name('orders.index');
+    Route::get('orders/create', [App\Http\Controllers\CraftablePro\OrderController::class, 'create'])->name('orders.create');
+    Route::post('orders', [App\Http\Controllers\CraftablePro\OrderController::class, 'store'])->name('orders.store');
+    Route::get('orders/export', [App\Http\Controllers\CraftablePro\OrderController::class, 'export'])->name('orders.export');
+    Route::get('orders/edit/{order}', [App\Http\Controllers\CraftablePro\OrderController::class, 'edit'])->name('orders.edit');
+    Route::match(['put', 'patch'], 'orders/{order}', [App\Http\Controllers\CraftablePro\OrderController::class, 'update'])->name('orders.update');
+    Route::delete('orders/{order}', [App\Http\Controllers\CraftablePro\OrderController::class, 'destroy'])->name('orders.destroy');
+    Route::post('orders/bulk-destroy', [App\Http\Controllers\CraftablePro\OrderController::class, 'bulkDestroy'])->name('orders.bulk-destroy');
+
     Route::group(['prefix' => 'webhooks'], function () {
         Route::get('etsy/auth-callback', [App\Http\Controllers\CraftablePro\ApiKeyController::class, 'authCallback'])->name('etsy.auth-callback');
     });

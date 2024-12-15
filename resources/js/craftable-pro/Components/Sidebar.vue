@@ -55,6 +55,13 @@
                         $t('global', 'Product Types')
                     }}</template>
                 </SidebarItem>
+                <SidebarItem
+                    :href="route('craftable-pro.orders.index')"
+                    :icon="CubeTransparentIcon"
+                    v-can="'global.order.index'"
+                >
+                    {{ $t('global', 'Orders') }}
+                </SidebarItem>
                 <!--AppendGeneratorLink-->
             </SidebarGroup>
 
