@@ -24,6 +24,50 @@
             :data="orders"
             dataKey="orders"
         >
+            <template #actions>
+                <div class="gap-5 md:flex">
+                    <FiltersDropdown
+                        :active-filters-count="activeFiltersCount"
+                        :reset-filters="resetFilters"
+                    >
+                        <div
+                            class="gap-4 space-y-1 sm:w-screen sm:max-w-xl sm:columns-2 dark:text-gray-100"
+                        >
+                            <!--                            <div class="shadow rounded-lg cursor-move bg-gray-200 dark:bg-gray-600 px-2"> </div>-->
+                            <template
+                                v-for="(filter, index) in filtersOptions"
+                                :key="index"
+                            >
+                                <Multiselect
+                                    v-if="filtersOptions[index]?.length"
+                                    v-model="filtersForm[index]"
+                                    :name="index"
+                                    :label="index"
+                                    :options="filtersOptions[index]"
+                                    :can-clear="true"
+                                />
+                                <!--                                    :mode="Array.isArray(filtersForm[filter]) ? 'multiple' : 'single'"-->
+                            </template>
+                            <div class="flex">
+                                <DatePicker
+                                    v-model="filtersForm.start_date"
+                                    name="start_date"
+                                    :left-icon="null"
+                                    mode="dateTime"
+                                    :label="$t('global', 'Start Date')"
+                                />
+                                <DatePicker
+                                    v-model="filtersForm.end_date"
+                                    name="end_date"
+                                    :left-icon="null"
+                                    mode="dateTime"
+                                    :label="$t('global', 'End Date')"
+                                />
+                            </div>
+                        </div>
+                    </FiltersDropdown>
+                </div>
+            </template>
             <template #bulkActions="{ bulkAction }">
                 <Modal type="danger">
                     <template #trigger="{ setIsOpen }">
@@ -85,7 +129,7 @@
                 <ListingHeaderCell v-width-dragging sortBy="id">
                     {{ $t('global', 'Id') }}
                 </ListingHeaderCell>
-                <ListingHeaderCell v-width-dragging >
+                <ListingHeaderCell v-width-dragging>
                     {{ $t('global', 'Api Key') }}
                 </ListingHeaderCell>
                 <ListingHeaderCell v-width-dragging sortBy="order_id">
@@ -302,25 +346,61 @@ import {
     PlusIcon,
     TrashIcon,
 } from '@heroicons/vue/24/outline';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import {
     Button,
+    DatePicker,
     IconButton,
     Listing,
     ListingDataCell,
     ListingHeaderCell,
     Modal,
+    Multiselect,
     PageContent,
     PageHeader,
+    FiltersDropdown,
 } from 'craftable-pro/Components';
+import { useListingFilters } from 'craftable-pro/hooks/useListingFilters';
 import { PaginatedCollection } from 'craftable-pro/types/pagination';
 import dayjs from 'dayjs';
 import type { Order } from './types';
 
 interface Props {
     orders: PaginatedCollection<Order>;
+    filtersOptions: Array<{ value: string | number; label: string }>;
 }
 defineProps<Props>();
+
+const { filtersForm, resetFilters, activeFiltersCount } = useListingFilters(
+    route('craftable-pro.orders.index'),
+    {
+        order_status:
+            (usePage().props as unknown as PageProps).filter?.order_status ??
+            [],
+        type: (usePage().props as unknown as PageProps).filter?.type ?? [],
+        fulfillment:
+            (usePage().props as unknown as PageProps).filter?.fulfillment ?? [],
+        sales_channel:
+            (usePage().props as unknown as PageProps).filter?.sales_channel ??
+            [],
+        total_currency:
+            (usePage().props as unknown as PageProps).filter?.total_currency ??
+            [],
+        payment_method:
+            (usePage().props as unknown as PageProps).filter?.payment_method ??
+            [],
+        state: (usePage().props as unknown as PageProps).filter?.state ?? [],
+        country_code:
+            (usePage().props as unknown as PageProps).filter?.country_code ??
+            [],
+        is_shipped:
+            (usePage().props as unknown as PageProps).filter?.is_shipped ?? [],
+        start_date:
+            (usePage().props as unknown as PageProps).filter?.start_date ?? '',
+        end_date:
+            (usePage().props as unknown as PageProps).filter?.end_date ?? '',
+    },
+);
 const downloadFile = () => {
     const url = window.location.href.split('?');
     if (url.length > 1) {

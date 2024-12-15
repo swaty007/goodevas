@@ -4,14 +4,21 @@
 
 namespace App\Models;
 
+use App\Helpers\TimeParser;
+use App\Models\Traits\HasDateScopes;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Pagination\Paginator;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Order extends Model
 {
+    use HasDateScopes;
     use LogsActivity;
 
     protected $table = 'orders';

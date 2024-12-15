@@ -47,7 +47,7 @@ class AmazonApiMethods extends AbstractAmazonApi implements IntegrationApiInterf
             $apiKeysCount = ApiKey::where('type', ApiKey::TYPE_AMAZON)->count();
             foreach ($orders as &$order) {
                 $order['items'] = $this->getOrderDetails($order['AmazonOrderId']);
-                sleep(2 * $apiKeysCount);
+                usleep((int) ((2.5 * $apiKeysCount) * 1000000)); // 2.5 sec
                 //                usleep(500000); // 0.5 sec
             }
         }

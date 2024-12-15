@@ -61,7 +61,7 @@ class OrderAmazonData extends Data implements OrderDataInterface
             'sales_channel' => $data->SalesChannel,
 
             'total_amount' => $data->OrderTotal['Amount'] ?? '0.00',
-            'total_currency' => $data->OrderTotal['CurrencyCode'] ?? 'USD',
+            'total_currency' => $data->OrderTotal['CurrencyCode'] ?? 'none',
             'payment_method' => $data->PaymentMethod,
 
             'buyer_name' => null, // В Amazon Orders нет имени покупателя напрямую

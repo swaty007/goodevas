@@ -227,7 +227,6 @@ class ApiKeyController extends Controller
             $code = $data['code'];
             $apiKey = ApiKey::find(Cache::get('amazon_verifier_id'));
 
-
             $response = Http::asForm()->post('https://api.amazon.com/auth/o2/token', [
                 'grant_type' => 'authorization_code',
                 'code' => $code,

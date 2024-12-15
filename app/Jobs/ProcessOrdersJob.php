@@ -30,6 +30,8 @@ class ProcessOrdersJob implements ShouldBeUnique, ShouldQueue
 
     public int $backoff = 30;
 
+    public int $timeout = 600;
+
     public function __construct(
         public ApiKey $apiKey,
         public ?\Carbon\Carbon $createdMin = null,
