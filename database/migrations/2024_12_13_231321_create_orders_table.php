@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('api_key_id')->nullable()->constrained('api_keys')->nullOnDelete();
 
             $table->string('order_id')->unique();
-            $table->timestamp('order_date')->nullable();
+            $table->dateTime('order_date')->nullable();
             $table->timestamp('update_date')->nullable();
             $table->string('order_status')->index();
             $table->string('fulfillment')->nullable();
@@ -36,7 +36,7 @@ return new class extends Migration
             $table->string('country_code')->nullable();
 
             // Показатели обработки и отгрузки
-            $table->timestamp('expected_ship_date')->nullable();
+            $table->dateTime('expected_ship_date')->nullable();
 
             $table->boolean('is_shipped')->default(false);
 

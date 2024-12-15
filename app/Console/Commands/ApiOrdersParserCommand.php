@@ -61,14 +61,14 @@ class ApiOrdersParserCommand extends Command
                 ])
                     ->then(function (Batch $batch) {
                         // Выполнится только если все задания внутри batch завершаются успехом
-                        Log::info('All jobs in the batch completed successfully!');
+                        // Log::info('All jobs in the batch completed successfully!');
                     })
                     ->catch(function (Batch $batch, Throwable $e) {
                         // Ошибка в одной из джоб
                         Log::error('Some job in the batch failed: '.$e->getMessage());
                     })
                     ->finally(function (Batch $batch) use ($cacheKey) {
-                        Log::info('Batch is finished (success or fail).');
+                        // Log::info('Batch is finished (success or fail).');
                         Cache::forget($cacheKey);
                     })
                     ->onQueue($apiKey->type)
