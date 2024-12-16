@@ -27,7 +27,7 @@ class EtsyMapper implements IntegrationMapperInterface
         $parsedData['transactions'] = $transactions;
 
         $order = OrderEtsyData::from($parsedData);
-        $order->originalObject = json_decode($data->toJson(), true);
+        $order->original_object = json_decode($data->toJson(), true);
 
         return $order;
     }

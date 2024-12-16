@@ -26,7 +26,7 @@ class ProcessOrdersJob implements ShouldBeUnique, ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public int $tries = 3;
+    public int $tries = 4;
 
     public int $backoff = 30;
 
@@ -86,27 +86,7 @@ class ProcessOrdersJob implements ShouldBeUnique, ShouldQueue
 
         $orders = $data['orders'] ?? [];
         $ordersMapped = $mapper->transformToUnified($orders);
-        DB::transaction(function () use ($ordersMapped) {
-            foreach ($ordersMapped as $orderData) {
-                $orderAttributes = $orderData->toArray();
-                $itemsData = $orderData->items ?? [];
-                unset($orderAttributes['items']);
-
-                /** @var Order $order */
-                $order = Order::updateOrCreate(['order_id' => $orderAttributes['order_id']], array_merge($orderAttributes, [
-                    'api_key_id' => $this->apiKey->id,
-                ]));
-                if (! empty($itemsData)) {
-                    foreach ($itemsData as $itemData) {
-                        $itemAttributes = $itemData->toArray();
-                        $order->items()->updateOrCreate(
-                            ['item_id' => $itemAttributes['item_id']], // Уникальное поле для поиска
-                            $itemAttributes
-                        );
-                    }
-                }
-            }
-        });
+        self::saveChunkToModel($ordersMapped, $this->apiKey);
 
         $hasNextPage = $data['hasNextPage'] ?? null;
         if ($hasNextPage) {
@@ -129,5 +109,47 @@ class ProcessOrdersJob implements ShouldBeUnique, ShouldQueue
             //                new ProcessAllOrdersJob($this->apiKey),
             //            ]);
         }
+    }
+
+    public static function saveChunkToModel(array $ordersMapped, ApiKey $apiKey): void
+    {
+        $chunked = collect($ordersMapped)->chunk(10);
+        $errorsCount = 0;
+        $chunked->each(function ($orderChunk) use ($apiKey, &$errorsCount) {
+            try {
+                DB::transaction(function () use ($orderChunk, $apiKey) {
+                    foreach ($orderChunk as $orderData) {
+                        $orderAttributes = $orderData->toArray();
+                        $itemsData = $orderData->items ?? [];
+                        unset($orderAttributes['items']);
+
+                        /** @var Order $order */
+                        $order = Order::updateOrCreate(['order_id' => $orderAttributes['order_id']], array_merge($orderAttributes, [
+                            'api_key_id' => $apiKey->id,
+                        ]));
+                        if (! empty($itemsData)) {
+                            foreach ($itemsData as $itemData) {
+                                $itemAttributes = $itemData->toArray();
+                                $order->items()->updateOrCreate(
+                                    ['item_id' => $itemAttributes['item_id']], // Уникальное поле для поиска
+                                    $itemAttributes
+                                );
+                            }
+                        }
+                    }
+                });
+            } catch (\Throwable $e) {
+                dump($e);
+                Log::error('Error saving chunk to model', [
+                    'error' => $e->getMessage(),
+                    'api_key_id' => $apiKey->id,
+                    'type' => $apiKey->type,
+                ]);
+                $errorsCount++;
+                if ($errorsCount > 3) {
+                    throw $e;
+                }
+            }
+        });
     }
 }

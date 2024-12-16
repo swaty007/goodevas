@@ -11,7 +11,6 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -22,7 +21,7 @@ class ApiOrdersParserCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'command:orders-parser {type=all} {--days=30}';
+    protected $signature = 'command:orders-parser {type=all} {--days=30} {--daysMax=}';
 
     /**
      * The console command description.
@@ -38,6 +37,7 @@ class ApiOrdersParserCommand extends Command
     {
         $type = $this->argument('type');
         $days = $this->option('days');
+        $daysMax = $this->option('daysMax');
         if (! in_array($type, ['all', ...ApiKey::TYPES]) || ! is_numeric($days) || $days < 1) {
             $this->error('Invalid type');
 
@@ -49,15 +49,20 @@ class ApiOrdersParserCommand extends Command
             $keys = ApiKey::where(['type' => $type])->get();
         }
 
+        if ($daysMax) {
+            $daysMax = now()->subDays($daysMax);
+        }
+
         foreach ($keys as $apiKey) {
             if (App::environment('production')) {
                 $cacheKey = "batch_active_{$apiKey->id}";
                 if (Cache::has($cacheKey)) {
                     $this->info("Batch уже активен для API ключа ID {$apiKey->id}, пропуск.");
+
                     continue;
                 }
                 $batch = Bus::batch([
-                    new ProcessOrdersJob($apiKey, createdMin: now()->subDays($days)),
+                    new ProcessOrdersJob($apiKey, createdMin: now()->subDays($days), createdMax: $daysMax),
                 ])
                     ->then(function (Batch $batch) {
                         // Выполнится только если все задания внутри batch завершаются успехом
@@ -73,7 +78,7 @@ class ApiOrdersParserCommand extends Command
                     })
                     ->onQueue($apiKey->type)
                     ->dispatch();
-                $hours = 1;
+                $hours = 2;
                 if ($apiKey->type === ApiKey::TYPE_AMAZON) {
                     $hours = 36;
                 }
@@ -86,7 +91,7 @@ class ApiOrdersParserCommand extends Command
                 $hasNextPage = true;
                 $options = [];
                 do {
-                    $data = $adapter->fetchOrders(createdMin: now()->subDays(30), options: $options);
+                    $data = $adapter->fetchOrders(createdMin: now()->subDays($days), createdMax: $daysMax, options: $options);
                     $hasNextPage = $data['hasNextPage'] ?? null;
                     $options = $data['options'] ?? [];
 
@@ -94,27 +99,8 @@ class ApiOrdersParserCommand extends Command
                     $ordersMapped = $mapper->transformToUnified($orders);
                     // dd($ordersMapped[0], $ordersMapped[0]->toArray(), new Order($ordersMapped[0]->toArray()));
                     // dd(new Order($ordersMapped[0]->toArray()), count($ordersMapped));
-                    DB::transaction(function () use ($ordersMapped, $apiKey) {
-                        foreach ($ordersMapped as $orderData) {
-                            $orderAttributes = $orderData->toArray();
-                            $itemsData = $orderData->items ?? [];
-                            unset($orderAttributes['items']);
+                    ProcessOrdersJob::saveChunkToModel($ordersMapped, $apiKey);
 
-                            /** @var Order $order */
-                            $order = Order::updateOrCreate(['order_id' => $orderAttributes['order_id']], array_merge($orderAttributes, [
-                                'api_key_id' => $apiKey->id,
-                            ]));
-                            if (! empty($itemsData)) {
-                                foreach ($itemsData as $itemData) {
-                                    $itemAttributes = $itemData->toArray();
-                                    $order->items()->updateOrCreate(
-                                        ['item_id' => $itemAttributes['item_id']], // Уникальное поле для поиска
-                                        $itemAttributes
-                                    );
-                                }
-                            }
-                        }
-                    });
                     $hasNextPage = false;
                 } while ($hasNextPage);
             }

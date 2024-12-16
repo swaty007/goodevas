@@ -44,6 +44,6 @@ class OrderUnifiedData extends Data
         /** @var ItemUnifiedData[] */
         public array $items = [],
         public array $refunds = [],
-        public mixed $originalObject = null,
+        public mixed $original_object = null,
     ) {}
 }

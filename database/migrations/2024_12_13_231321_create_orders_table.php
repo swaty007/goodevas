@@ -42,6 +42,8 @@ return new class extends Migration
 
             // Оригинальный объект
             $table->json('original_object')->nullable();
+            // $table->text('original_object')->nullable();
+            // $table->longText('original_object')->nullable();
 
             $table->timestamps();
         });

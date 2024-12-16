@@ -26,7 +26,7 @@ class OrderShopifyData extends Data implements OrderDataInterface
         /** @var ItemShopifyData[] */
         public array $line_items,
         public array $refunds,
-        public mixed $originalObject = null,
+        public mixed $original_object = null,
     ) {}
 
     public const array STATUS_MAP = [
@@ -107,7 +107,7 @@ class OrderShopifyData extends Data implements OrderDataInterface
             'is_shipped' => $is_shipped,
             'items' => $transactions,
             'refunds' => $data->refunds,
-            'originalObject' => $data->originalObject,
+            'original_object' => $data->original_object,
         ]);
     }
 }

@@ -21,9 +21,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('model:prune')->cron('20 0 * * *');
         $schedule->command('auth:clear-resets')->everyFifteenMinutes();
         $schedule->command('horizon:snapshot')->everyFifteenMinutes();
-        $schedule->command('command:orders-parser --days=1')->everyThirtyMinutes();
+        $schedule->command('command:orders-parser etsy --days=1')->everyThirtyMinutes();
+        $schedule->command('command:orders-parser shopify --days=1')->everyThirtyMinutes();
+        $schedule->command('command:orders-parser amazon --days=1')->everyThirtyMinutes();
         $schedule->command('queue:prune-failed --hours=168')->everyFifteenMinutes();
-        $schedule->command('queue:prune-batches --hours=48 --unfinished=72')->everyFifteenMinutes();
+        $schedule->command('queue:prune-batches --hours=168 --unfinished=168')->everyFifteenMinutes();
         $schedule->command(\App\Console\Commands\TelegramHandlerCommand::class)
             ->everyThirtySeconds()
             ->withoutOverlapping(1);

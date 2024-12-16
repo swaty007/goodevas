@@ -30,7 +30,7 @@ class OrderEtsyData extends Data implements OrderDataInterface
         /** @var ItemEtsyData[] */
         public array $transactions,
         public array $refunds,
-        public mixed $originalObject = null,
+        public mixed $original_object = null,
 
     ) {}
 
@@ -118,7 +118,7 @@ class OrderEtsyData extends Data implements OrderDataInterface
             'items' => $transactions,
             'refunds' => $data->refunds,
 
-            'originalObject' => $data->originalObject,
+            'original_object' => $data->original_object,
         ]);
 
     }

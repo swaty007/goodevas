@@ -12,7 +12,7 @@ class AmazonMapper implements IntegrationMapperInterface
     public function transformOne($data): OrderAmazonData
     {
         $order = OrderAmazonData::from($data);
-        $order->originalObject = $data;
+        $order->original_object = $data;
 
         return $order;
     }

@@ -51,6 +51,7 @@ class Order extends Model
         'order_date' => 'datetime',
         'update_date' => 'datetime',
         'expected_ship_date' => 'datetime',
+        'original_object' => 'array',
     ];
 
     public function items(): HasMany

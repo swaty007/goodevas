@@ -23,7 +23,7 @@ class OrderAmazonData extends Data implements OrderDataInterface
         public ?array $ShippingAddress, // StateOrRegion PostalCode City CountryCode
         /** @var ItemAmazonData[] */
         public ?array $items,
-        public mixed $originalObject = null,
+        public mixed $original_object = null,
     ) {}
 
     public const array STATUS_MAP = [
@@ -81,7 +81,7 @@ class OrderAmazonData extends Data implements OrderDataInterface
             'items' => $transactions,
             'refunds' => [], // Amazon Orders API не даёт рефанды напрямую
 
-            'originalObject' => $data->originalObject,
+            'original_object' => $data->original_object,
         ]);
 
     }
