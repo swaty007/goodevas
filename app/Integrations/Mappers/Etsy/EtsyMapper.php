@@ -16,9 +16,14 @@ class EtsyMapper implements IntegrationMapperInterface
         $transactions = [];
         foreach ($parsedData['transactions'] as $transaction) {
             if (str_contains($transaction['sku'], '+')) {
+                $n = 0;
                 foreach (explode('+', $transaction['sku']) as $sku) {
                     $transaction['sku'] = $sku;
+                    if ($n > 0) {
+                        $transaction['transaction_id'] .= '_'.$sku;
+                    }
                     $transactions[] = $transaction;
+                    $n++;
                 }
             } else {
                 $transactions[] = $transaction;
