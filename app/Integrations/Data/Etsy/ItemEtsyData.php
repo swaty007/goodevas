@@ -33,6 +33,7 @@ class ItemEtsyData extends Data implements ItemDataInterface
             'quantity' => $data->quantity,
             'title' => $data->title,
             'sku' => $data->sku,
+            'barcode' => $data->sku,
         ]);
     }
 }

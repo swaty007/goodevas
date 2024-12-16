@@ -101,10 +101,10 @@ class ProcessOrdersJob implements ShouldBeUnique, ShouldQueue
             ]);
         } else {
             // Нет NextToken -> добавляем финальную джобу
-            Log::info('All orders processed', [
-                'api_key_id' => $this->apiKey->id,
-                'type' => $this->apiKey->type,
-            ]);
+//            Log::info('All orders processed', [
+//                'api_key_id' => $this->apiKey->id,
+//                'type' => $this->apiKey->type,
+//            ]);
             //            $this->batch()->add([
             //                new ProcessAllOrdersJob($this->apiKey),
             //            ]);

@@ -13,6 +13,7 @@ class ItemShopifyData extends Data implements ItemDataInterface
         public $title,
         public $quantity,
         public $sku,
+        public ?string $barcode,
         public ?string $order_id,
     ) {}
 
@@ -28,6 +29,7 @@ class ItemShopifyData extends Data implements ItemDataInterface
             'quantity' => $data->quantity,
             'title' => $data->title,
             'sku' => $data->sku ?? 'null',
+            'barcode' => $data->barcode,
         ]);
     }
 }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('quantity')->default(0);
             $table->string('title')->nullable();
             $table->string('sku');
+            $table->string('barcode')->index();
 
             // Связь с заказом
             //            $table->foreign('api_order_id')

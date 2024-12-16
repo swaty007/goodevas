@@ -12,5 +12,6 @@ class ItemUnifiedData extends Data
         public int $quantity,
         public ?string $title,
         public string $sku,
+        public string $barcode,
     ) {}
 }

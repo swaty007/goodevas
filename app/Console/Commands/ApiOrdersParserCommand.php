@@ -57,7 +57,7 @@ class ApiOrdersParserCommand extends Command
             if (App::environment('production')) {
                 $cacheKey = "batch_active_{$apiKey->id}";
                 if (Cache::has($cacheKey)) {
-                    $this->info("Batch уже активен для API ключа ID {$apiKey->id}, пропуск.");
+                    $this->info("Batch уже активен для API ключа ID {$apiKey->id} {$apiKey->name}, пропуск.");
 
                     continue;
                 }

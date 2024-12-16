@@ -297,7 +297,7 @@
                 </ListingDataCell>
                 <ListingDataCell>
                     <div v-for="item in item.items" :key="item.id" class="">
-                        SKU: {{ item.sku }} Quantity:{{ item.quantity }}
+                        SKU: {{ item.sku }} Barcode: {{ item.barcode }} Quantity:{{ item.quantity }}
                         <p class="text-nowrap inline-block overflow-auto max-w-64">{{ item.title }}</p>
                     </div>
                 </ListingDataCell>

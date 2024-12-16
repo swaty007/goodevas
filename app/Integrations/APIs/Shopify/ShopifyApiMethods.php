@@ -26,7 +26,7 @@ use Shopify\Clients\PageInfo;
  */
 class ShopifyApiMethods extends AbstractShopifyApi implements IntegrationApiInterface
 {
-    public function getOrdersList(Carbon $createdMin, ?Carbon $createdMax = null, int $perPage = 250, array $options = []): array
+    public function getOrdersList(Carbon $createdMin, ?Carbon $createdMax = null, int $perPage = 2, array $options = []): array
     {
         if ($perPage > 250) {
             throw new RuntimeException('Per page limit is 250');
@@ -77,6 +77,29 @@ class ShopifyApiMethods extends AbstractShopifyApi implements IntegrationApiInte
         //QUERY;
     }
 
+    public function getProducts(): array
+    {
+        return Cache::remember('shopify_products', now()->addMinutes(60 * 4), function () {
+            $client = $this->getClient();
+            $hasNextPage = false;
+            $pageInfoNext = false;
+            $products = [];
+            do {
+                if (! empty($pageInfoNext)) {
+                    $response = $client->get(path: 'products', query: $pageInfoNext->getNextPageQuery());
+                } else {
+                    $response = $client->get(path: 'products', query: [
+                        'limit' => 250,
+                    ]);
+                }
+
+                $products = array_merge($products, $response->getDecodedBody()['products']);
+                $pageInfoNext = $response->getPageInfo();
+                $hasNextPage = $pageInfoNext?->hasNextPage() ?? false;
+            } while ($hasNextPage);
+            return $products;
+        });
+    }
     public function getOrdersCount(): array
     {
         $client = $this->getClient();

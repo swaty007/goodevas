@@ -8,6 +8,7 @@ export type OrderItem = {
     quantity: number;
     title: string;
     sku: string;
+    barcode: string;
 }
 
 export type Order = {

@@ -18,6 +18,7 @@ class OrderItem extends Model
         'quantity',
         'title',
         'sku',
+        'barcode',
     ];
 
     protected $casts = [

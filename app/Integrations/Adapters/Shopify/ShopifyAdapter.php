@@ -20,6 +20,15 @@ class ShopifyAdapter extends ShopifyApiMethods implements IntegrationAdapterInte
     {
         $createdMin = $createdMin ?? now()->subDays(30);
         $data = $this->getOrdersList(createdMin: $createdMin, createdMax: $createdMax, options: $options);
+
+        $products = $this->getProducts();
+        $array_column = array_column($products, 'id');
+        foreach ($data['orders'] as &$order) {
+            foreach ($order['line_items'] as &$item) {
+                $item['barcode'] = $products[array_search($item['product_id'], $array_column)]['variants'][0]['barcode'] ?? 'null';
+            }
+        }
+
         $data['hasNextPage'] = (bool) $data['hasNextPage'];
         $data['options'] = [
             'pageInfo' => $data['pageInfo'],
