@@ -191,9 +191,9 @@ return [
             'connection' => 'redis',
             'queue' => [
                 'default',
-                'amazon',
-                'shopify',
-                'etsy',
+                // 'amazon',
+                // 'shopify',
+                // 'etsy',
             ],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',

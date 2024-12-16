@@ -190,15 +190,46 @@
                     {{ $t('global', 'Is Shipped') }}
                 </ListingHeaderCell>
                 <ListingHeaderCell v-width-dragging>
-                    {{ $t('global', 'Original Object') }}
+                    {{ $t('global', 'Items') }}
                 </ListingHeaderCell>
+<!--                <ListingHeaderCell v-width-dragging>-->
+<!--                    {{ $t('global', 'Original Object') }}-->
+<!--                </ListingHeaderCell>-->
                 <ListingHeaderCell v-width-dragging>
                     <span class="sr-only">{{ $t('global', 'Actions') }}</span>
                 </ListingHeaderCell>
             </template>
-            <template #tableRow="{ item, action }: any">
+            <template #tableRow="{ item, action }: { item: Order}">
                 <ListingDataCell>
-                    {{ item.id }}
+                    <Modal type="info" size="lg">
+                        <template #trigger="{ setIsOpen }">
+                            <IconButton
+                                @click="() => setIsOpen(true)"
+                                color="gray"
+                                variant="ghost"
+                                :icon="EyeIcon"
+                            />
+                        </template>
+
+                        <template #title>
+                            {{ $t('global', 'Show Order') }}
+                        </template>
+                        <template #content>
+                            <pre>
+                                {{ item.original_object }}
+                            </pre>
+                        </template>
+
+                        <template #buttons="{ setIsOpen }">
+                            <Button
+                                @click.prevent="() => setIsOpen()"
+                                color="gray"
+                                variant="outline"
+                            >
+                                {{ $t('global', 'Cancel') }}
+                            </Button>
+                        </template>
+                    </Modal>
                 </ListingDataCell>
                 <ListingDataCell>
                     {{ item?.api_key?.name }}
@@ -265,8 +296,14 @@
                     {{ item.is_shipped }}
                 </ListingDataCell>
                 <ListingDataCell>
-                    {{ item.original_object }}
+                    <div v-for="item in item.items" :key="item.id" class="">
+                        SKU: {{ item.sku }} Quantity:{{ item.quantity }}
+                        <p class="text-nowrap inline-block overflow-auto max-w-64">{{ item.title }}</p>
+                    </div>
                 </ListingDataCell>
+<!--                <ListingDataCell>-->
+<!--                    {{ item.original_object }}-->
+<!--                </ListingDataCell>-->
                 <ListingDataCell>
                     <div class="flex items-center justify-end gap-3">
                         <IconButton
@@ -345,6 +382,7 @@ import {
     PencilSquareIcon,
     PlusIcon,
     TrashIcon,
+    EyeIcon,
 } from '@heroicons/vue/24/outline';
 import { Link, usePage } from '@inertiajs/vue3';
 import {

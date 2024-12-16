@@ -76,7 +76,7 @@ class ApiOrdersParserCommand extends Command
                         // Log::info('Batch is finished (success or fail).');
                         Cache::forget($cacheKey);
                     })
-                    ->onQueue($apiKey->type)
+                    // ->onQueue($apiKey->type)
                     ->dispatch();
                 $hours = 2;
                 if ($apiKey->type === ApiKey::TYPE_AMAZON) {
