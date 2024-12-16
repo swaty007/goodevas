@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Traits;
 
+use App\Exceptions\InternalExchangeResponseException;
+use App\Jobs\TelegramMessageJob;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 trait TelegramSystemLogTrait
@@ -21,9 +24,9 @@ trait TelegramSystemLogTrait
 
     public function handleException(Throwable $e): void
     {
-        if (env('APP_ENV') == 'production') {
+        if (App::environment('production')) {
             try {
-                $text = 'Server error | on '.env('APP_NAME');
+                $text = 'Server error | on '.$this->getAppName();
                 $text = hex2bin(self::$telegram_icon_sos).'<b>'.$text."</b>\n";
                 $text .= 'Class: '.get_class($e)."\n";
                 $text .= 'File: '.$e->getFile()."\n";
@@ -32,21 +35,25 @@ trait TelegramSystemLogTrait
                 $text .= 'User/Admin ID: '.Auth::id()."\n";
                 $text .= 'Error: '.$e->getMessage()."\n";
                 $trace = $e->getTrace();
-                for ($i = 0; $i < min(10, count($trace)); $i++) {
-                    $text .= 'Trace '.($i + 1).': File: '.$trace[$i]['file'].' Line: '.$trace[$i]['line']."\n";
+                if (! $e instanceof InternalExchangeResponseException) {
+                    $text .= '<blockquote expandable><pre><code class="language-php">';
+                    for ($i = 0; $i < min(10, count($trace)); $i++) {
+                        $text .= 'Trace '.($i + 1).': File: '.$trace[$i]['file'].' Line: '.$trace[$i]['line']."\n";
+                    }
+                    $text .= '</code></pre></blockquote>';
                 }
                 $this->sendImportantMessage($text);
             } catch (Throwable $e) {
-
+                $this->sendImportantMessage('Server error | on '.env('APP_NAME')."\n".'Error: '.$e->getMessage());
             }
         }
     }
 
     public function errorMessageGroup($error = ''): void
     {
-        if (env('APP_ENV') == 'production') {
+        if (App::environment('production')) {
             try {
-                $text = 'Server error | on '.env('APP_NAME');
+                $text = 'Server error | on '.$this->getAppName();
                 $text = hex2bin(self::$telegram_icon_sos).'<b>'.$text."</b>\n";
                 $text .= 'Error: '.$error;
 
@@ -59,9 +66,9 @@ trait TelegramSystemLogTrait
 
     public function infoMessageGroup($error = ''): void
     {
-        if (env('APP_ENV') == 'production') {
+        if (App::environment('production')) {
             try {
-                $text = 'Server info | on '.env('APP_NAME');
+                $text = 'Server info | on '.$this->getAppName();
                 $text = hex2bin(self::$telegram_icon_warning).'<b>'.$text."</b>\n";
                 $text .= 'Info: '.$error."\n";
                 $this->sendMinorMessage($text);
@@ -72,43 +79,19 @@ trait TelegramSystemLogTrait
         }
     }
 
-    private function updateTextForTelegram($text): string
-    {
-        $allowed_tags = '<b><strong><i><em><u><ins><s><strike><del><a><code><pre><tg-spoiler>';
-        if (strlen($text) < 500) {
-            $text = strip_tags($text, $allowed_tags);
-        } else {
-            $text = strip_tags($text);
-        }
-        $text = str_replace([' < ', ' > ', '&'], '', $text);
-        $text = urlencode($text);
-        $text = substr($text, 0, 4095);
-
-        return $text;
-    }
-
     private function sendImportantMessage($text): void
     {
-        $this->sendTelegramChatMessage($text, config('telegram.chat_id'));
+        $this->sendTelegramChatMessage($text, config('telegram-logger.chat_id'));
     }
 
     private function sendMinorMessage($text): void
     {
-        $this->sendTelegramChatMessage($text, config('telegram.chat_id'));
+        $this->sendTelegramChatMessage($text, config('telegram-logger.chat_id'));
     }
 
     private function sendTelegramChatMessage($text, $chat_id): void
     {
-        $ch = curl_init('https://api.telegram.org/bot'.config('telegram.api_key').'/sendMessage?parse_mode=HTML&chat_id='.$chat_id.'&text='.$this->updateTextForTelegram($text));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        try {
-            $res = json_decode(curl_exec($ch));
-            if (empty($res->ok)) {
-                Log::info('Telegram Error: '.$res->description);
-            }
-            curl_close($ch);
-        } catch (Throwable $e) {
-        }
+        TelegramMessageJob::dispatch(config('telegram-logger.token'), $chat_id, $text);
     }
 
     public function sendMessageSlack($text): void
@@ -123,5 +106,14 @@ trait TelegramSystemLogTrait
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_exec($ch);
         curl_close($ch);
+    }
+
+    private function getAppName(): string
+    {
+        try {
+            return config('app.name', ___('global', 'Platform', ['site_name' => config('app.name', 'Platform')])).' | '.Request::getHost();
+        } catch (Throwable $e) {
+            return env('APP_NAME').' | '.Request::getHost();
+        }
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Loggers\Handlers;
 
+use App\Jobs\TelegramMessageJob;
 use Exception;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
@@ -45,7 +47,7 @@ class TelegramHandler extends AbstractProcessingHandler
 
         // define variables for text message
         $this->appName = $this->getAppName();
-        $this->appEnv = config('app.env');
+        $this->appEnv = App::environment();
     }
 
     /**
@@ -62,24 +64,11 @@ class TelegramHandler extends AbstractProcessingHandler
             $textChunks = str_split($this->formatText($record), 4096);
 
             foreach ($textChunks as $textChunk) {
-                if (count($textChunks) > 1) {
-                    $textChunk = $this->updateTextForTelegram($textChunk);
-                }
                 $this->sendMessage($textChunk);
             }
         } catch (Exception $exception) {
             Log::channel('single')->error($exception->getMessage());
         }
-    }
-
-    private function updateTextForTelegram($text): string
-    {
-        $allowed_tags = '<b><strong><i><em><u><ins><s><strike><del><a><code><pre><tg-spoiler><blockquote>';
-        $text = strip_tags($text, $allowed_tags);
-        $text = str_replace([' < ', ' > ', '&'], '', $text);
-        $text = substr($text, 0, 4095);
-
-        return $text;
     }
 
     /**
@@ -88,7 +77,7 @@ class TelegramHandler extends AbstractProcessingHandler
     protected function getDefaultFormatter(): FormatterInterface
     {
         // $format = "%message% %context% %extra%\n";
-        $format = "%message% %extra%\n";
+        $format = "%message% %context% %extra%\n";
 
         return new LineFormatter($format, null, true, true);
     }
@@ -143,32 +132,28 @@ class TelegramHandler extends AbstractProcessingHandler
 
     private function sendMessage(string $text): void
     {
-        $host = $this->getConfigValue('api_host');
-        $proxy = $this->getConfigValue('proxy');
-        $url = $host.'/bot'.$this->botToken.'/sendMessage';
-        $options = config('telegram-logger.options', []);
+        TelegramMessageJob::dispatch($this->botToken, $this->chatId, $text);
 
-        $response = Http::withOptions([
-            'proxy' => $proxy,
-        ])->asForm()->post($url, array_merge([
-            'text' => $text,
-            'chat_id' => $this->chatId,
-            'parse_mode' => 'html',
-        ], $options));
-
-        if (! $response->successful()) {
-            Log::channel('single')->error('Failed to send Telegram message', [
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ]);
-        }
+        //        $host = $this->getConfigValue('api_host');
+        //        $proxy = $this->getConfigValue('proxy');
+        //        $url = $host . '/bot' . $this->botToken . '/sendMessage';
+        //        $options = config('telegram-logger.options', []);
+        //        $response = Http::withOptions([
+        //            'proxy' => $proxy,
+        //        ])->asForm()->post($url, array_merge([
+        //            'text'       => $text,
+        //            'chat_id'    => $this->chatId,
+        //            'parse_mode' => 'html',
+        //        ], $options));
+        //        if (!$response->successful()) {
+        //            Log::channel('single')->error('Failed to send Telegram message', [
+        //                'status' => $response->status(),
+        //                'body' => $response->body(),
+        //            ]);
+        //        }
     }
 
-    /**
-     * @param  string  $key
-     * @param  string  $defaultConfigKey
-     */
-    private function getConfigValue($key, $defaultConfigKey = null): ?string
+    private function getConfigValue(string $key, ?string $defaultConfigKey = null): ?string
     {
         if (isset($this->config[$key])) {
             return $this->config[$key];
