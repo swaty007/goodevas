@@ -2,10 +2,11 @@
 
 namespace App\Integrations\Data;
 
-use App\Integrations\Data\Casts\UnifiedStatusCast;
+use App\Integrations\Data\Casts\UnifiedMappedCast;
 use DateTime;
 use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Casts\DateTimeInterfaceCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
 
 class OrderUnifiedData extends Data
@@ -17,8 +18,11 @@ class OrderUnifiedData extends Data
         public ?DateTime $order_date,
         #[WithCast(DateTimeInterfaceCast::class)]
         public ?DateTime $update_date,
-        #[WithCast(UnifiedStatusCast::class)]
         public Enums\UnifiedOrderStatus $order_status,
+        public Enums\UnifiedFulfilmentStatus $fulfillment_status,
+        public Enums\UnifiedRefundStatus $refund_status,
+        #[WithCast(UnifiedMappedCast::class)]
+        public Enums\UnifiedMappedStatus $mapped_status,
         public ?string $fulfillment,
         public ?string $sales_channel,
         public string $total_amount,

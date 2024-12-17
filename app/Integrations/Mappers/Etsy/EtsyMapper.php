@@ -12,6 +12,12 @@ class EtsyMapper implements IntegrationMapperInterface
 {
     public function transformOne($data): OrderEtsyData
     {
+        $shipments = [];
+        foreach ($data->shipments as $shipment) {
+            $shipments[] = $shipment->toArray();
+        }
+        $data->shipments = $shipments;
+
         $parsedData = json_decode($data->toJson(), true);
         $transactions = [];
         foreach ($parsedData['transactions'] as $transaction) {

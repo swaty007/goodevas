@@ -2,7 +2,10 @@
 
 namespace App\Integrations\Data\Etsy;
 
+use App\Integrations\Data\Enums\UnifiedFulfilmentStatus;
+use App\Integrations\Data\Enums\UnifiedMappedStatus;
 use App\Integrations\Data\Enums\UnifiedOrderStatus;
+use App\Integrations\Data\Enums\UnifiedRefundStatus;
 use App\Integrations\Data\OrderDataInterface;
 use App\Integrations\Data\OrderUnifiedData;
 use App\Models\ApiKey;
@@ -30,18 +33,19 @@ class OrderEtsyData extends Data implements OrderDataInterface
         /** @var ItemEtsyData[] */
         public array $transactions,
         public array $refunds,
+        public array $shipments,
         public mixed $original_object = null,
 
     ) {}
 
     public const array STATUS_MAP = [
-        'Paid' => UnifiedOrderStatus::PAID,
-        'Completed' => UnifiedOrderStatus::DONE,
-        'Open' => UnifiedOrderStatus::PENDING,
-        'Payment Processing' => UnifiedOrderStatus::PENDING,
-        'Canceled' => UnifiedOrderStatus::CANCELED,
-        'Fully Refunded' => UnifiedOrderStatus::REFUNDED,
-        'Partially Refunded' => UnifiedOrderStatus::PARTIALLY_REFUND,
+        'Paid' => UnifiedMappedStatus::PAID,
+        'Completed' => UnifiedMappedStatus::DONE,
+        'Open' => UnifiedMappedStatus::PENDING,
+        'Payment Processing' => UnifiedMappedStatus::PENDING,
+        'Canceled' => UnifiedMappedStatus::CANCELED,
+        'Fully Refunded' => UnifiedMappedStatus::REFUNDED,
+        'Partially Refunded' => UnifiedMappedStatus::PARTIALLY_REFUND,
     ];
 
     public static function getStatusMap(): array
@@ -49,24 +53,65 @@ class OrderEtsyData extends Data implements OrderDataInterface
         return self::STATUS_MAP;
     }
 
-    public static function convertToUnified(?OrderEtsyData $data = null): OrderUnifiedData
+    public static function resolveOrderStatus(?OrderEtsyData $order = null): UnifiedOrderStatus
     {
-        if (! $data instanceof OrderEtsyData) {
+        $fulfillmentStatus = self::resolveFulfillmentStatus($order);
+        if ($fulfillmentStatus === UnifiedFulfilmentStatus::SHIPPED) {
+            return UnifiedOrderStatus::DONE;
+        }
+        if ($order->status === 'Canceled') {
+            return UnifiedOrderStatus::CANCELED;
+        }
+        if (in_array($fulfillmentStatus, [UnifiedFulfilmentStatus::PARTIALLY_SHIPPED, UnifiedFulfilmentStatus::NOT_SHIPPED])) {
+            return UnifiedOrderStatus::PENDING;
+        }
+        return UnifiedOrderStatus::ERROR;
+    }
+
+    public static function resolveFulfillmentStatus(?OrderEtsyData $order = null): UnifiedFulfilmentStatus
+    {
+        if (! $order->is_shipped) {
+            return UnifiedFulfilmentStatus::NOT_SHIPPED;
+        }
+        if (empty($order->shipments)) {
+            return UnifiedFulfilmentStatus::NOT_SHIPPED;
+        }
+        if (count($order->transactions) > 0) {
+            if (count($order->shipments) >= count($order->transactions)) {
+                return UnifiedFulfilmentStatus::SHIPPED;
+            }
+
+            return UnifiedFulfilmentStatus::PARTIALLY_SHIPPED;
+        }
+
+        return UnifiedFulfilmentStatus::ERROR;
+    }
+
+    public static function resolveRefundStatus(?OrderEtsyData $order = null): UnifiedRefundStatus
+    {
+        if (in_array($order->status, ['Fully Refunded'])) {
+            return UnifiedRefundStatus::REFUNDED;
+        }
+        if (in_array($order->status, ['Partially Refunded']) || ! empty($order->refunds)) {
+            return UnifiedRefundStatus::PARTIALLY_REFUND;
+        }
+
+        return UnifiedRefundStatus::NOT_REFUNDED;
+    }
+
+    public static function convertToUnified(?OrderEtsyData $order = null): OrderUnifiedData
+    {
+        if (! $order instanceof OrderEtsyData) {
             throw new \InvalidArgumentException('Ожидался объект типа OrderEtsyData');
         }
         // Преобразуем транзакции Etsy в унифицированный формат
-        $transactions = array_map(fn ($t) => $t::convertToUnified($t), $data->transactions);
-
-        // Агрегируем min_processing_days, max_processing_days и expected_ship_date из транзакций
-        // Предполагается, что min_processing_days, max_processing_days, expected_ship_date - это массивы в транзакциях,
-        // содержащие числовые значения (для min/max) или даты (для expected_ship_date).
-        // Возьмём минимальное/максимальное значение по всем транзакциям, а для expected_ship_date - самую раннюю дату.
+        $transactions = array_map(fn ($t) => $t::convertToUnified($t), $order->transactions);
 
         $allMinDays = [];
         $allMaxDays = [];
         $allShipDates = [];
 
-        foreach ($data->transactions as $t) {
+        foreach ($order->transactions as $t) {
             if (! empty($t->min_processing_days)) {
                 $allMinDays[] = $t->min_processing_days;
             }
@@ -77,7 +122,6 @@ class OrderEtsyData extends Data implements OrderDataInterface
                 $allShipDates[] = date('c', $t->expected_ship_date);
             }
         }
-
         $minProcessing = ! empty($allMinDays) ? min($allMinDays) : null;
         $maxProcessing = ! empty($allMaxDays) ? max($allMaxDays) : null;
         $expectedShip = null;
@@ -90,35 +134,39 @@ class OrderEtsyData extends Data implements OrderDataInterface
 
         return OrderUnifiedData::from([
             'type' => ApiKey::TYPE_ETSY,
-            'order_id' => (string) $data->receipt_id,
-            'order_date' => $data->created_timestamp ? gmdate('c', $data->created_timestamp) : null,
-            'update_date' => $data->updated_timestamp ? gmdate('c', $data->updated_timestamp) : null,
+            'order_id' => (string) $order->receipt_id,
+            'order_date' => $order->created_timestamp ? gmdate('c', $order->created_timestamp) : null,
+            'update_date' => $order->updated_timestamp ? gmdate('c', $order->updated_timestamp) : null,
 
-            'order_status' => $data->status,
+            'mapped_status' => $order->status,
             'fulfillment' => null, // У Etsy нет аналога FulfillmentChannel
             'sales_channel' => 'Etsy',
 
-            'total_amount' => bcdiv($data->grandtotal['amount'], $data->grandtotal['divisor'], 2),
-            'total_currency' => $data->grandtotal['currency_code'],
-            'payment_method' => $data->payment_method,
+            'total_amount' => bcdiv($order->grandtotal['amount'], $order->grandtotal['divisor'], 2),
+            'total_currency' => $order->grandtotal['currency_code'],
+            'payment_method' => $order->payment_method,
 
-            'buyer_name' => $data->name,
-            'address_line_1' => $data->first_line,
-            'address_line_2' => $data->second_line,
-            'city' => $data->city,
-            'state' => $data->state,
-            'postal_code' => $data->zip,
-            'country_code' => $data->country_iso,
+            'buyer_name' => $order->name,
+            'address_line_1' => $order->first_line,
+            'address_line_2' => $order->second_line,
+            'city' => $order->city,
+            'state' => $order->state,
+            'postal_code' => $order->zip,
+            'country_code' => $order->country_iso,
 
             //            'min_processing_days' => $minProcessing,
             //            'max_processing_days' => $maxProcessing,
             'expected_ship_date' => $expectedShip,
 
-            'is_shipped' => (bool) $data->is_shipped,
+            'is_shipped' => (bool) $order->is_shipped,
             'items' => $transactions,
-            'refunds' => $data->refunds,
+            'refunds' => $order->refunds,
 
-            'original_object' => $data->original_object,
+            'original_object' => $order->original_object,
+
+            'order_status' => self::resolveOrderStatus($order),
+            'fulfillment_status' => self::resolveFulfillmentStatus($order),
+            'refund_status' => self::resolveRefundStatus($order),
         ]);
 
     }

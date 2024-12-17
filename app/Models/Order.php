@@ -24,12 +24,17 @@ class Order extends Model
     protected $table = 'orders';
 
     protected $fillable = [
-        'api_key_id',
-        'order_id',
+        // 'tracing_number',
         'type',
+        'order_status',
+        'fulfillment_status',
+        'refund_status',
+        'mapped_status',
+        'api_key_id',
+        'order_status',
+        'order_id',
         'order_date',
         'update_date',
-        'order_status',
         'fulfillment',
         'sales_channel',
         'total_amount',

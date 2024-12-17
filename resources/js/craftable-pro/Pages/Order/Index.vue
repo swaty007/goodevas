@@ -147,6 +147,12 @@
                 <ListingHeaderCell v-width-dragging sortBy="order_status">
                     {{ $t('global', 'Order Status') }}
                 </ListingHeaderCell>
+                <ListingHeaderCell v-width-dragging sortBy="fulfillment_status">
+                    {{ $t('global', 'Fulfilment Status') }}
+                </ListingHeaderCell>
+                <ListingHeaderCell v-width-dragging sortBy="refund_status">
+                    {{ $t('global', 'Refund Status') }}
+                </ListingHeaderCell>
                 <ListingHeaderCell v-width-dragging sortBy="fulfillment">
                     {{ $t('global', 'Fulfillment') }}
                 </ListingHeaderCell>
@@ -248,6 +254,12 @@
                 </ListingDataCell>
                 <ListingDataCell>
                     {{ item.order_status }}
+                </ListingDataCell>
+                <ListingDataCell>
+                    {{ item.fulfillment_status }}
+                </ListingDataCell>
+                <ListingDataCell>
+                    {{ item.refund_status }}
                 </ListingDataCell>
                 <ListingDataCell>
                     {{ item.fulfillment }}
@@ -412,31 +424,19 @@ defineProps<Props>();
 const { filtersForm, resetFilters, activeFiltersCount } = useListingFilters(
     route('craftable-pro.orders.index'),
     {
-        order_status:
-            (usePage().props as unknown as PageProps).filter?.order_status ??
-            [],
+        order_status: (usePage().props as unknown as PageProps).filter?.order_status ?? [],
+        fulfillment_status: (usePage().props as unknown as PageProps).filter?.fulfillment_status ?? [],
+        refund_status: (usePage().props as unknown as PageProps).filter?.refund_status ?? [],
         type: (usePage().props as unknown as PageProps).filter?.type ?? [],
-        fulfillment:
-            (usePage().props as unknown as PageProps).filter?.fulfillment ?? [],
-        sales_channel:
-            (usePage().props as unknown as PageProps).filter?.sales_channel ??
-            [],
-        total_currency:
-            (usePage().props as unknown as PageProps).filter?.total_currency ??
-            [],
-        payment_method:
-            (usePage().props as unknown as PageProps).filter?.payment_method ??
-            [],
+        fulfillment: (usePage().props as unknown as PageProps).filter?.fulfillment ?? [],
+        sales_channel: (usePage().props as unknown as PageProps).filter?.sales_channel ?? [],
+        total_currency: (usePage().props as unknown as PageProps).filter?.total_currency ?? [],
+        payment_method: (usePage().props as unknown as PageProps).filter?.payment_method ?? [],
         state: (usePage().props as unknown as PageProps).filter?.state ?? [],
-        country_code:
-            (usePage().props as unknown as PageProps).filter?.country_code ??
-            [],
-        is_shipped:
-            (usePage().props as unknown as PageProps).filter?.is_shipped ?? [],
-        start_date:
-            (usePage().props as unknown as PageProps).filter?.start_date ?? '',
-        end_date:
-            (usePage().props as unknown as PageProps).filter?.end_date ?? '',
+        country_code: (usePage().props as unknown as PageProps).filter?.country_code ?? [],
+        is_shipped: (usePage().props as unknown as PageProps).filter?.is_shipped ?? [],
+        start_date: (usePage().props as unknown as PageProps).filter?.start_date ?? '',
+        end_date: (usePage().props as unknown as PageProps).filter?.end_date ?? '',
     },
 );
 const downloadFile = () => {

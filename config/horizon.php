@@ -191,9 +191,9 @@ return [
             'connection' => 'redis',
             'queue' => [
                 'default',
-                'amazon',
-                'shopify',
-                'etsy',
+                // 'amazon',
+                // 'shopify',
+                // 'etsy',
             ],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
@@ -210,8 +210,8 @@ return [
     'environments' => [
         'production' => [
             'supervisor-default' => [
-                'minProcesses' => 2,
-                'maxProcesses' => 4,
+                'minProcesses' => 3,
+                'maxProcesses' => 6,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 2,
             ],

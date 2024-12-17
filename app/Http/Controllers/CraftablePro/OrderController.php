@@ -43,6 +43,8 @@ class OrderController extends Controller
                     'order_date',
                     'update_date',
                     'order_status',
+                    'fulfillment_status',
+                    'refund_status',
                     'fulfillment',
                     'sales_channel',
                     'total_amount',
@@ -59,6 +61,8 @@ class OrderController extends Controller
                     'is_shipped',
                 )),
                 AllowedFilter::custom('order_status', new FilterWithNull),
+                AllowedFilter::custom('fulfillment_status', new FilterWithNull),
+                AllowedFilter::custom('refund_status', new FilterWithNull),
                 AllowedFilter::custom('type', new FilterWithNull),
                 AllowedFilter::custom('fulfillment', new FilterWithNull),
                 AllowedFilter::custom('sales_channel', new FilterWithNull),
@@ -71,7 +75,11 @@ class OrderController extends Controller
                 AllowedFilter::scope('end_date'),
             ])
             ->defaultSort('id')
-            ->allowedSorts('id', 'order_id', 'type', 'order_date', 'update_date', 'order_status', 'fulfillment', 'sales_channel', 'total_amount', 'total_currency', 'payment_method', 'buyer_name', 'address_line_1', 'address_line_2', 'city', 'state', 'postal_code', 'country_code', 'expected_ship_date', 'is_shipped');
+            ->allowedSorts('id', 'order_id', 'type', 'order_date', 'update_date',
+                'order_status',
+                'fulfillment_status',
+                'refund_status',
+                'fulfillment', 'sales_channel', 'total_amount', 'total_currency', 'payment_method', 'buyer_name', 'address_line_1', 'address_line_2', 'city', 'state', 'postal_code', 'country_code', 'expected_ship_date', 'is_shipped');
 
         if ($request->wantsJson() && $request->get('bulk_select_all')) {
             return response()->json($ordersQuery->select(['id'])->pluck('id'));
@@ -92,6 +100,8 @@ class OrderController extends Controller
                 'order_date',
                 'update_date',
                 'order_status',
+                'fulfillment_status',
+                'refund_status',
                 'fulfillment',
                 'sales_channel',
                 'total_amount',
@@ -119,6 +129,8 @@ class OrderController extends Controller
 
     protected array $filterKeys = [
         'order_status',
+        'fulfillment_status',
+        'refund_status',
         'type',
         'fulfillment',
         'sales_channel',

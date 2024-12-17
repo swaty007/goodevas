@@ -15,11 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('type')->index();
             $table->foreignId('api_key_id')->nullable()->constrained('api_keys')->nullOnDelete();
+            $table->string('order_status')->index();
+            $table->string('fulfillment_status')->index();
+            $table->string('refund_status')->index();
+            $table->string('mapped_status');
 
             $table->string('order_id')->unique();
             $table->dateTime('order_date')->nullable();
             $table->timestamp('update_date')->nullable();
-            $table->string('order_status')->index();
             $table->string('fulfillment')->nullable();
             $table->string('sales_channel')->nullable();
             $table->decimal('total_amount', 10, 2);
