@@ -6,7 +6,6 @@ use App\Integrations\Data\Enums\UnifiedFulfilmentStatus;
 use App\Integrations\Data\Enums\UnifiedMappedStatus;
 use App\Integrations\Data\Enums\UnifiedOrderStatus;
 use App\Integrations\Data\Enums\UnifiedRefundStatus;
-use App\Integrations\Data\Etsy\OrderEtsyData;
 use App\Integrations\Data\OrderDataInterface;
 use App\Integrations\Data\OrderUnifiedData;
 use App\Models\ApiKey;
@@ -22,6 +21,8 @@ class OrderShopifyData extends Data implements OrderDataInterface
         public $updated_at,
         public ?string $fulfillment_status,
         public $financial_status,
+        public $cancel_reason, // shopify_draft_order
+        public $source_name, // shopify_draft_order
         public $total_price,
         public $currency,
         public array $payment_gateway_names,
@@ -30,6 +31,7 @@ class OrderShopifyData extends Data implements OrderDataInterface
         /** @var ItemShopifyData[] */
         public array $line_items,
         public array $refunds,
+        public array $fulfillments,
         public mixed $original_object = null,
     ) {}
 
@@ -67,16 +69,49 @@ class OrderShopifyData extends Data implements OrderDataInterface
 
     public static function resolveOrderStatus(?OrderShopifyData $order = null): UnifiedOrderStatus
     {
+        $fulfillmentStatus = self::resolveFulfillmentStatus($order);
+        if ($fulfillmentStatus === UnifiedFulfilmentStatus::SHIPPED) {
+            return UnifiedOrderStatus::DONE;
+        }
+        if (in_array($order->financial_status, ['voided', 'expired']) || ! empty($order->cancel_reason)) {
+            return UnifiedOrderStatus::CANCELED;
+        }
+        if (in_array($fulfillmentStatus, [UnifiedFulfilmentStatus::PARTIALLY_SHIPPED, UnifiedFulfilmentStatus::NOT_SHIPPED])) {
+            return UnifiedOrderStatus::PENDING;
+        }
 
+        return UnifiedOrderStatus::ERROR;
     }
 
     public static function resolveFulfillmentStatus(?OrderShopifyData $order = null): UnifiedFulfilmentStatus
     {
+        if (empty($order->fulfillments)) {
+            return UnifiedFulfilmentStatus::NOT_SHIPPED;
+        }
+        $countFulfillments = 0;
+        foreach ($order->fulfillments as $fulfillment) {
+            $countFulfillments += count($fulfillment['tracking_numbers']);
+        }
+        if (count($order->line_items) > 0) {
+            if ($countFulfillments >= count($order->line_items)) {
+                return UnifiedFulfilmentStatus::SHIPPED;
+            }
+
+            return UnifiedFulfilmentStatus::PARTIALLY_SHIPPED;
+        }
+
         return UnifiedFulfilmentStatus::ERROR;
     }
 
     public static function resolveRefundStatus(?OrderShopifyData $order = null): UnifiedRefundStatus
     {
+        if ($order->financial_status === 'refunded') {
+            return UnifiedRefundStatus::REFUNDED;
+        }
+        if ($order->financial_status === 'partially_refunded') {
+            return UnifiedRefundStatus::PARTIALLY_REFUND;
+        }
+
         return UnifiedRefundStatus::NOT_REFUNDED;
     }
 

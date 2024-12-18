@@ -1,90 +1,114 @@
 <template>
-  <tr
-    class="border-b"
-    :class="{
-      'bg-indigo-50 dark:bg-indigo-900': level === 0,
-      'bg-slate-50 dark:bg-slate-800': level === 1,
-      'bg-white dark:bg-gray-800': level > 1,
-    }"
-  >
-    <ListingDataCell class="relative py-0 pr-0">
-      <div
-        class="flex"
+    <tr
+        class="border-b dark:border-gray-600 border-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700"
         :class="{
-          'pl-8': level === 1,
-          'pl-16': level === 2,
-          'pl-24': level === 3,
-          'pl-32': level === 4,
+            'bg-indigo-50 dark:bg-indigo-900': level === 0,
+            'bg-slate-50 dark:bg-slate-800': level === 1,
+            'bg-white dark:bg-gray-800': level > 1,
         }"
-      >
-        <button
-          v-if="hasChildren"
-          type="button"
-          @click.prevent="disclosureIsOpen = !disclosureIsOpen"
-          class="flex"
+    >
+        <ListingDataCell
+            class="sticky left-0 py-0 pr-0 z-3"
+            :class="{
+                'bg-indigo-50 dark:bg-indigo-900': level === 0,
+                'bg-slate-50 dark:bg-slate-800': level === 1,
+                'bg-white dark:bg-gray-800': level > 1,
+            }"
         >
-          <ChevronUpIcon v-if="disclosureIsOpen" class="h-5 w-5" />
-          <ChevronDownIcon v-else class="h-5 w-5" />
+            <div
+                class="flex"
+                :class="{
+                    'pl-8': level === 1,
+                    'pl-16': level === 2,
+                    'pl-24': level === 3,
+                    'pl-32': level === 4,
+                }"
+            >
+                <button
+                    v-if="hasChildren"
+                    type="button"
+                    class="flex"
+                    @click.prevent="disclosureIsOpen = !disclosureIsOpen"
+                >
+                    <ChevronUpIcon
+                        v-if="disclosureIsOpen"
+                        class="h-5 w-5"
+                    />
+                    <ChevronDownIcon
+                        v-else
+                        class="h-5 w-5"
+                    />
 
-          <FolderIcon class="ml-3 mr-2 h-5 w-5" />
-        </button>
+                    <FolderIcon class="ml-3 mr-2 h-5 w-5" />
+                </button>
 
-        <div
-          class="text-sm text-slate-900 dark:text-slate-100"
-          :class="{ 'font-medium': level === 0 }"
-        >
-          <template v-if="hasChildren">
-            {{ $t("permissions", permissionName) }}
-          </template>
+                <div
+                    class="text-sm text-slate-900 dark:text-slate-100"
+                    :class="{ 'font-medium': level === 0 }"
+                >
+                    <template v-if="hasChildren">
+                        {{ $t("permissions", permissionName) }}
+                    </template>
 
-          <template v-else>
-            {{ $t("permissions", permission) }}
-          </template>
-        </div>
-      </div>
-    </ListingDataCell>
+                    <template v-else>
+                        {{ $t("permissions", permission) }}
+                    </template>
+                </div>
+            </div>
+        </ListingDataCell>
 
-    <template v-if="hasChildren">
-      <ListingDataCell v-for="role in roles" class="border-l">
-        <Checkbox
-          class="justify-center"
-          :modelValue="
-            calculateBulkValue(role) === null || calculateBulkValue(role)
-          "
-          :checked="
-            calculateBulkValue(role) === null || calculateBulkValue(role)
-          "
-          :indeterminate="calculateBulkValue(role) === null"
-          @change="
-            $event.target.checked
-              ? modifyChildren(role, true)
-              : modifyChildren(role, false)
-          "
+        <template v-if="hasChildren">
+            <ListingDataCell
+                v-for="role in roles"
+                :key="role.id"
+                class="border-l dark:border-gray-600 border-gray-200"
+            >
+                <Checkbox
+                    class="justify-center"
+                    :model-value="
+                        calculateBulkValue(role) === null || calculateBulkValue(role)
+                    "
+                    :checked="
+                        calculateBulkValue(role) === null || calculateBulkValue(role)
+                    "
+                    :indeterminate="calculateBulkValue(role) === null"
+                    @change="
+                        $event.target.checked
+                            ? modifyChildren(role, true)
+                            : modifyChildren(role, false)
+                    "
+                />
+            </ListingDataCell>
+        </template>
+
+        <template v-else>
+            <ListingDataCell
+                v-for="role in roles"
+                :key="role.id"
+                class="border-l dark:border-gray-600 border-gray-200"
+            >
+                <Checkbox
+                    class="justify-center"
+                    :model-value="isPermissionAssigned(role)"
+                    @change="permissionCheck(role)"
+                />
+            </ListingDataCell>
+        </template>
+    </tr>
+
+    <div
+        v-if="hasChildren && disclosureIsOpen"
+        class="contents"
+    >
+        <PermissionTableRow
+            v-for="[key, value] of Object.entries(permission)"
+            :key="key"
+            v-model="roles"
+            :permission="value"
+            :permission-name="permissionName + '.' + key"
+            :level="level + 1"
         />
-      </ListingDataCell>
-    </template>
-
-    <template v-else>
-      <ListingDataCell v-for="role in roles" class="border-l">
-        <Checkbox
-          class="justify-center"
-          :modelValue="isPermissionAssigned(role)"
-          @change="permissionCheck(role)"
-        />
-      </ListingDataCell>
-    </template>
-  </tr>
-
-  <div v-if="hasChildren && disclosureIsOpen" class="contents">
-    <PermissionTableRow
-      v-for="[key, value] of Object.entries(permission)"
-      v-model="roles"
-      :permission="value"
-      :permissionName="permissionName + '.' + key"
-      :level="level + 1"
-      :key="key"
-    />
-  </div>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -95,29 +119,29 @@ import { Checkbox } from "craftable-pro/Components";
 import { ListingDataCell } from "craftable-pro/Components";
 
 interface Permission {
-  [key: string]: Permission | string;
+    [key: string]: Permission | string;
 }
 
 interface Props {
-  modelValue: { id: number; name: string; permissions: string[] }[];
-  permission: Permission | string;
-  permissionName: string | number;
-  level?: number;
+    modelValue: { id: number; name: string; permissions: string[] }[];
+    permission: Permission | string;
+    permissionName: string | number;
+    level?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  level: 0,
+    level: 0,
 });
 
 const emit = defineEmits(["update:modelValue"]);
 
 const roles = computed({
-  get: () => {
-    return props.modelValue;
-  },
-  set: (value) => {
-    emit("update:modelValue", value);
-  },
+    get: () => {
+        return props.modelValue;
+    },
+    set: (value) => {
+        emit("update:modelValue", value);
+    },
 });
 
 const disclosureIsOpen = ref<boolean>(true);
@@ -125,74 +149,74 @@ const disclosureIsOpen = ref<boolean>(true);
 const hasChildren = computed(() => typeof props.permission === "object");
 
 const isPermissionAssigned = (role: any) => {
-  return role.permissions.includes(props.permission);
+    return role.permissions.includes(props.permission);
 };
 
 const permissionCheck = (role: any) => {
-  const roleIndex = props.modelValue.findIndex((r: any) => r.id === role.id);
+    const roleIndex = props.modelValue.findIndex((r: any) => r.id === role.id);
 
-  if (isPermissionAssigned(role)) {
-    const withoutPermission = props.modelValue[roleIndex].permissions.filter(
-      function (permission: any) {
-        return permission !== props.permission;
-      }
-    );
-    props.modelValue[roleIndex].permissions = withoutPermission;
-  } else {
-    props.modelValue[roleIndex].permissions.push(props.permission as string);
-  }
+    if (isPermissionAssigned(role)) {
+        const withoutPermission = props.modelValue[roleIndex].permissions.filter(
+            function (permission: any) {
+                return permission !== props.permission;
+            }
+        );
+        props.modelValue[roleIndex].permissions = withoutPermission;
+    } else {
+        props.modelValue[roleIndex].permissions.push(props.permission as string);
+    }
 
-  emit("update:modelValue", props.modelValue);
+    emit("update:modelValue", props.modelValue);
 };
 
 const calculateBulkValue = (role: any) => {
-  const roleIndex = props.modelValue.findIndex((r: any) => r.id === role.id);
-  const allChildrenPermissions = getValues(props.permission);
-  const rolePermissions = props.modelValue[roleIndex].permissions;
+    const roleIndex = props.modelValue.findIndex((r: any) => r.id === role.id);
+    const allChildrenPermissions = getValues(props.permission);
+    const rolePermissions = props.modelValue[roleIndex].permissions;
 
-  if (allChildrenPermissions.every((p: any) => rolePermissions.includes(p))) {
-    return true;
-  }
+    if (allChildrenPermissions.every((p: any) => rolePermissions.includes(p))) {
+        return true;
+    }
 
-  if (allChildrenPermissions.every((p: any) => !rolePermissions.includes(p))) {
-    return false;
-  }
+    if (allChildrenPermissions.every((p: any) => !rolePermissions.includes(p))) {
+        return false;
+    }
 
-  return null;
+    return null;
 };
 
 const modifyChildren = (role: any, toAdd: any) => {
-  const roleIndex = props.modelValue.findIndex((r: any) => r.id === role.id);
-  const allChildrenPermissions = getValues(props.permission);
+    const roleIndex = props.modelValue.findIndex((r: any) => r.id === role.id);
+    const allChildrenPermissions = getValues(props.permission);
 
-  if (toAdd) {
-    allChildrenPermissions.forEach((p: any) => {
-      props.modelValue[roleIndex].permissions.push(p);
-    });
-  } else {
-    const withoutChildrenPermissions = props.modelValue[
-      roleIndex
-    ].permissions.filter(function (p: any) {
-      return !allChildrenPermissions.includes(p);
-    });
-    props.modelValue[roleIndex].permissions = withoutChildrenPermissions;
-  }
+    if (toAdd) {
+        allChildrenPermissions.forEach((p: any) => {
+            props.modelValue[roleIndex].permissions.push(p);
+        });
+    } else {
+        const withoutChildrenPermissions = props.modelValue[
+            roleIndex
+            ].permissions.filter(function (p: any) {
+            return !allChildrenPermissions.includes(p);
+        });
+        props.modelValue[roleIndex].permissions = withoutChildrenPermissions;
+    }
 
-  emit("update:modelValue", props.modelValue);
+    emit("update:modelValue", props.modelValue);
 };
 
 const getValues = (obj: any): any => {
-  let objects: any[] = [];
+    let objects: any[] = [];
 
-  for (var i in obj) {
-    if (!obj.hasOwnProperty(i)) continue;
+    for (var i in obj) {
+        if (!obj.hasOwnProperty(i)) continue;
 
-    if (typeof obj[i] == "object") {
-      objects = objects.concat(getValues(obj[i]));
-    } else {
-      objects.push(obj[i]);
+        if (typeof obj[i] == "object") {
+            objects = objects.concat(getValues(obj[i]));
+        } else {
+            objects.push(obj[i]);
+        }
     }
-  }
-  return objects;
+    return objects;
 };
 </script>

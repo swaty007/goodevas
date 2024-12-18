@@ -3,7 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import PermissionIndexPage from 'craftable-pro/Pages/Permissions/Index.vue';
+// import PermissionIndexPage from 'craftable-pro/Pages/Permissions/Index.vue';
+import PermissionIndexPage from "./PermissionIndexPage.vue";
 import type { Role } from 'craftable-pro/types/models';
 
 interface Props {
