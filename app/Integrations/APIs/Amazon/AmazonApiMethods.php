@@ -25,7 +25,7 @@ use RuntimeException;
  */
 class AmazonApiMethods extends AbstractAmazonApi implements IntegrationApiInterface
 {
-    public function getOrdersList(Carbon $createdMin, ?Carbon $createdMax = null, int $perPage = 40, array $options = [], $withItems = true): array
+    public function getOrdersList(Carbon $createdMin, ?Carbon $createdMax = null, int $perPage = 30, array $options = [], $withItems = true): array
     {
         if ($perPage > 100) {
             throw new RuntimeException('Per page limit is 100');
@@ -47,7 +47,9 @@ class AmazonApiMethods extends AbstractAmazonApi implements IntegrationApiInterf
             $apiKeysCount = ApiKey::where('type', ApiKey::TYPE_AMAZON)->count();
             foreach ($orders as &$order) {
                 $order['items'] = $this->getOrderDetails($order['AmazonOrderId']);
-                usleep((int) ((2.5 * $apiKeysCount) * 1000000)); // 2.5 sec
+                usleep((int) ((2.2 * $apiKeysCount) * 1000000)); // 2.5 sec
+                $order['financialEvents'] = $this->getOrderFinancialEvents($order['AmazonOrderId']);
+                usleep((int) ((2.2 * $apiKeysCount) * 1000000)); // 2.5 sec
                 //                usleep(500000); // 0.5 sec
             }
         }
@@ -66,6 +68,15 @@ class AmazonApiMethods extends AbstractAmazonApi implements IntegrationApiInterf
         foreach ($data as &$item) {
             $item['AmazonOrderId'] = $order_id;
         }
+
+        return $data;
+    }
+
+    public function getOrderFinancialEvents(string $order_id): array
+    {
+        $uri = "finances/v0/orders/$order_id/financialEvents";
+        $response = $this->sendRequest('GET', $uri);
+        $data = $response['payload']['FinancialEvents'];
 
         return $data;
     }

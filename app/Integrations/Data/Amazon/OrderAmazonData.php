@@ -8,7 +8,6 @@ use App\Integrations\Data\Enums\UnifiedOrderStatus;
 use App\Integrations\Data\Enums\UnifiedRefundStatus;
 use App\Integrations\Data\OrderDataInterface;
 use App\Integrations\Data\OrderUnifiedData;
-use App\Integrations\Data\Shopify\OrderShopifyData;
 use App\Models\ApiKey;
 use Spatie\LaravelData\Data;
 
@@ -27,6 +26,7 @@ class OrderAmazonData extends Data implements OrderDataInterface
         public ?array $ShippingAddress, // StateOrRegion PostalCode City CountryCode
         /** @var ItemAmazonData[] */
         public ?array $items,
+        public ?array $financialEvents,
         public mixed $original_object = null,
     ) {}
 
@@ -48,16 +48,45 @@ class OrderAmazonData extends Data implements OrderDataInterface
 
     public static function resolveOrderStatus(?OrderAmazonData $order = null): UnifiedOrderStatus
     {
+        $fulfillmentStatus = self::resolveFulfillmentStatus($order);
+        if ($fulfillmentStatus === UnifiedFulfilmentStatus::SHIPPED) {
+            return UnifiedOrderStatus::DONE;
+        }
+        if (in_array($order->OrderStatus, ['Canceled', 'Unfulfillable'])) {
+            return UnifiedOrderStatus::CANCELED;
+        }
+        if (in_array($fulfillmentStatus, [UnifiedFulfilmentStatus::PARTIALLY_SHIPPED, UnifiedFulfilmentStatus::NOT_SHIPPED])) {
+            return UnifiedOrderStatus::PENDING;
+        }
 
+        return UnifiedOrderStatus::ERROR;
     }
 
     public static function resolveFulfillmentStatus(?OrderAmazonData $order = null): UnifiedFulfilmentStatus
     {
+        if ($order->OrderStatus === 'Shipped') {
+            return UnifiedFulfilmentStatus::SHIPPED;
+        }
+        if ($order->OrderStatus === 'PartiallyShipped') {
+            return UnifiedFulfilmentStatus::PARTIALLY_SHIPPED;
+        }
+        if ($order->OrderStatus === 'Unshipped') {
+            return UnifiedFulfilmentStatus::NOT_SHIPPED;
+        }
+
         return UnifiedFulfilmentStatus::ERROR;
     }
 
     public static function resolveRefundStatus(?OrderAmazonData $order = null): UnifiedRefundStatus
     {
+        if (! empty($order->financialEvents['RefundEventList'])) {
+            if (count($order->items) > count($order->financialEvents['RefundEventList'])) {
+                return UnifiedRefundStatus::PARTIALLY_REFUND;
+            }
+
+            return UnifiedRefundStatus::REFUNDED;
+        }
+
         return UnifiedRefundStatus::NOT_REFUNDED;
     }
 

@@ -107,7 +107,7 @@
             <template #tableRow="{ item, action }: any">
                 <ListingDataCell>
                     <Button
-                        v-if="item.type === 'etsy' && !item.additional_data"
+                        v-if="item.type === 'etsy' && !item.additional_data.length"
                         :as="'a'"
                         :href="route('craftable-pro.etsy.oauth', item)"
                         color="warning"

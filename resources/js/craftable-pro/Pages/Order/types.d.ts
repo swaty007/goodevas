@@ -19,6 +19,10 @@ export type Order = {
     order_date: string;
     update_date: string;
     order_status: string;
+    fulfillment_status: string;
+    refund_status: string;
+    mapped_status: string;
+    manual_changed: boolean;
     fulfillment: string;
     sales_channel: string;
     total_amount: number;

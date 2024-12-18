@@ -15,6 +15,8 @@ interface OrderDataInterface
     public static function getStatusMap(): array;
 
     public static function resolveOrderStatus(): UnifiedOrderStatus;
+
     public static function resolveFulfillmentStatus(): UnifiedFulfilmentStatus;
+
     public static function resolveRefundStatus(): UnifiedRefundStatus;
 }

@@ -18,8 +18,11 @@ class OrderUnifiedData extends Data
         public ?DateTime $order_date,
         #[WithCast(DateTimeInterfaceCast::class)]
         public ?DateTime $update_date,
+        #[WithCast(EnumCast::class)]
         public Enums\UnifiedOrderStatus $order_status,
+        #[WithCast(EnumCast::class)]
         public Enums\UnifiedFulfilmentStatus $fulfillment_status,
+        #[WithCast(EnumCast::class)]
         public Enums\UnifiedRefundStatus $refund_status,
         #[WithCast(UnifiedMappedCast::class)]
         public Enums\UnifiedMappedStatus $mapped_status,

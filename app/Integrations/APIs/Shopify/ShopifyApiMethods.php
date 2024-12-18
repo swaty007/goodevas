@@ -97,9 +97,11 @@ class ShopifyApiMethods extends AbstractShopifyApi implements IntegrationApiInte
                 $pageInfoNext = $response->getPageInfo();
                 $hasNextPage = $pageInfoNext?->hasNextPage() ?? false;
             } while ($hasNextPage);
+
             return $products;
         });
     }
+
     public function getOrdersCount(): array
     {
         $client = $this->getClient();

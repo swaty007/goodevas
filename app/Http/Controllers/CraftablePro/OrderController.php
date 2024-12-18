@@ -13,161 +13,42 @@ use App\Http\Requests\CraftablePro\Order\StoreOrderRequest;
 use App\Http\Requests\CraftablePro\Order\UpdateOrderRequest;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Utils\FilterWithNull;
-use Brackets\CraftablePro\Queries\Filters\FuzzyFilter;
+use App\Services\Order\OrderManager;
+use App\Services\Order\OrderQueryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
-use Spatie\QueryBuilder\AllowedFilter;
-use Spatie\QueryBuilder\QueryBuilder;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class OrderController extends Controller
 {
+    public function __construct(
+        protected OrderQueryService $orderQueryService,
+        protected OrderManager $orderManager,
+    ) {}
+
     /**
      * Display a listing of the resource.
      */
     public function index(IndexOrderRequest $request): Response|JsonResponse
     {
-        $ordersQuery = QueryBuilder::for(Order::class)
-            ->allowedFilters([
-                AllowedFilter::custom('search', new FuzzyFilter(
-                    'id',
-                    'order_id',
-                    'type',
-                    'order_date',
-                    'update_date',
-                    'order_status',
-                    'fulfillment_status',
-                    'refund_status',
-                    'fulfillment',
-                    'sales_channel',
-                    'total_amount',
-                    'total_currency',
-                    'payment_method',
-                    'buyer_name',
-                    'address_line_1',
-                    'address_line_2',
-                    'city',
-                    'state',
-                    'postal_code',
-                    'country_code',
-                    'expected_ship_date',
-                    'is_shipped',
-                )),
-                AllowedFilter::custom('order_status', new FilterWithNull),
-                AllowedFilter::custom('fulfillment_status', new FilterWithNull),
-                AllowedFilter::custom('refund_status', new FilterWithNull),
-                AllowedFilter::custom('type', new FilterWithNull),
-                AllowedFilter::custom('fulfillment', new FilterWithNull),
-                AllowedFilter::custom('sales_channel', new FilterWithNull),
-                AllowedFilter::custom('total_currency', new FilterWithNull),
-                AllowedFilter::custom('payment_method', new FilterWithNull),
-                AllowedFilter::custom('state', new FilterWithNull),
-                AllowedFilter::custom('country_code', new FilterWithNull),
-                AllowedFilter::custom('is_shipped', new FilterWithNull),
-                AllowedFilter::scope('start_date'),
-                AllowedFilter::scope('end_date'),
-            ])
-            ->defaultSort('id')
-            ->allowedSorts('id', 'order_id', 'type', 'order_date', 'update_date',
-                'order_status',
-                'fulfillment_status',
-                'refund_status',
-                'fulfillment', 'sales_channel', 'total_amount', 'total_currency', 'payment_method', 'buyer_name', 'address_line_1', 'address_line_2', 'city', 'state', 'postal_code', 'country_code', 'expected_ship_date', 'is_shipped');
-
         if ($request->wantsJson() && $request->get('bulk_select_all')) {
-            return response()->json($ordersQuery->select(['id'])->pluck('id'));
+            return response()->json($this->orderQueryService->getPluckIndex());
         }
 
-        $orders = $ordersQuery
-            ->with([
-                'items',
-                'apiKey' => function ($query) {
-                    $query->select('id', 'name', 'type');
-                },
-            ])
-            ->select(
-                'id',
-                'api_key_id',
-                'order_id',
-                'type',
-                'order_date',
-                'update_date',
-                'order_status',
-                'fulfillment_status',
-                'refund_status',
-                'fulfillment',
-                'sales_channel',
-                'total_amount',
-                'total_currency',
-                'payment_method',
-                'buyer_name',
-                'address_line_1',
-                'address_line_2',
-                'city',
-                'state',
-                'postal_code',
-                'country_code',
-                'expected_ship_date',
-                'is_shipped',
-                'original_object')
-            ->paginate($request->get('per_page'))->withQueryString();
+        $orders = $this->orderQueryService->getIndexPagination($request->get('per_page'));
 
         Session::put('orders_url', $request->fullUrl());
 
         return Inertia::render('Order/Index', [
             'orders' => $orders,
-            'filtersOptions' => $this->getFiltersArray(),
+            'filtersOptions' => $this->orderQueryService->getFilterOptions(),
         ]);
-    }
-
-    protected array $filterKeys = [
-        'order_status',
-        'fulfillment_status',
-        'refund_status',
-        'type',
-        'fulfillment',
-        'sales_channel',
-        'total_currency',
-        'payment_method',
-        'state',
-        'country_code',
-        'is_shipped',
-    ];
-
-    public function getFiltersArray(): array
-    {
-        $result = Cache::remember('order_filters_data', 300, function () {
-            $data = [];
-            foreach ($this->filterKeys as $filterKey) {
-                $item = Order::select($filterKey)
-                    ->distinct()
-                    ->toBase() // To disable CountryName castings
-                    ->pluck($filterKey)
-                    ->filter()
-                    ->map(fn ($value) => [
-                        'value' => $value,
-                        'label' => $value,
-                    ])
-                    ->values();
-
-                $item->prepend([
-                    'value' => null,
-                    'label' => ___('global', 'null'),
-                ]);
-                $data[$filterKey] = $item;
-            }
-
-            return $data;
-        });
-
-        return $result;
     }
 
     /**
@@ -186,11 +67,7 @@ class OrderController extends Controller
     public function store(StoreOrderRequest $request): RedirectResponse
     {
         dd($request->validated());
-        $order = Order::create($request->validated());
-
-        if ($request->input('orderItems_ids')) {
-            $order->orderItems()->sync($request->input('orderItems_ids'));
-        }
+        $this->orderManager->store($request->validated());
 
         return redirect()->route('craftable-pro.orders.index')->with(['message' => ___('craftable-pro', 'Operation successful')]);
     }
@@ -214,15 +91,21 @@ class OrderController extends Controller
     public function update(UpdateOrderRequest $request, Order $order): RedirectResponse
     {
         dd($request->validated());
-        $order->update($request->validated());
-
-        if ($request->input('orderItems_ids')) {
-            $order->items()->sync($request->input('orderItems_ids'));
-        }
+        $this->orderManager->update($request->validated(), $order);
 
         if (session('orders_url')) {
             return redirect(session('orders_url'))->with(['message' => ___('craftable-pro', 'Operation successful')]);
         }
+
+        return redirect()->route('craftable-pro.orders.index')->with(['message' => ___('craftable-pro', 'Operation successful')]);
+    }
+
+    public function bulkUpdate(UpdateOrderRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
+        $ids = $data['ids'];
+        $orderData = Arr::except($data, ['ids']);
+        $batchUuid = $this->orderManager->bulkUpdate($ids, $orderData);
 
         return redirect()->route('craftable-pro.orders.index')->with(['message' => ___('craftable-pro', 'Operation successful')]);
     }
@@ -233,9 +116,7 @@ class OrderController extends Controller
     public function destroy(DestroyOrderRequest $request, Order $order): RedirectResponse
     {
         dd('not now');
-        $order->items()->detach();
-
-        $order->delete();
+        $this->orderManager->delete($order);
 
         return redirect()->back()->with(['message' => ___('craftable-pro', 'Operation successful')]);
     }

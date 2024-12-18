@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('fulfillment_status')->index();
             $table->string('refund_status')->index();
             $table->string('mapped_status');
+            $table->boolean('manual_changed')->default(false)->index();
 
             $table->string('order_id')->unique();
             $table->dateTime('order_date')->nullable();

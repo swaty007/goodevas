@@ -4,15 +4,10 @@
 
 namespace App\Models;
 
-use App\Helpers\TimeParser;
 use App\Models\Traits\HasDateScopes;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Pagination\Paginator;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -30,6 +25,7 @@ class Order extends Model
         'fulfillment_status',
         'refund_status',
         'mapped_status',
+        'manual_changed',
         'api_key_id',
         'order_status',
         'order_id',

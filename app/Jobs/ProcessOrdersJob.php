@@ -28,7 +28,13 @@ class ProcessOrdersJob implements ShouldBeUnique, ShouldQueue
 
     public int $tries = 4;
 
-    public int $backoff = 30;
+    public function backoff(): int|array
+    {
+        if ($this->apiKey->type === ApiKey::TYPE_AMAZON) {
+            return [90, 120, 240];
+        }
+        return 30;
+    }
 
     public int $timeout = 600;
 
@@ -101,10 +107,10 @@ class ProcessOrdersJob implements ShouldBeUnique, ShouldQueue
             ]);
         } else {
             // Нет NextToken -> добавляем финальную джобу
-//            Log::info('All orders processed', [
-//                'api_key_id' => $this->apiKey->id,
-//                'type' => $this->apiKey->type,
-//            ]);
+            //            Log::info('All orders processed', [
+            //                'api_key_id' => $this->apiKey->id,
+            //                'type' => $this->apiKey->type,
+            //            ]);
             //            $this->batch()->add([
             //                new ProcessAllOrdersJob($this->apiKey),
             //            ]);
@@ -113,9 +119,10 @@ class ProcessOrdersJob implements ShouldBeUnique, ShouldQueue
 
     public static function saveChunkToModel(array $ordersMapped, ApiKey $apiKey): void
     {
-        $chunked = collect($ordersMapped)->chunk(10);
+        $chunked = collect($ordersMapped)->chunk(20);
         $errorsCount = 0;
-        $chunked->each(function ($orderChunk) use ($apiKey, &$errorsCount) {
+        $maxErrorsAllowed = $chunked->count();
+        $chunked->each(function ($orderChunk) use ($apiKey, &$errorsCount, $maxErrorsAllowed) {
             try {
                 DB::transaction(function () use ($orderChunk, $apiKey) {
                     foreach ($orderChunk as $orderData) {
@@ -124,6 +131,12 @@ class ProcessOrdersJob implements ShouldBeUnique, ShouldQueue
                         unset($orderAttributes['items']);
 
                         /** @var Order $order */
+                        $order = Order::where(['order_id' => $orderAttributes['order_id']])->first();
+                        if ($order && $order->manual_changed) {
+                            unset($orderAttributes['order_status']);
+                            unset($orderAttributes['fulfillment_status']);
+                            unset($orderAttributes['refund_status']);
+                        }
                         $order = Order::updateOrCreate(['order_id' => $orderAttributes['order_id']], array_merge($orderAttributes, [
                             'api_key_id' => $apiKey->id,
                         ]));
@@ -146,7 +159,7 @@ class ProcessOrdersJob implements ShouldBeUnique, ShouldQueue
                     'type' => $apiKey->type,
                 ]);
                 $errorsCount++;
-                if ($errorsCount > 3) {
+                if ($errorsCount >= min($maxErrorsAllowed, 3)) {
                     throw $e;
                 }
             }

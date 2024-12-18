@@ -65,6 +65,7 @@ class OrderEtsyData extends Data implements OrderDataInterface
         if (in_array($fulfillmentStatus, [UnifiedFulfilmentStatus::PARTIALLY_SHIPPED, UnifiedFulfilmentStatus::NOT_SHIPPED])) {
             return UnifiedOrderStatus::PENDING;
         }
+
         return UnifiedOrderStatus::ERROR;
     }
 
