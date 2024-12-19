@@ -24,6 +24,7 @@ class OrderManager
 
     public function update(array $orderData, Order $order, bool $bulkAction = false): Order
     {
+        $orderData['manual_changed'] = true;
         $order->update($orderData);
 
         if (! empty($orderData['orderItems_ids'])) {

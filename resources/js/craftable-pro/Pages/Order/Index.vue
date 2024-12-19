@@ -68,7 +68,12 @@
                     </FiltersDropdown>
                 </div>
             </template>
-            <template #bulkActions="{ bulkAction }">
+            <template #bulkActions="{ bulkAction, bulkActionForm }">
+                <ModalBulkEdit
+                    :ids="bulkActionForm.ids"
+                    :order-statuses="orderStatuses"
+                    :fulfillment-statuses="fulfillmentStatuses"
+                    :refund-statuses="refundStatuses" />
                 <Modal type="danger">
                     <template #trigger="{ setIsOpen }">
                         <Button
@@ -253,13 +258,37 @@
                     {{ dayjs(item.update_date).format('DD.MM.YYYY HH:mm') }}
                 </ListingDataCell>
                 <ListingDataCell>
-                    {{ item.order_status }}
+<!--                    {{ item.order_status }}-->
+                    <Multiselect
+                        :model-value="item.order_status"
+                        name="order_status"
+                        :options="orderStatuses"
+                        :allow-absent="true"
+                        mode="single"
+                        @update:model-value="updateOrder(item, 'order_status', $event)"
+                    />
                 </ListingDataCell>
                 <ListingDataCell>
-                    {{ item.fulfillment_status }}
+<!--                    {{  item.fulfillment_status }}-->
+                    <Multiselect
+                        :model-value="item.fulfillment_status"
+                        name="fulfillment_status"
+                        :options="fulfillmentStatuses"
+                        :allow-absent="true"
+                        mode="single"
+                        @update:model-value="updateOrder(item, 'fulfillment_status', $event)"
+                    />
                 </ListingDataCell>
                 <ListingDataCell>
-                    {{ item.refund_status }}
+<!--                    {{ item.refund_status }}-->
+                    <Multiselect
+                        :model-value="item.refund_status"
+                        name="refund_status"
+                        :options="refundStatuses"
+                        :allow-absent="true"
+                        mode="single"
+                        @update:model-value="updateOrder(item, 'refund_status', $event)"
+                    />
                 </ListingDataCell>
                 <ListingDataCell>
                     {{ item.fulfillment }}
@@ -414,10 +443,15 @@ import { useListingFilters } from 'craftable-pro/hooks/useListingFilters';
 import { PaginatedCollection } from 'craftable-pro/types/pagination';
 import dayjs from 'dayjs';
 import type { Order } from './types';
+import debounce from "lodash/debounce";
+import ModalBulkEdit from "@/craftable-pro/Pages/Order/_ModalBulkEdit.vue";
 
 interface Props {
     orders: PaginatedCollection<Order>;
     filtersOptions: Array<{ value: string | number; label: string }>;
+    orderStatuses: string[];
+    fulfillmentStatuses: string[];
+    refundStatuses: string[];
 }
 defineProps<Props>();
 
@@ -450,4 +484,10 @@ const downloadFile = () => {
         window.location = route('craftable-pro.orders.export');
     }
 };
+
+const updateOrder = debounce((item: Order, name: string, value: Array<string | number>) => {
+    action('post', route('craftable-pro.orders.update', item.id), {
+        [name]: value
+    })
+}, 1000)
 </script>

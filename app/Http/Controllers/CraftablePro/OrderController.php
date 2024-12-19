@@ -5,12 +5,16 @@ namespace App\Http\Controllers\CraftablePro;
 use App\Exports\CraftablePro\OrdersExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CraftablePro\Order\BulkDestroyOrderRequest;
+use App\Http\Requests\CraftablePro\Order\BulkUpdateOrderRequest;
 use App\Http\Requests\CraftablePro\Order\CreateOrderRequest;
 use App\Http\Requests\CraftablePro\Order\DestroyOrderRequest;
 use App\Http\Requests\CraftablePro\Order\EditOrderRequest;
 use App\Http\Requests\CraftablePro\Order\IndexOrderRequest;
 use App\Http\Requests\CraftablePro\Order\StoreOrderRequest;
 use App\Http\Requests\CraftablePro\Order\UpdateOrderRequest;
+use App\Integrations\Data\Enums\UnifiedFulfilmentStatus;
+use App\Integrations\Data\Enums\UnifiedOrderStatus;
+use App\Integrations\Data\Enums\UnifiedRefundStatus;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\Order\OrderManager;
@@ -82,6 +86,9 @@ class OrderController extends Controller
         return Inertia::render('Order/Edit', [
             'order' => $order,
             // 'orderItemsOptions' => OrderItem::all()->map(fn ($model) => ['value' => $model->id, 'label' => $model->sku]),
+            'orderStatuses' => array_map(fn ($status) => $status->value, UnifiedOrderStatus::cases()),
+            'fulfillmentStatuses' => array_map(fn ($status) => $status->value, UnifiedFulfilmentStatus::cases()),
+            'refundStatuses' => array_map(fn ($status) => $status->value, UnifiedRefundStatus::cases()),
         ]);
     }
 
@@ -90,8 +97,10 @@ class OrderController extends Controller
      */
     public function update(UpdateOrderRequest $request, Order $order): RedirectResponse
     {
-        dd($request->validated());
-        $this->orderManager->update($request->validated(), $order);
+        $data = $request->validated();
+        if (! empty($data)) {
+            $this->orderManager->update($request->validated(), $order);
+        }
 
         if (session('orders_url')) {
             return redirect(session('orders_url'))->with(['message' => ___('craftable-pro', 'Operation successful')]);
@@ -100,7 +109,7 @@ class OrderController extends Controller
         return redirect()->route('craftable-pro.orders.index')->with(['message' => ___('craftable-pro', 'Operation successful')]);
     }
 
-    public function bulkUpdate(UpdateOrderRequest $request): RedirectResponse
+    public function bulkUpdate(BulkUpdateOrderRequest $request): RedirectResponse
     {
         $data = $request->validated();
         $ids = $data['ids'];
